@@ -10,34 +10,46 @@
   <title>Animator</title>
 </head>
 
-<body>
+<body class="flex flex-col gap-4 p-4">
   <header>
-    <h1>Web Video Maker</h1>
-    <p>Use Javascript to render something in this canvas. It will be turned into a video with FFMPEG.</p>
+    <h1 class="font-bold text-lg">Web Video Maker</h1>
+    <p class="italic">
+      Use Javascript to render something in this canvas. It will be turned into a video with FFMPEG.
+    </p>
   </header>
-  <main style="display: flex; flex-direction: column;">
+  <main class="flex flex-col gap-4">
     <div>
       <canvas id="canvas"
-              style="border: 1px solid black;"
+              class="border border-gray-400"
               width="300"
               height="300">
       </canvas>
     </div>
 
-    <button id="recordStartButton">
+    <input type="text"
+           class="rounded border border-gray-400 p-2"
+           placeholder="Framerate"
+           id="framerateInput"
+           value="30">
+
+    <button id="recordStartButton"
+      class="rounded bg-gray-700 text-white p-2">
       Start Recording
     </button>
 
-    <button id="recordStopButton">
+    <button id="recordStopButton"
+      class="rounded bg-gray-700 text-white p-2">
       Stop Recording
     </button>
   </main>
 
   <script type="module">
     import * as videoBuilder from './index';
+    import './index.css';
 
     const recordStartButton = document.getElementById('recordStartButton');
     const recordStopButton = document.getElementById('recordStopButton');
+    const framerateInput = document.getElementById('framerateInput');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     let isRecording = false;
@@ -49,7 +61,7 @@
 
     recordStopButton.addEventListener('click', async () => {
       isRecording = false;
-      const videoBlob = await videoBuilder.fromFrames(frames);
+      const videoBlob = await videoBuilder.fromFrames(frames, framerateInput.value);
       console.log(videoBlob);
       const videoUrl = URL.createObjectURL(videoBlob);
       
@@ -75,19 +87,30 @@
       ctx.closePath();
     }
 
+    let lastFrameTime = 0;
+    let frameCount = 0;
+
     function animate() {
       requestAnimationFrame(animate);
-      draw();
-      y -= 1;
-      if (y < 0) {
-        y = canvas.height;
-      }
+      const now = performance.now();
+      const elapsed = now - lastFrameTime;
+      const framerate = parseInt(framerateInput.value, 10);
+      const frameDuration = 1000 / framerate;
 
-      if (isRecording) {
-        canvas.toBlob((blob) => {
-          frames.push(blob);
-          console.log('frames', frames.length);
-        }, 'image/jpeg', 1);
+      if (elapsed > frameDuration) {
+        lastFrameTime = now - (elapsed % frameDuration);
+        draw();
+        y -= 1;
+        if (y < 0) {
+          y = canvas.height;
+        }
+
+        if (isRecording) {
+          canvas.toBlob((blob) => {
+            frames.push(blob);
+            console.log('frames', frames.length);
+          }, 'image/jpeg', 1);
+        }
       }
     }
 

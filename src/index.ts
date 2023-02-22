@@ -2,7 +2,7 @@ import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 const ffmpeg = createFFmpeg({ log: true });
 
-export async function fromFrames(frames: Blob[]) {
+export async function fromFrames(frames: Blob[], framerate: number) {
   await ffmpeg.load();
 
   let frameIndex = 0;
@@ -19,7 +19,7 @@ export async function fromFrames(frames: Blob[]) {
 
   await ffmpeg.run(
     '-framerate',
-    '30',
+    String(framerate),
     '-pattern_type',
     'glob',
     '-i',
