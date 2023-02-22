@@ -1,4 +1,4 @@
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import { createFFmpeg } from '@ffmpeg/ffmpeg';
 
 const ffmpeg = createFFmpeg({ log: true });
 
