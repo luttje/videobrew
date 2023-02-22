@@ -1,0 +1,21 @@
+{
+  "name": "web-video-maker",
+  "description": "",
+  "version": "0.1.0",
+  "author": "Luttje",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@ffmpeg/core": "^0.11.0",
+    "@ffmpeg/ffmpeg": "^0.11.6"
+  },
+  "devDependencies": {
+    "@types/ffmpeg": "^1.0.4",
+    "tsx": "^3.12.3",
+    "vite": "^4.0.0"
+  }
+}

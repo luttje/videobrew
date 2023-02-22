@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible"
+        content="IE=edge">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>Animator</title>
+</head>
+
+<body>
+  <header>
+    <h1>Web Video Maker</h1>
+    <p>Use Javascript to render something in this canvas. It will be turned into a video with FFMPEG.</p>
+  </header>
+  <main style="display: flex; flex-direction: column;">
+    <div>
+      <canvas id="canvas"
+              style="border: 1px solid black;"
+              width="300"
+              height="300">
+      </canvas>
+    </div>
+
+    <button id="recordStartButton">
+      Start Recording
+    </button>
+
+    <button id="recordStopButton">
+      Stop Recording
+    </button>
+  </main>
+
+  <script type="module">
+    import * as videoBuilder from './index';
+
+    const recordStartButton = document.getElementById('recordStartButton');
+    const recordStopButton = document.getElementById('recordStopButton');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let isRecording = false;
+    let frames = [];
+
+    recordStartButton.addEventListener('click', () => {
+      isRecording = true;
+    });
+
+    recordStopButton.addEventListener('click', async () => {
+      isRecording = false;
+      const videoBlob = await videoBuilder.fromFrames(frames);
+      console.log(videoBlob);
+      const videoUrl = URL.createObjectURL(videoBlob);
+      
+      // Download video
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      a.style.display = 'none';
+      a.target = '_blank';
+      a.href = videoUrl;
+      a.click();
+    });
+
+    const radius = 20;
+    const x = canvas.width / 2;
+    let y = canvas.height - radius;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#0095DD';
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      draw();
+      y -= 1;
+      if (y < 0) {
+        y = canvas.height;
+      }
+
+      if (isRecording) {
+        canvas.toBlob((blob) => {
+          frames.push(blob);
+          console.log('frames', frames.length);
+        }, 'image/jpeg', 1);
+      }
+    }
+
+    animate();
+  </script>
+</body>
+
+</html>
