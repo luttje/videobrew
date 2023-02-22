@@ -3,13 +3,14 @@ import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 const ffmpeg = createFFmpeg({ log: true });
 
 export async function fromFrames(frames: Blob[], framerate: number) {
-  await ffmpeg.load();
+  if(!ffmpeg.isLoaded())
+    await ffmpeg.load();
 
   let frameIndex = 0;
   for (const frame of frames) {
     await ffmpeg.FS(
       'writeFile',
-      `${String(frameIndex).padStart(5, '0')}.jpg`,
+      `${String(frameIndex).padStart(5, '0')}.jpeg`,
       new Uint8Array(await frame.arrayBuffer())
     );
     frameIndex++;
@@ -23,7 +24,9 @@ export async function fromFrames(frames: Blob[], framerate: number) {
     '-pattern_type',
     'glob',
     '-i',
-    '*.jpg',
+    '*.jpeg',
+    '-vf',
+    'pad=ceil(iw/2)*2:ceil(ih/2)*2',
     '-c:v',
     'libx264',
     '-pix_fmt',

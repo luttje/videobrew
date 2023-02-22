@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@ffmpeg/core": "^0.11.0",
-    "@ffmpeg/ffmpeg": "^0.11.6"
+    "@ffmpeg/ffmpeg": "^0.11.6",
+    "modern-screenshot": "^4.4.1"
   },
   "devDependencies": {
     "@types/ffmpeg": "^1.0.4",

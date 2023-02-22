@@ -10,7 +10,7 @@
   <title>Animator</title>
 </head>
 
-<body class="flex flex-col gap-4 p-4">
+<body class="flex flex-col gap-4 p-4 bg-white">
   <header>
     <h1 class="font-bold text-lg">Web Video Maker</h1>
     <p class="italic">
@@ -44,6 +44,8 @@
   </main>
 
   <script type="module">
+    import workerUrl from 'modern-screenshot/worker?url';
+    import { createContext, destroyContext, domToBlob } from 'modern-screenshot';
     import * as videoBuilder from './index';
     import './index.css';
 
@@ -52,17 +54,21 @@
     const framerateInput = document.getElementById('framerateInput');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-    let isRecording = false;
+    let context = null;
     let frames = [];
 
-    recordStartButton.addEventListener('click', () => {
-      isRecording = true;
+    recordStartButton.addEventListener('click', async () => {
+      context = await createContext(document.body, {
+        workerUrl,
+        workerNumber: 1,
+        type: 'image/jpeg',
+      });
     });
 
     recordStopButton.addEventListener('click', async () => {
-      isRecording = false;
+      destroyContext(context);
+      context = null;
       const videoBlob = await videoBuilder.fromFrames(frames, framerateInput.value);
-      console.log(videoBlob);
       const videoUrl = URL.createObjectURL(videoBlob);
       
       // Download video
@@ -90,8 +96,7 @@
     let lastFrameTime = 0;
     let frameCount = 0;
 
-    function animate() {
-      requestAnimationFrame(animate);
+    async function animate() {
       const now = performance.now();
       const elapsed = now - lastFrameTime;
       const framerate = parseInt(framerateInput.value, 10);
@@ -105,13 +110,13 @@
           y = canvas.height;
         }
 
-        if (isRecording) {
-          canvas.toBlob((blob) => {
-            frames.push(blob);
-            console.log('frames', frames.length);
-          }, 'image/jpeg', 1);
+        if (context) {
+          const frame = await domToBlob(context);
+          frames.push(frame);
         }
       }
+      
+      requestAnimationFrame(animate);
     }
 
     animate();
