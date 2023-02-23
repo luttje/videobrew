@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const port = process.env.PORT || 8081;
+const port = process.env.PORT || 8080;
 const args = process.argv.slice(2);
 const action = args[0];
 
@@ -131,4 +131,24 @@ const server = http.createServer((req, res) => {
 
 server.listen(port, () => {
   console.log(`Serving file: ${videoFilePath} on port http://localhost:${port}`);
+});
+
+// Watch (not needed in production) and rebuild the svelte app so it can be served
+import { spawn } from 'child_process';
+const builder = spawn('npm', ['run', 'watch'], {
+  cwd: path.join(__dirname, '..'),
+  stdio: 'inherit',
+  shell: true,
+});
+
+builder.on('exit', (code) => {
+  console.log(`Build exited with code ${code}`);
+  server.close();
+  process.exit(code);
+});
+
+builder.on('error', (err) => {
+  console.error(`Build error: ${err}`);
+  server.close();
+  process.exit(1);
 });
