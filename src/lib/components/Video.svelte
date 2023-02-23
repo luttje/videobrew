@@ -1,4 +1,8 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+
   type Ball = {
     x: number;
     y: number;
@@ -7,8 +11,10 @@
     radius: number;
   };
 
-  export let width: number;
-  export let height: number;
+  export const width: number = 1080;
+  export const height: number = 1920;
+  export const framerate: number = 30;
+  export const estimatedFrameCount: number = 2 * framerate;
 
   let ballStart: Ball[] = [];
   const radius = width / 10;
@@ -96,6 +102,8 @@
     if (frame === 0) {
       // copy the initial state into balls
       balls = ballStart.map((ball) => ({ ...ball }));
+    } else if (frame === estimatedFrameCount) {
+      dispatch('end');
     }
     move();
   }

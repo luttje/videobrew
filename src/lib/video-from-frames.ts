@@ -14,8 +14,6 @@ export async function fromFrames(frames: Blob[], framerate: number) {
       new Uint8Array(await frame.arrayBuffer())
     );
     frameIndex++;
-
-    console.log('Frame', frameIndex);
   }
 
   await ffmpeg.run(
