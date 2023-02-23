@@ -9,8 +9,8 @@
     radius: number;
   };
 
-  export let canvasWidth: number;
-  export let canvasHeight: number;
+  export let width: number;
+  export let height: number;
 
   let balls: Ball[] = [];
   for (let i = 0; i < 4; i++) {
@@ -32,14 +32,14 @@
 
         const diameter = ball.radius * 2;
 
-        if (ball.x + diameter > canvasWidth) {
-          ball.x = canvasWidth - diameter;
+        if (ball.x + diameter > width) {
+          ball.x = width - diameter;
           ball.dx *= -1;
         } else if (ball.x < 0) {
           ball.x = 0;
           ball.dx *= -1;
-        } else if (ball.y + diameter > canvasHeight) {
-          ball.y = canvasHeight - diameter;
+        } else if (ball.y + diameter > height) {
+          ball.y = height - diameter;
           ball.dy *= -1;
         } else if (ball.y < 0) {
           ball.y = 0;

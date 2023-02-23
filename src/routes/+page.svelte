@@ -22,21 +22,15 @@
   let heightSetting: string = "1920";
   let scaleSetting: number = 0.2;
 
+  let width: number;
+  let height: number;
+
+  $: width = parseInt(widthSetting);
+  $: height = parseInt(heightSetting);
+
   let canvas: HTMLElement;
-  let canvasWidth: number = 0;
-  let canvasHeight: number = 0;
   let context: Context | null = null;
   let frames: Blob[] = [];
-
-  $: canvasWidth = Math.round(parseInt(widthSetting) * scaleSetting);
-  $: {
-    const width = parseInt(widthSetting);
-    const height = parseInt(heightSetting);
-    const aspectRatio = width / height;
-
-    // Round to at most 4 decimal places
-    canvasHeight = Math.round((canvasWidth / aspectRatio) * 10000) / 10000;
-  }
 
   async function recordStart() {
     frames = [];
@@ -120,12 +114,16 @@
         />
       </Setting>
     </div>
-    <div
-      bind:this={canvas}
-      class="relative overflow-hidden inline-block bg-white self-center m-2 max-w-full"
-      style="width: {canvasWidth}px; height: {canvasHeight}px;"
-    >
-      <Video {canvasWidth} {canvasHeight} />
+    <div class="overflow-hidden m-2"
+      style="width: {width*scaleSetting}px; height: {height*scaleSetting}px;"
+      >
+      <div
+        bind:this={canvas}
+        class="relative overflow-hidden inline-block bg-white"
+        style="width: {widthSetting}px; height: {heightSetting}px; transform: scale({scaleSetting}); transform-origin: top left;"
+      >
+        <Video {width} {height} />
+      </div>
     </div>
   </div>
 
