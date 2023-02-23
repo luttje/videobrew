@@ -30,14 +30,49 @@
   $: height = parseInt(heightSetting);
 
   let canvas: HTMLElement;
-  let context: Context | null = null;
+  let renderContext: Context | null = null;
   let frames: Blob[] = [];
+
+  let video: Video;
+  type VideoPlayback = {
+    playing: boolean;
+    frame: number;
+  };
+  let videoPlayback: VideoPlayback = {
+    playing: false,
+    frame: 0,
+  };
+
+  function play() {
+    videoPlayback.playing = true;
+  }
+
+  function pause() {
+    videoPlayback.playing = false;
+  }
+
+  function nextFrame() {
+    videoPlayback.frame++;
+  }
+
+  function previousFrame() {
+    videoPlayback.frame--;
+  }
+
+  function reset() {
+    videoPlayback.frame = 0;
+  }
+
+  function stop() {
+    videoPlayback.playing = false;
+    videoPlayback.frame = 0;
+  }
 
   async function recordStart() {
     frames = [];
     oldScaleSetting = scaleSetting;
     scaleSetting = 1;
-    context = await createContext(canvas, {
+    renderContext = await createContext(canvas, {
       // @ts-ignore 2322
       workerUrl,
       workerNumber: 1,
@@ -46,8 +81,8 @@
   }
 
   async function recordStop() {
-    destroyContext(context!);
-    context = null;
+    destroyContext(renderContext!);
+    renderContext = null;
     scaleSetting = oldScaleSetting;
     const videoBlob = await videoBuilder.fromFrames(
       frames,
@@ -72,15 +107,20 @@
 
       if (!canvas) return;
 
+      if (!videoPlayback.playing) return;
+
       const now = performance.now();
       const elapsed = now - lastFrameTime;
       const frameDuration = 1000 / parseInt(framerateSetting);
 
       if (elapsed > frameDuration) {
+        video.tick(videoPlayback.frame);
+        nextFrame();
+
         lastFrameTime = now - (elapsed % frameDuration);
 
-        if (context) {
-          const frame = await domToBlob(context);
+        if (renderContext) {
+          const frame = await domToBlob(renderContext);
           frames.push(frame);
         }
       }
@@ -126,10 +166,19 @@
         class="relative overflow-hidden inline-block bg-white"
         style="width: {widthSetting}px; height: {heightSetting}px; transform: scale({scaleSetting}); transform-origin: top left;"
       >
-        <Video {width} {height} />
+        <Video bind:this={video} {width} {height} />
       </div>
     </div>
   </div>
+
+  {#if videoPlayback.playing}
+    <div class="flex flex-row gap-2">
+      <Primary on:click={pause}>Pause</Primary>
+      <Primary on:click={stop}>Stop</Primary>
+    </div>
+  {:else}
+    <Primary on:click={play}>Play</Primary>
+  {/if}
 
   <Primary on:click={recordStart}>Start Recording</Primary>
 
