@@ -35,14 +35,14 @@
         if (ball.x + diameter > canvasWidth) {
           ball.x = canvasWidth - diameter;
           ball.dx *= -1;
-        } else if (ball.x - diameter < 0) {
-          ball.x = diameter;
+        } else if (ball.x < 0) {
+          ball.x = 0;
           ball.dx *= -1;
         } else if (ball.y + diameter > canvasHeight) {
           ball.y = canvasHeight - diameter;
           ball.dy *= -1;
-        } else if (ball.y - diameter < 0) {
-          ball.y = diameter;
+        } else if (ball.y < 0) {
+          ball.y = 0;
           ball.dy *= -1;
         }
 
