@@ -34,47 +34,99 @@ const videoFilePath = path.join(workingDirectory, relativeFilePath);
 const svelteAppPath = path.join(__dirname, '..', 'build');
 
 const server = http.createServer((req, res) => {
-  if (req.url === '/video') {
+  const inVideoDomain = req.url.startsWith('/video') || req.headers.referer?.endsWith('/video');
+  let basePath = inVideoDomain ? path.dirname(videoFilePath) : svelteAppPath;
+  let url = inVideoDomain ? req.url.replace('/video', '/'+path.basename(videoFilePath)) : req.url;
+  let filePath = path.join(basePath, url === '/' ? 'index.html' : url);
+  const ext = path.parse(filePath).ext;
+  const map = {
+    '.htm': 'text/html',
+    '.html': 'text/html',
+    '.md': 'text/markdown',
+    '.txt': 'text/plain',
+    '.xhtml': 'application/xhtml+xml',
+    '.xml': 'application/xml',
+
+    '.cjs': 'text/javascript',
+    '.js': 'text/javascript',
+    '.jsx': 'text/javascript',
+    '.mjs': 'text/javascript',
+    '.ts': 'text/javascript',
+    '.tsx': 'text/javascript',
+    
+    '.wasm': 'application/wasm',
+
+    '.json': 'application/json',
+    '.jsonp': 'application/json',
+    '.map': 'application/json',
+
+    '.css': 'text/css',
+    '.less': 'text/css',
+    '.sass': 'text/css',
+    '.scss': 'text/css',
+    '.styl': 'text/css',
+
+    '.bmp': 'image/bmp',
+    '.gif': 'image/gif',
+    '.ico': 'image/x-icon',
+    '.jpeg': 'image/jpeg',
+    '.jpg': 'image/jpeg',
+    '.png': 'image/png',
+    '.svg': 'image/svg+xml',
+    '.tiff': 'image/tiff',
+    '.webp': 'image/webp',
+    
+    '.otf': 'application/font-sfnt',
+    '.ttf': 'application/font-sfnt',
+    '.woff': 'application/font-woff',
+    '.woff2': 'application/font-woff2',
+
+    '.mp3': 'audio/mpeg',
+    '.ogg': 'audio/ogg',
+    '.wav': 'audio/wav',
+
+    '.mov': 'video/quicktime',
+    '.mp4': 'video/mp4',
+    '.webm': 'video/webm',
+
+    '.7z': 'application/x-7z-compressed',
+    '.csh': 'application/x-csh',
+    '.doc': 'application/msword',
+    '.eot': 'application/vnd.ms-fontobject',
+    '.gz': 'application/gzip',
+    '.jar': 'application/java-archive',
+    '.pdf': 'application/pdf',
+    '.ppt': 'application/vnd.ms-powerpoint',
+    '.rar': 'application/x-rar-compressed',
+    '.sh': 'application/x-sh',
+    '.tar': 'application/x-tar',
+    '.xls': 'application/vnd.ms-excel',
+    '.xsl': 'application/xml',
+    '.xslt': 'application/xslt+xml',
+    '.zip': 'application/zip',
+  };
+
+  const exist = fs.existsSync(filePath);
+
+  if(!exist) {
+    res.statusCode = 404;
+    res.end(`File ${filePath} not found!`);
+    return;
+  }
+
+  const data = fs.readFileSync(filePath);
+  
+  res.setHeader('Content-type', map[ext] || 'text/plain' );
+
+  if (inVideoDomain) {
+    // Ensure it can be embedded in an iframe
     res.writeHead(200, {
-      'Content-Type': 'text/html',
       'Cross-Origin-Resource-Policy': 'cross-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp',
-
     });
-    res.end(fs.readFileSync(videoFilePath));
-  } else {
-    let filePath = path.join(svelteAppPath, req.url === '/' ? 'index.html' : req.url);
-    const ext = path.parse(filePath).ext;
-    const map = {
-      '.ico': 'image/x-icon',
-      '.html': 'text/html',
-      '.js': 'text/javascript',
-      '.mjs': 'text/javascript',
-      '.cjs': 'text/javascript',
-      '.json': 'application/json',
-      '.css': 'text/css',
-      '.png': 'image/png',
-      '.jpg': 'image/jpeg',
-      '.wav': 'audio/wav',
-      '.mp3': 'audio/mpeg',
-      '.svg': 'image/svg+xml',
-      '.pdf': 'application/pdf',
-      '.doc': 'application/msword'
-    };
-  
-    const exist = fs.existsSync(filePath);
-
-    if(!exist) {
-      res.statusCode = 404;
-      res.end(`File ${filePath} not found!`);
-      return;
-    }
-
-    const data = fs.readFileSync(filePath);
-
-    res.setHeader('Content-type', map[ext] || 'text/plain' );
-    res.end(data);
   }
+
+  res.end(data);
 });
 
 server.listen(port, () => {
