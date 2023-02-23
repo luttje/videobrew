@@ -21,6 +21,7 @@
   let widthSetting: string = "1080";
   let heightSetting: string = "1920";
   let scaleSetting: number = 0.2;
+  let oldScaleSetting: number = 0.2;
 
   let width: number;
   let height: number;
@@ -34,7 +35,9 @@
 
   async function recordStart() {
     frames = [];
-    context = await createContext(document.body, {
+    oldScaleSetting = scaleSetting;
+    scaleSetting = 1;
+    context = await createContext(canvas, {
       // @ts-ignore 2322
       workerUrl,
       workerNumber: 1,
@@ -45,6 +48,7 @@
   async function recordStop() {
     destroyContext(context!);
     context = null;
+    scaleSetting = oldScaleSetting;
     const videoBlob = await videoBuilder.fromFrames(
       frames,
       parseInt(framerateSetting)
