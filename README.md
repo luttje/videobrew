@@ -18,15 +18,25 @@ Create a video by animating a web page.
 
 ⚠ **This usage description is how we want it to be, not yet how it is.**
 
-1. Create a new project that uses your prefered frontend framework. For example, create a new [Svelte](https://svelte.dev/) project with `npm create svelte@latest my-video-project` and [configure it to generate a static site](https://kit.svelte.dev/docs/adapter-static#usage).
+### Pure HTML
+
+1. Create a new HTML file named `my-video-project.html` based on the [Pure HTML Example Video](#pure-html) below.
+
+2. Run `web-video-maker preview my-video-project.html` to preview the video. A preview of the video can be viewed in your preferred browser.
+
+3. You can render the video directly from the preview page or run `web-video-maker render my-video-project.html out/my-video-project.mp4` to render the video to the specified path.
+
+### Svelte
+
+1. Create a new [Svelte](https://svelte.dev/) project with `npm create svelte@latest my-video-project` and [configure it to generate a static site](https://kit.svelte.dev/docs/adapter-static#usage).
 
 2. Require `web-video-maker` in your project by running `npm i web-video-maker`.
 
-3. Create a web page that describes the video. For example, with svelte you could change the `routes/+page.svelte` file to the [Svelte Example Video](#svelte) below.
+3. Create a web page that describes the video. For example change the `routes/+page.svelte` file to the [Svelte Example Video](#svelte) below.
 
-4. Render your project so a webpage is created. For example, with svelte you can run `npm run build`.
+4. Run `npm run build` to render your webpage to a static site.
 
-5. Run `web-video-maker preview build/index.html` with the path to the webpage to preview the video. A preview of the video will open in your preferred browser.
+5. Run `web-video-maker preview build/index.html` with the path to the webpage to preview the video. A preview of the video can be viewed in your preferred browser.
 
 6. You can render the video directly from the preview page or run `web-video-maker render build/index.html out/my-video-project.mp4` to render the video to the specified path.
 
