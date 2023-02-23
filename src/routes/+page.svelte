@@ -55,17 +55,14 @@
     videoPlayback.frame++;
   }
 
-  function previousFrame() {
-    videoPlayback.frame--;
-  }
-
   function reset() {
     videoPlayback.frame = 0;
   }
 
   function stop() {
-    videoPlayback.playing = false;
-    videoPlayback.frame = 0;
+    pause();
+    reset();
+    video.tick(videoPlayback.frame);
   }
 
   async function recordStart() {
@@ -101,13 +98,19 @@
 
   onMount(() => {
     let lastFrameTime = 0;
+    
+    video.tick(videoPlayback.frame);
 
     async function animate() {
       requestAnimationFrame(animate);
 
-      if (!canvas) return;
+      if (!canvas) {
+        return;
+      }
 
-      if (!videoPlayback.playing) return;
+      if (!videoPlayback.playing) {
+        return;
+      }
 
       const now = performance.now();
       const elapsed = now - lastFrameTime;

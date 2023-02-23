@@ -10,16 +10,19 @@
   export let width: number;
   export let height: number;
 
-  let balls: Ball[] = [];
+  let ballStart: Ball[] = [];
+  const radius = width / 10;
+  const maxSpeed = width / 100;
   for (let i = 0; i < 4; i++) {
-    balls.push({
-      x: Math.random() * 300,
-      y: Math.random() * 300,
-      dx: Math.random() * 3 - 1,
-      dy: Math.random() * 3 - 1,
-      radius: 25,
+    ballStart.push({
+      x: Math.random() * (width - radius * 2),
+      y: Math.random() * (height - radius * 2),
+      dx: Math.random() * maxSpeed - 1,
+      dy: Math.random() * maxSpeed - 1,
+      radius: radius,
     });
   }
+  let balls: Ball[] = [];
 
   function move() {
     for (let i = 0; i < balls.length; i++) {
@@ -66,10 +69,6 @@
           const xVelocity = ball.dx * cosine + ball.dy * sine;
           const yVelocity = ball.dy * cosine - ball.dx * sine;
 
-          // Rotate other ball position
-          const otherX = 0;
-          const otherY = 0;
-
           // Rotate other ball velocity
           const otherXVelocity =
             other.dx * cosine + other.dy * sine;
@@ -94,7 +93,10 @@
   }
 
   export function tick(frame: number) {
-    // TODO: take frame into account so that the animation is consistent
+    if (frame === 0) {
+      // copy the initial state into balls
+      balls = ballStart.map((ball) => ({ ...ball }));
+    }
     move();
   }
 </script>
