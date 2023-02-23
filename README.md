@@ -18,7 +18,7 @@ Create a video by animating a web page.
 
 ⚠ **This usage description is how we want it to be, not yet how it is.**
 
-1. Create a new project that uses your prefered frontend framework. For example, create a new [Svelte](https://svelte.dev/) project with `npm create svelte@latest my-video-project`.
+1. Create a new project that uses your prefered frontend framework. For example, create a new [Svelte](https://svelte.dev/) project with `npm create svelte@latest my-video-project` and [configure it to generate a static site](https://kit.svelte.dev/docs/adapter-static#usage).
 
 2. Require `web-video-maker` in your project by running `npm i web-video-maker`.
 
@@ -26,9 +26,9 @@ Create a video by animating a web page.
 
 4. Render your project so a webpage is created. For example, with svelte you can run `npm run build`.
 
-5. Run `web-video-maker preview .svelte-kit/output/index.html` with the path to the webpage to preview the video. A preview of the video will open in your preferred browser.
+5. Run `web-video-maker preview build/index.html` with the path to the webpage to preview the video. A preview of the video will open in your preferred browser.
 
-6. You can render the video directly from the preview page or run `web-video-maker render .svelte-kit/output/index.html out/my-video-project.mp4` to render the video to the specified path.
+6. You can render the video directly from the preview page or run `web-video-maker render build/index.html out/my-video-project.mp4` to render the video to the specified path.
 
 ## Example videos
 
