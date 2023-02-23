@@ -30,7 +30,7 @@
   let renderEncodingProgress: number | null = null;
   let frames: Blob[] = [];
 
-  let video: Video;
+  let video: HTMLIFrameElement;
   type VideoPlayback = {
     playing: boolean;
     frame: number;
@@ -59,7 +59,7 @@
   function stop() {
     pause();
     reset();
-    video.tick(videoPlayback.frame);
+    //video.tick(videoPlayback.frame);
   }
 
   async function render() {
@@ -110,8 +110,10 @@
 
   onMount(() => {
     let lastFrameTime = 0;
+
+    video.src = '/video';
     
-    video.tick(videoPlayback.frame);
+    //video.tick(videoPlayback.frame);
 
     async function animate() {
       requestAnimationFrame(animate);
@@ -129,7 +131,7 @@
       const frameDuration = 1000 / framerate;
 
       if (elapsed > frameDuration) {
-        video.tick(videoPlayback.frame);
+        //video.tick(videoPlayback.frame);
         nextFrame();
 
         lastFrameTime = now - (elapsed % frameDuration);
@@ -181,13 +183,18 @@
         class="relative overflow-hidden inline-block bg-white"
         style="width: {width}px; height: {height}px; transform: scale({scaleSetting}); transform-origin: top left;"
       >
-        <Video bind:this={video} 
+        <!-- <Video bind:this={video} 
           bind:width={width} 
           bind:height={height} 
           bind:framerate={framerate} 
           bind:estimatedFrameCount={estimatedFrameCount}
           on:end={renderEnd}
-        />
+        /> -->
+        <iframe bind:this={video} 
+          title="test"
+          width={width}
+          height={height}>
+        </iframe>
       </div>
     </div>
   </div>
