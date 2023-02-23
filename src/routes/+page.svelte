@@ -1,4 +1,7 @@
 <script lang="ts">
+  /**
+   * This page draws a preview of the video on a canvas and records it.
+   */
   import {
     createContext,
     destroyContext,
@@ -8,31 +11,48 @@
   import workerUrl from 'modern-screenshot/worker?url';
   import * as videoBuilder from '$lib/video-from-frames';
   import { onMount } from 'svelte';
+  import Setting from '$lib/components/Setting.svelte';
+  import Primary from '$lib/components/button/Primary.svelte';
+  import Text from '$lib/components/input/Text.svelte';
+  import Video from '$lib/components/Video.svelte';
 
-  let recordStartButton: HTMLButtonElement;
-  let recordStopButton: HTMLButtonElement;
-  let framerateInput: HTMLInputElement;
-  let canvas: HTMLCanvasElement;
+  let framerateSetting: string = '30';
+  let widthSetting: string = '1080';
+  let heightSetting: string = '1920';
+  let scale: number = 1;
+
+  let canvas: HTMLElement;
+  let canvasWidth: number = 0;
+  let canvasHeight: number = 0;
   let context: Context | null = null;
   let frames: Blob[] = [];
 
-  onMount(() => {
-    recordStartButton.addEventListener('click', async () => {
-      context = await createContext(document.body, {
-        // @ts-ignore 2322
-        workerUrl,
-        workerNumber: 1,
-        type: 'image/jpeg',
-      });
-      frames = [];
-    });
+  $: canvasWidth = Math.round(parseInt(widthSetting) * scale);
+  $: {
+    const width = parseInt(widthSetting);
+    const height = parseInt(heightSetting);
+    const aspectRatio = width / height;
 
-    recordStopButton.addEventListener('click', async () => {
-      destroyContext(context!);
+    // Round to at most 4 decimal places
+    canvasHeight = Math.round(canvasWidth / aspectRatio * 10000) / 10000;
+  }
+
+  async function recordStart() {
+    frames = [];
+    context = await createContext(document.body, {
+      // @ts-ignore 2322
+      workerUrl,
+      workerNumber: 1,
+      type: 'image/jpeg',
+    });
+  }
+
+  async function recordStop() {
+    destroyContext(context!);
       context = null;
       const videoBlob = await videoBuilder.fromFrames(
         frames,
-        parseInt(framerateInput.value)
+        parseInt(framerateSetting)
       );
       const videoUrl = URL.createObjectURL(videoBlob);
 
@@ -43,87 +63,85 @@
       a.target = '_blank';
       a.href = videoUrl;
       a.click();
-    });
+  }
 
-    const radius = 20;
-    const x = canvas.width / 2;
-    let y = canvas.height - radius;
-    const ctx = canvas.getContext('2d')!;
+  // Ensure the canvas fits the screen
+  function calculateScale() {
+    if(!canvas)
+      return;
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fillStyle = '#0095DD';
-      ctx.fill();
-      ctx.closePath();
-    }
+    const parent = canvas.parentElement!;
+    const parentPadding =
+      parseInt(getComputedStyle(parent).paddingLeft) +
+      parseInt(getComputedStyle(parent).paddingRight);
+    const canvasMargin =
+      parseInt(getComputedStyle(canvas).marginLeft) +
+      parseInt(getComputedStyle(canvas).marginRight);
+    const parentWidth = parent.clientWidth - parentPadding - canvasMargin;
+
+    const width = parseInt(widthSetting);
+    scale = parentWidth / width;
+  }
+
+  onMount(() => {
+    calculateScale();
 
     let lastFrameTime = 0;
-    let frameCount = 0;
 
     async function animate() {
+      requestAnimationFrame(animate);
+
+      if(!canvas)
+        return;
+
       const now = performance.now();
       const elapsed = now - lastFrameTime;
-      const framerate = parseInt(framerateInput.value, 10);
-      const frameDuration = 1000 / framerate;
+      const frameDuration = 1000 / parseInt(framerateSetting);
 
       if (elapsed > frameDuration) {
         lastFrameTime = now - (elapsed % frameDuration);
-        draw();
-        y -= 1;
-        if (y < 0) {
-          y = canvas.height;
-        }
 
         if (context) {
           const frame = await domToBlob(context);
           frames.push(frame);
         }
       }
-
-      requestAnimationFrame(animate);
     }
 
     animate();
   });
 </script>
 
-<header>
-  <h1 class="font-bold text-lg">Web Video Maker</h1>
-  <p class="italic">
-    Use Javascript to render something in this canvas. It will be turned into a
-    video with FFMPEG.
-  </p>
-</header>
+<svelte:window on:resize={calculateScale} />
+
 <main class="flex flex-col gap-4">
-  <div>
-    <canvas bind:this={canvas}
-      class="border border-gray-400"
-      width="300"
-      height="300"
-    />
+  <div class="flex flex-col bg-slate-700 border-inside border-2 border-slate-600">
+    <div class="flex flex-col gap-2 p-4 bg-slate-600 items-center">
+      <Setting>
+        Framerate
+        <Text slot="input" bind:value={framerateSetting} />
+      </Setting>
+      <Setting>
+        Resolution
+        <div slot="input" class="flex flex-row gap-2">
+          <Text small bind:value={widthSetting} />
+          x
+          <Text small bind:value={heightSetting} />
+        </div>
+      </Setting>
+    </div>
+    <div bind:this={canvas}
+      class="relative overflow-hidden inline-block bg-white self-center m-2 max-w-full"
+      style="width: {canvasWidth}px; height: {canvasHeight}px;">
+      <Video {canvasWidth} {canvasHeight} />
+    </div>
   </div>
 
-  <input
-    bind:this={framerateInput}
-    type="text"
-    class="rounded border border-gray-400 p-2"
-    placeholder="Framerate"
-    value="30"
-  />
-
-  <button
-    bind:this={recordStartButton}
-    class="rounded bg-gray-700 text-white p-2"
-  >
+  <Primary on:click={recordStart}>
     Start Recording
-  </button>
+  </Primary>
 
-  <button
-    bind:this={recordStopButton}
-    class="rounded bg-gray-700 text-white p-2"
-  >
+  <Primary on:click={recordStop}>
     Stop Recording
-  </button>
+  </Primary>
 </main>
