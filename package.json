@@ -1,12 +1,13 @@
 {
-	"name": "web-video-maker",
+	"name": "videobrew",
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
+	"bin": {
+		"videobrew": "bin/cli.js"
+	},
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
@@ -27,6 +28,9 @@
 	"dependencies": {
 		"@ffmpeg/core": "^0.11.0",
 		"@ffmpeg/ffmpeg": "^0.11.6",
-		"modern-screenshot": "^4.4.1"
+		"any-shell-escape": "^0.1.1",
+		"ffmpeg-static": "^5.1.0",
+		"modern-screenshot": "^4.4.1",
+		"playwright": "^1.31.1"
 	}
 }
