@@ -25,16 +25,17 @@ export function videobrew(): PluginOption {
      * Expand the Vite to include the video app in rollup.
      */
     config(config) {
-      const videoAppPath = process.env.VIDEOBREW_TARGET;
+      let videoAppPath = process.env.VIDEOBREW_TARGET;
 
       if (!videoAppPath) {
-        return
+        videoAppPath = path.resolve(path.join(__dirname, '..', '..', 'tests', 'pure-html'));
+        console.warn(`VIDEOBREW_TARGET is not set, defaulting to ${videoAppPath}`);
       }
 
       return {
         resolve: {
           alias: {
-            ['@video']: videoAppPath,
+            '@video': videoAppPath,
           },
         },
         server: {
