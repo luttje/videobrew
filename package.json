@@ -1,10 +1,10 @@
 {
-	"name": "web-video-maker",
+	"name": "videobrew",
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
 	"bin": {
-		"web-video-maker": "bin/cli.js"
+		"videobrew": "bin/cli.js"
 	},
 	"scripts": {
 		"dev": "vite dev",

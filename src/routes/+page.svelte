@@ -16,6 +16,7 @@
   import Text from "$lib/components/input/Text.svelte";
   import Video from "$lib/components/Video.svelte";
   import Range from "$lib/components/input/Range.svelte";
+  import videoPath from "@video/index.html?url";
 
   let scaleSetting: number = 0.2;
   let oldScaleSetting: number = 0.2;
@@ -111,8 +112,6 @@
   onMount(() => {
     let lastFrameTime = 0;
 
-    video.src = '/video';
-    
     //video.tick(videoPlayback.frame);
 
     async function animate() {
@@ -192,6 +191,7 @@
         /> -->
         <iframe bind:this={video} 
           title="test"
+          src={videoPath}
           width={width}
           height={height}>
         </iframe>

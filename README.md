@@ -1,18 +1,6 @@
-# Web Video Maker
+# Videobrew
 
-Create a video by animating a web page.
-
-## Requirements
-
-* [Node.js](http://nodejs.org/)
-* A web browser
-
-## Getting Started
-
-1. Clone this repository
-2. Go into the repository directory
-3. Run `npm install`
-4. Run `npm run dev` 
+Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.
 
 ## Usage
 
@@ -20,25 +8,27 @@ Create a video by animating a web page.
 
 ### Pure HTML
 
-1. Create a new HTML file named `my-video-project.html` based on the [Pure HTML Example Video](#pure-html) below.
+1. Install `videobrew` globally with `npm i -g videobrew`.
 
-2. Run `web-video-maker preview my-video-project.html` to preview the video. A preview of the video can be viewed in your preferred browser.
+2. Create a new HTML file named `index.html` based on the [Pure HTML Example](#pure-html) below. *You are free to include css, javascript and any other <u>local</u> content.*
 
-3. You can render the video directly from the preview page or run `web-video-maker render my-video-project.html out/my-video-project.mp4` to render the video to the specified path.
+3. Run `videobrew preview` in the directory of the created `index.html`. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8080`](http://localhost:8080).
+
+4. You can render the video directly from the preview page or run `videobrew render out/my-video-project.mp4` to render the video to the specified path.
 
 ### Svelte
 
 1. Create a new [Svelte](https://svelte.dev/) project with `npm create svelte@latest my-video-project` and [configure it to generate a static site](https://kit.svelte.dev/docs/adapter-static#usage).
 
-2. Require `web-video-maker` in your project by running `npm i web-video-maker`.
+2. Require `videobrew` in your project by running `npm i videobrew`.
 
 3. Create a web page that describes the video. For example change the `routes/+page.svelte` file to the [Svelte Example Video](#svelte) below.
 
 4. Run `npm run build` to render your webpage to a static site.
 
-5. Run `web-video-maker preview build/index.html` with the path to the webpage to preview the video. A preview of the video can be viewed in your preferred browser.
+5. Run `videobrew preview build/` with the path to the webpage files. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8080`](http://localhost:8080).
 
-6. You can render the video directly from the preview page or run `web-video-maker render build/index.html out/my-video-project.mp4` to render the video to the specified path.
+6. You can render the video directly from the preview page or run `videobrew render build/ out/my-video-project.mp4` to render the video to the specified path.
 
 ## Example videos
 
@@ -53,7 +43,7 @@ Create a video by animating a web page.
     Transition, 
     TimeSpan,
     Easing
-  } from 'web-video-maker';
+  } from 'videobrew';
 </script>
 
 <Sequence>

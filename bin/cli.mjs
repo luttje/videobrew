@@ -1,13 +1,12 @@
-import http from 'http';
-import fs from 'fs';
-import path from 'node:path';
+import { spawn } from 'child_process';
 import { cwd } from 'node:process';
 import { fileURLToPath } from 'url';
+import path from 'node:path';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const port = process.env.PORT || 8080;
 const args = process.argv.slice(2);
 const action = args[0];
 
@@ -22,133 +21,38 @@ if (action !== 'preview') {
   process.exit(1);
 }
 
-const relativeFilePath = args[1];
+const relativeVideoAppPath = args[1] ?? '.';
 
-if (!relativeFilePath) {
-  console.log('Please provide a relative path to the file to preview.');
+const workingDirectory = cwd();
+const videoAppPath = path.join(workingDirectory, relativeVideoAppPath);
+const videoAppFilePath = path.join(videoAppPath, 'index.html');
+
+if (!fs.existsSync(videoAppPath)) {
+  console.log(`Video app path ${videoAppPath} does not exist! Please provide a valid path to where your video website is located.`);
   process.exit(1);
 }
 
-const workingDirectory = cwd();
-const videoFilePath = path.join(workingDirectory, relativeFilePath);
-const svelteAppPath = path.join(__dirname, '..', 'build');
+if (!fs.existsSync(videoAppFilePath)) {
+  console.log(`Video app path does not contain index.html (${videoAppFilePath} does not exist!) Please provide a valid path to where your video webpage is located.`);
+  process.exit(1);
+}
 
-const server = http.createServer((req, res) => {
-  const inVideoDomain = req.url.startsWith('/video') || req.headers.referer?.endsWith('/video');
-  let basePath = inVideoDomain ? path.dirname(videoFilePath) : svelteAppPath;
-  let url = inVideoDomain ? req.url.replace('/video', '/'+path.basename(videoFilePath)) : req.url;
-  let filePath = path.join(basePath, url === '/' ? 'index.html' : url);
-  const ext = path.parse(filePath).ext;
-  const map = {
-    '.htm': 'text/html',
-    '.html': 'text/html',
-    '.md': 'text/markdown',
-    '.txt': 'text/plain',
-    '.xhtml': 'application/xhtml+xml',
-    '.xml': 'application/xml',
-
-    '.cjs': 'text/javascript',
-    '.js': 'text/javascript',
-    '.jsx': 'text/javascript',
-    '.mjs': 'text/javascript',
-    '.ts': 'text/javascript',
-    '.tsx': 'text/javascript',
-    
-    '.wasm': 'application/wasm',
-
-    '.json': 'application/json',
-    '.jsonp': 'application/json',
-    '.map': 'application/json',
-
-    '.css': 'text/css',
-    '.less': 'text/css',
-    '.sass': 'text/css',
-    '.scss': 'text/css',
-    '.styl': 'text/css',
-
-    '.bmp': 'image/bmp',
-    '.gif': 'image/gif',
-    '.ico': 'image/x-icon',
-    '.jpeg': 'image/jpeg',
-    '.jpg': 'image/jpeg',
-    '.png': 'image/png',
-    '.svg': 'image/svg+xml',
-    '.tiff': 'image/tiff',
-    '.webp': 'image/webp',
-    
-    '.otf': 'application/font-sfnt',
-    '.ttf': 'application/font-sfnt',
-    '.woff': 'application/font-woff',
-    '.woff2': 'application/font-woff2',
-
-    '.mp3': 'audio/mpeg',
-    '.ogg': 'audio/ogg',
-    '.wav': 'audio/wav',
-
-    '.mov': 'video/quicktime',
-    '.mp4': 'video/mp4',
-    '.webm': 'video/webm',
-
-    '.7z': 'application/x-7z-compressed',
-    '.csh': 'application/x-csh',
-    '.doc': 'application/msword',
-    '.eot': 'application/vnd.ms-fontobject',
-    '.gz': 'application/gzip',
-    '.jar': 'application/java-archive',
-    '.pdf': 'application/pdf',
-    '.ppt': 'application/vnd.ms-powerpoint',
-    '.rar': 'application/x-rar-compressed',
-    '.sh': 'application/x-sh',
-    '.tar': 'application/x-tar',
-    '.xls': 'application/vnd.ms-excel',
-    '.xsl': 'application/xml',
-    '.xslt': 'application/xslt+xml',
-    '.zip': 'application/zip',
-  };
-
-  const exist = fs.existsSync(filePath);
-
-  if(!exist) {
-    res.statusCode = 404;
-    res.end(`File ${filePath} not found!`);
-    return;
-  }
-
-  const data = fs.readFileSync(filePath);
-  
-  res.setHeader('Content-type', map[ext] || 'text/plain' );
-
-  if (inVideoDomain) {
-    // Ensure it can be embedded in an iframe
-    res.writeHead(200, {
-      'Cross-Origin-Resource-Policy': 'cross-origin',
-      'Cross-Origin-Embedder-Policy': 'require-corp',
-    });
-  }
-
-  res.end(data);
-});
-
-server.listen(port, () => {
-  console.log(`Serving file: ${videoFilePath} on port http://localhost:${port}`);
-});
-
-// Watch (not needed in production) and rebuild the svelte app so it can be served
-import { spawn } from 'child_process';
-const builder = spawn('npm', ['run', 'watch'], {
+// We want to run videobrew with HMR enabled, so we can trigger a rebuild when the video app changes
+const devServer = spawn('npm', ['run', 'dev'], {
   cwd: path.join(__dirname, '..'),
-  stdio: 'inherit',
+  stdio: 'inherit', 
   shell: true,
+  env: {
+    'VIDEOBREW_TARGET': videoAppPath,
+  },
 });
 
-builder.on('exit', (code) => {
-  console.log(`Build exited with code ${code}`);
-  server.close();
+devServer.on('close', (code) => {
+  console.log(`DevServer exited with code ${code}`);
   process.exit(code);
 });
 
-builder.on('error', (err) => {
+devServer.on('error', (err) => {
   console.error(`Build error: ${err}`);
-  server.close();
   process.exit(1);
 });
