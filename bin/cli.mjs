@@ -10,22 +10,13 @@ const __dirname = path.dirname(__filename);
 const args = process.argv.slice(2);
 const action = args[0];
 
-if (action === 'render') {
-  console.log('Rendering...');
-  console.log('TODO! (not implemented yet)');
-  process.exit(0);
-}
-
-if (action !== 'preview') {
-  console.log('Please provide an action: preview or render');
-  process.exit(1);
-}
-
 const relativeVideoAppPath = args[1] ?? '.';
+const relativeOutputPath = args[2] ?? 'out';
 
 const workingDirectory = cwd();
 const root = path.resolve(__dirname, '..');
 let videoAppPath = path.join(workingDirectory, relativeVideoAppPath);
+let outputPath = path.join(workingDirectory, relativeOutputPath);
 
 // If it is inside the videobrew root, move it up one level
 if (videoAppPath.startsWith(root + path.sep)) {
@@ -56,22 +47,34 @@ if (!fs.existsSync(videoAppFilePath)) {
   process.exit(1);
 }
 
-// We want to run videobrew with HMR enabled, so we can trigger a rebuild when the video app changes
-const devServer = spawn('npm', ['run', 'dev'], {
-  cwd: path.join(__dirname, '..'),
-  stdio: 'inherit', 
-  shell: true,
-  env: {
-    'VIDEOBREW_TARGET': videoAppPath,
-  },
-});
+if (action === 'render') {
+  // Call renderer.mjs
+  spawn('node', ['--experimental-wasm-threads', 'bin/renderer.mjs', videoAppPath, outputPath], {
+    cwd: path.join(__dirname, '..'),
+    stdio: 'inherit',
+    shell: true,
+  });
+} else if (action === 'preview') {
+  // We want to run videobrew with HMR enabled, so we can trigger a rebuild when the video app changes
+  const devServer = spawn('npm', ['run', 'dev'], {
+    cwd: path.join(__dirname, '..'),
+    stdio: 'inherit', 
+    shell: true,
+    env: {
+      'VIDEOBREW_TARGET': videoAppPath,
+    },
+  });
 
-devServer.on('close', (code) => {
-  console.log(`DevServer exited with code ${code}`);
-  process.exit(code);
-});
+  devServer.on('close', (code) => {
+    console.log(`DevServer exited with code ${code}`);
+    process.exit(code);
+  });
 
-devServer.on('error', (err) => {
-  console.error(`Build error: ${err}`);
+  devServer.on('error', (err) => {
+    console.error(`Build error: ${err}`);
+    process.exit(1);
+  });
+} else {
+  console.log('Please provide an action: preview or render');
   process.exit(1);
-});
+}

@@ -7,25 +7,13 @@
   <title>Document</title>
 
   <link rel="stylesheet" href="style.css">
-  <script src="script.js"></script>
 </head>
 <body style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100%; margin: 0">
   <span style="display: block;"></span>
   <div style="background-color: hsl(0, 100%, 50%);"></div>
   <div style="background-color: hsl(0, 100%, 50%);"></div>
   <div style="background-color: hsl(0, 100%, 50%);"></div>
-
-  <script>
-    const squares = document.querySelectorAll('div');
-    const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
-    let hues = [90, 180, 270, 360];
-
-    setInterval(() => {
-      hues = hues.map(hue => (hue + 1) % 360);
-      squares.forEach((square, i) => {
-        square.style.backgroundColor = `hsl(${hues[i]}, 100%, 50%)`;
-      });
-    }, 100);
-  </script>
+  
+  <script src="script.js" defer></script>
 </body>
 </html>

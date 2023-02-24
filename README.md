@@ -14,7 +14,7 @@ Create videos using any web technologies. Animate a web page with your favorite 
 
 3. Run `videobrew preview` in the directory of the created `index.html`. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8080`](http://localhost:8080).
 
-4. You can render the video directly from the preview page or run `videobrew render out/my-video-project.mp4` to render the video to the specified path.
+4. You can render the video directly from the preview page or run `videobrew render out/` to render the video to the specified path.
 
 ### Svelte
 
@@ -28,7 +28,7 @@ Create videos using any web technologies. Animate a web page with your favorite 
 
 5. Run `videobrew preview build/` with the path to the webpage files. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8080`](http://localhost:8080).
 
-6. You can render the video directly from the preview page or run `videobrew render build/ out/my-video-project.mp4` to render the video to the specified path.
+6. You can render the video directly from the preview page or run `videobrew render build/ out/` to render the video to the specified path.
 
 ## Example videos
 

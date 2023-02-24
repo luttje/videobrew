@@ -1,35 +1,22 @@
 <script lang="ts">
   /**
-   * This page draws a preview of the video on a canvas and records it.
+   * This page draws a preview of the video.
    */
-  import {
-    createContext,
-    destroyContext,
-    domToBlob,
-    type Context,
-  } from "modern-screenshot";
-  import workerUrl from "modern-screenshot/worker?url";
-  import * as videoBuilder from "$lib/video-from-frames";
   import { onMount } from "svelte";
   import Setting from "$lib/components/Setting.svelte";
   import Primary from "$lib/components/button/Primary.svelte";
   import Text from "$lib/components/input/Text.svelte";
-  import Video from "$lib/components/Video.svelte";
   import Range from "$lib/components/input/Range.svelte";
   import videoPath from "@video/index.html?url";
 
   let scaleSetting: number = 0.2;
-  let oldScaleSetting: number = 0.2;
 
   let width: number;
   let height: number;
   let framerate: number;
-  let estimatedFrameCount: number;
+  let frameCount: number;
 
-  let renderContext: Context | null = null;
-  let renderEncodingProgress: number | null = null;
-  let frames: Blob[] = [];
-
+  let videoInterval: NodeJS.Timer;
   let video: HTMLIFrameElement;
   type VideoPlayback = {
     playing: boolean;
@@ -45,11 +32,25 @@
       throw new Error("Video iframe has no contentWindow");
     }
 
-    video.contentWindow.postMessage({ ...data, type }, document.location.origin);
+    video.contentWindow.postMessage({ ...data, type });
   }
 
   function play() {
     videoPlayback.playing = true;
+
+    if(videoInterval)
+      clearInterval(videoInterval);
+
+    videoInterval = setInterval(() => {
+      if(!videoPlayback.playing)
+        return;
+    
+      if(videoPlayback.frame >= frameCount)
+        stop();
+
+      messageVideo('videobrew.tick', { frame: videoPlayback.frame });
+      nextFrame();
+    }, 1000 / framerate);
   }
 
   function pause() {
@@ -68,118 +69,39 @@
     pause();
     reset();
     messageVideo('videobrew.tick', { frame: videoPlayback.frame });
-  }
 
-  async function render() {
-    reset();
-    frames = [];
-    oldScaleSetting = scaleSetting;
-    scaleSetting = 1;
-    renderContext = await createContext(video, {
-      // @ts-ignore 2322
-      workerUrl,
-      workerNumber: 1,
-      type: "image/jpeg",
-    });
-    play();
-  }
-
-  async function renderEnd() {
-    stop();
-    destroyContext(renderContext!);
-    const renderEncodingStart = performance.now();
-    const estimatedDuration = frames.length * 100;
-
-    const interval = setInterval(() => {
-      const now = performance.now();
-      const elapsed = now - renderEncodingStart;
-      renderEncodingProgress = Math.min((elapsed / estimatedDuration) * 100, 99);
-    }, 100);
-
-    renderContext = null;
-    scaleSetting = oldScaleSetting;
-    const videoBlob = await videoBuilder.fromFrames(
-      frames,
-      framerate
-    );
-    const videoUrl = URL.createObjectURL(videoBlob);
-
-    // Download video
-    const a = document.createElement("a");
-    document.body.appendChild(a);
-    a.style.display = "none";
-    a.target = "_blank";
-    a.href = videoUrl;
-    a.click();
-
-    clearInterval(interval);
-    renderEncodingProgress = null;
+    if(videoInterval)
+      clearInterval(videoInterval);
   }
 
   onMount(() => {
-    let lastFrameTime = 0;
-
-    if (!video.contentWindow) {
+    if (!video.contentWindow)
       throw new Error("Video iframe has no contentWindow");
-    }
 
     messageVideo('videobrew.init');
     messageVideo('videobrew.tick', { frame: videoPlayback.frame });
-
-    async function animate() {
-      requestAnimationFrame(animate);
-
-      if (!videoPlayback.playing) {
-        return;
-      }
-
-      const now = performance.now();
-      const elapsed = now - lastFrameTime;
-      const frameDuration = 1000 / framerate;
-
-      if (elapsed > frameDuration) {
-        messageVideo('videobrew.tick', { frame: videoPlayback.frame });
-        nextFrame();
-
-        lastFrameTime = now - (elapsed % frameDuration);
-
-        if (renderContext) {
-          const frame = await domToBlob(renderContext);
-          frames.push(frame);
-        }
-      }
-    }
-
-    animate();
   });
 
   function onMessage(event: MessageEvent) {
     if (event.origin !== document.location.origin)
       return;
     
-    const { data } = event;
+    const { data: message } = event;
     
-    switch (data.type) {
+    switch (message.type) {
       case 'videobrew.setup':
-        setupVideo(data.width, data.height, data.framerate, data.estimatedFrameCount);
-        break;
-      case 'videobrew.end':
-        if (renderContext)
-          renderEnd();
-        else
-          stop();
-          
+        setupVideo(message.width, message.height, message.framerate, message.frameCount);
         break;
     }
   }
   
-  function setupVideo(desiredWidth: number, desiredHeight: number, desiredFamerate: number, desiredEstimatedFrameCount: number) {
+  function setupVideo(desiredWidth: number, desiredHeight: number, desiredFamerate: number, desiredFrameCount: number) {
     width = desiredWidth;
     height = desiredHeight;
     framerate = desiredFamerate;
-    estimatedFrameCount = desiredEstimatedFrameCount;
+    frameCount = desiredFrameCount;
 
-    console.log('Video setup', { width, height, framerate, estimatedFrameCount });
+    console.log('Video setup', { width, height, framerate, frameCount });
 
     video.classList.remove('hidden');
   }
@@ -243,65 +165,9 @@
     <Primary on:click={play}>Play</Primary>
   {/if}
 
-  <Primary on:click={render}>Render</Primary>
-</main>
-
-{#if renderContext || renderEncodingProgress}
-<div class="fixed text-black bg-black bg-opacity-50 inset-0 z-50 flex flex-col items-center justify-center">
-  <div class="flex flex-col gap-2 p-4 bg-white rounded-lg shadow w-64">
-    <h1 class="text-2xl font-bold">Rendering</h1>
-    <p class="text-gray-600">This may take a while.</p>
-
-    <h2 class="flex flex-row gap-2">
-      <span>
-      {#if renderContext}
-      📽
-      {:else}
-      ✔
-      {/if}
-      </span>
-      Rendering frames:
-    </h2>
-    {#if renderContext}
-    <div class="relative w-full h-5 bg-gray-400 rounded">
-      <div
-        class="absolute top-0 left-0 h-full bg-blue-500 rounded"
-        style="width: {videoPlayback.frame / estimatedFrameCount * 100}%;"
-      ></div>
-
-      <div class="absolute inset-0 h-full flex items-center justify-center">
-        <p class="text-xs font-semibold text-white">
-          {videoPlayback.frame} / {estimatedFrameCount}
-        </p>
-
-        <p class="text-xs font-semibold text-white ml-2">
-          {Math.round(videoPlayback.frame / estimatedFrameCount * 100)}%
-        </p>
-      </div>
-    </div>
-    {/if}
-
-    <h2 class="flex flex-row gap-2">
-      <span>
-      {#if renderContext}
-      ⏳
-      {:else if renderEncodingProgress}
-      💾
-      {:else}
-      ✔
-      {/if}
-      </span>
-      Encoding frames:
-    </h2>
-    <div class="relative w-full h-5 bg-gray-400 rounded">
-      {#if renderEncodingProgress}
-      <!-- A progress bar that grows as it gets nearer to the ETA -->
-      <div
-        class="absolute top-0 left-0 h-full bg-blue-500 rounded"
-        style="width: {renderEncodingProgress}%;"
-      ></div>
-      {/if}
-    </div>
+  <div class="rounded bg-slate-700 p-4">
+    <h2 class="text-xl">How to render</h2>
+    <p>You can render this video by running this command in the root of your video project:</p>
+    <pre>videobrew render</pre>
   </div>
-</div>
-{/if}
+</main>
