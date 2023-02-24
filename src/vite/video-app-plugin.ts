@@ -45,9 +45,6 @@ export function videobrew(): PluginOption {
             'Cross-Origin-Embedder-Policy': 'require-corp',
           },
         },
-        assetsInclude: [
-          path.join(videoAppPath, 'index.html'),
-        ]
       }
     },
   }
