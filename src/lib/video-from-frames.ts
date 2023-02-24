@@ -10,7 +10,7 @@ export async function fromFrames(frames: Blob[], framerate: number) {
   for (const frame of frames) {
     await ffmpeg.FS(
       'writeFile',
-      `${String(frameIndex).padStart(5, '0')}.jpeg`,
+      `${String(frameIndex).padStart(8, '0')}.jpeg`,
       new Uint8Array(await frame.arrayBuffer())
     );
     frameIndex++;

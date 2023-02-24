@@ -26,7 +26,6 @@
   let framerate: number;
   let estimatedFrameCount: number;
 
-  let canvas: HTMLElement;
   let renderContext: Context | null = null;
   let renderEncodingProgress: number | null = null;
   let frames: Blob[] = [];
@@ -40,6 +39,14 @@
     playing: false,
     frame: 0,
   };
+
+  function messageVideo(type: string, data?: object) {
+    if (!video.contentWindow) {
+      throw new Error("Video iframe has no contentWindow");
+    }
+
+    video.contentWindow.postMessage({ ...data, type }, document.location.origin);
+  }
 
   function play() {
     videoPlayback.playing = true;
@@ -60,7 +67,7 @@
   function stop() {
     pause();
     reset();
-    //video.tick(videoPlayback.frame);
+    messageVideo('videobrew.tick', { frame: videoPlayback.frame });
   }
 
   async function render() {
@@ -68,7 +75,7 @@
     frames = [];
     oldScaleSetting = scaleSetting;
     scaleSetting = 1;
-    renderContext = await createContext(canvas, {
+    renderContext = await createContext(video, {
       // @ts-ignore 2322
       workerUrl,
       workerNumber: 1,
@@ -116,15 +123,11 @@
       throw new Error("Video iframe has no contentWindow");
     }
 
-    video.contentWindow.postMessage({ type: "videobrew.init" }, document.location.origin);
-    //video.tick(videoPlayback.frame);
+    messageVideo('videobrew.init');
+    messageVideo('videobrew.tick', { frame: videoPlayback.frame });
 
     async function animate() {
       requestAnimationFrame(animate);
-
-      if (!canvas) {
-        return;
-      }
 
       if (!videoPlayback.playing) {
         return;
@@ -135,7 +138,7 @@
       const frameDuration = 1000 / framerate;
 
       if (elapsed > frameDuration) {
-        //video.tick(videoPlayback.frame);
+        messageVideo('videobrew.tick', { frame: videoPlayback.frame });
         nextFrame();
 
         lastFrameTime = now - (elapsed % frameDuration);
@@ -156,13 +159,28 @@
     
     const { data } = event;
     
-    if (data.type !== 'videobrew.setup')
-      return;
+    switch (data.type) {
+      case 'videobrew.setup':
+        setupVideo(data.width, data.height, data.framerate, data.estimatedFrameCount);
+        break;
+      case 'videobrew.end':
+        if (renderContext)
+          renderEnd();
+        else
+          stop();
+          
+        break;
+    }
+  }
+  
+  function setupVideo(desiredWidth: number, desiredHeight: number, desiredFamerate: number, desiredEstimatedFrameCount: number) {
+    width = desiredWidth;
+    height = desiredHeight;
+    framerate = desiredFamerate;
+    estimatedFrameCount = desiredEstimatedFrameCount;
 
-    width = data.width;
-    height = data.height;
-    framerate = data.framerate;
-    estimatedFrameCount = data.estimatedFrameCount;
+    console.log('Video setup', { width, height, framerate, estimatedFrameCount });
+
     video.classList.remove('hidden');
   }
 </script>
@@ -201,12 +219,12 @@
       style="width: {width*scaleSetting}px; height: {height*scaleSetting}px;"
       >
       <div
-        bind:this={canvas}
         class="relative overflow-hidden inline-block bg-white"
         style="width: {width}px; height: {height}px; transform: scale({scaleSetting}); transform-origin: top left;"
       >
         <iframe bind:this={video} 
           class="hidden"
+          id="video"
           title="Video described by web-app"
           src={videoPath}
           {width}
