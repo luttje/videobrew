@@ -1,10 +1,23 @@
-# Videobrew
+```
+ ___________________________________________________
+/                                                   \
+|---------------------------------------------------|
+|   ____________                     ____________   |
+|  /            |    Video Brew     |            \  |
+| (             |                   |             ) |
+| |             |                   |             | |
+| (             |                   |             ) |
+|  \____________|                   |____________/  |
+|                                                   |
+\___________________________________________________/
+```
+# <span style="display:none">Videobrew</span>
 
 Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.
 
 ## Usage
 
-⚠ **This usage description is how we want it to be, not yet how it is.**
+⚠ **This software is under construction. Things may work or not work and possibly different from the documentation.**
 
 ### Pure HTML
 
@@ -14,7 +27,7 @@ Create videos using any web technologies. Animate a web page with your favorite 
 
 3. Run `videobrew preview` in the directory of the created `index.html`. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8080`](http://localhost:8080).
 
-4. You can render the video directly from the preview page or run `videobrew render out/` to render the video to the specified path.
+4. You can render the video by running `videobrew render . out/` to render the video to the specified path.
 
 ### Svelte
 
@@ -28,7 +41,7 @@ Create videos using any web technologies. Animate a web page with your favorite 
 
 5. Run `videobrew preview build/` with the path to the webpage files. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8080`](http://localhost:8080).
 
-6. You can render the video directly from the preview page or run `videobrew render build/ out/` to render the video to the specified path.
+6. You can render the video by running `videobrew render . out/` to render the video to the specified path.
 
 ## Example videos
 
