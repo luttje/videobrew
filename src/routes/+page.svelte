@@ -112,6 +112,11 @@
   onMount(() => {
     let lastFrameTime = 0;
 
+    if (!video.contentWindow) {
+      throw new Error("Video iframe has no contentWindow");
+    }
+
+    video.contentWindow.postMessage({ type: "videobrew.init" }, document.location.origin);
     //video.tick(videoPlayback.frame);
 
     async function animate() {
@@ -144,7 +149,25 @@
 
     animate();
   });
+
+  function onMessage(event: MessageEvent) {
+    if (event.origin !== document.location.origin)
+      return;
+    
+    const { data } = event;
+    
+    if (data.type !== 'videobrew.setup')
+      return;
+
+    width = data.width;
+    height = data.height;
+    framerate = data.framerate;
+    estimatedFrameCount = data.estimatedFrameCount;
+    video.classList.remove('hidden');
+  }
 </script>
+
+<svelte:window on:message={onMessage} />
 
 <main class="flex flex-col gap-4">
   <div
@@ -182,18 +205,12 @@
         class="relative overflow-hidden inline-block bg-white"
         style="width: {width}px; height: {height}px; transform: scale({scaleSetting}); transform-origin: top left;"
       >
-        <!-- <Video bind:this={video} 
-          bind:width={width} 
-          bind:height={height} 
-          bind:framerate={framerate} 
-          bind:estimatedFrameCount={estimatedFrameCount}
-          on:end={renderEnd}
-        /> -->
         <iframe bind:this={video} 
-          title="test"
+          class="hidden"
+          title="Video described by web-app"
           src={videoPath}
-          width={width}
-          height={height}>
+          {width}
+          {height}>
         </iframe>
       </div>
     </div>
