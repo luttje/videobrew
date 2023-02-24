@@ -28,8 +28,7 @@ export function videobrew(): PluginOption {
       let videoAppPath = process.env.VIDEOBREW_TARGET;
 
       if (!videoAppPath) {
-        videoAppPath = path.resolve(path.join(__dirname, '..', '..', 'tests', 'pure-html'));
-        console.warn(`VIDEOBREW_TARGET is not set, defaulting to ${videoAppPath}`);
+        throw new Error('VIDEOBREW_TARGET is not set');
       }
 
       return {
