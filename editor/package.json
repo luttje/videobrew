@@ -1,6 +1,17 @@
 {
 	"name": "@videobrew/editor",
 	"description": "Preview videos created using any web technologies. Requires @videobrew/cli to be installed globally.",
+	"keywords": [
+		"video",
+		"generation",
+		"animation",
+		"api"
+	],
+	"homepage": "https://github.com/luttje/videobrew",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/luttje/videobrew"
+	},
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
 	"version": "0.1.0",

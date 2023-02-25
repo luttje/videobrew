@@ -1,6 +1,17 @@
 {
 	"name": "@videobrew/cli",
 	"description": "Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
+	"keywords": [
+		"video",
+		"generation",
+		"animation",
+		"api"
+	],
+	"homepage": "https://github.com/luttje/videobrew",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/luttje/videobrew"
+	},
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
 	"version": "0.1.0",
