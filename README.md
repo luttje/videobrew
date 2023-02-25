@@ -48,14 +48,14 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 ## 📃 Features
 
 ### Rendering
-- [x] `videobrew render [videoAppPath=.] [outputPath=out]`: Render videos from local HTML, CSS and Javascript.
+- [x] `videobrew render [videoAppPath=.] [output=out]`: Render videos from local HTML, CSS and Javascript.
 - [ ] Render videos from hosted HTML, CSS and Javascript.
 - [ ] Provide Svelte components to build videos.
 - [ ] Provide Vue components to build videos.
 - [ ] Provide React components to build videos.
 
 ### Previewing
-- [x] `videobrew preview [videoAppPath=.] [outputPath=out]`:  Preview videos from hosted HTML, CSS and Javascript.
+- [x] `videobrew preview [videoAppPath=.] [output=out]`:  Preview videos from hosted HTML, CSS and Javascript.
 - [ ] Show a timeline of the video.
 - [ ] Show a list of all the elements in the video.
 - [ ] Show a list of all the transitions in the video.
