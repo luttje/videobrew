@@ -1,11 +1,8 @@
 # Videobrew Documentation
 
-> &nbsp;
 > ## 🚧 Work in progress
 > 
 > This documentation is a work in progress. If you have any questions, please [open an issue](https://github.com/luttje/videobrew/issues/new).
-> 
-> &nbsp;
 
 * [How to serve your video app yourself](./serving-video-apps.md)
 

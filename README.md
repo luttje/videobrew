@@ -3,13 +3,11 @@
 Create videos using any web technologies (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript. Animate your web page and have Videobrew render it to a video.
 
 > <div align="center">
-> &nbsp;
 >
 > ## 🚀 Quickstart
 > *Start composing your videos with code!*
 > 
 > <hr>
-> &nbsp;
 >
 > ### Install the CLI
 > 
@@ -18,13 +16,11 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > ```
 > 
 > <hr> 
-> &nbsp;
 >
 > ### Create your video app
 > Build a web page that describes the video. *For inspiration check out the [examples](#examples).*
 > 
 > <hr> 
-> &nbsp;
 >
 > ### Preview your video
 > 
@@ -37,7 +33,6 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > *This editor is served @ http://localhost:8087*
 > 
 > <hr> 
-> &nbsp;
 >
 > ### Render
 >   
@@ -48,14 +43,11 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > [<img src="./docs/cli-rendering-video-app.png" alt="Rendering a video app" align="middle" width="500" />](./docs/cli-rendering-video-app.png)
 > 
 > <hr> 
-> &nbsp;
 >
 > ### Done 🎉
 > See [the example video app](./examples/0-dependencies/) to learn how to make your own and watch [📼 the rendered video](./examples/0-dependencies/out/output.mp4) Videobrew created.
 >   
 > </div>
-> 
-> &nbsp;
 
 ## 📖 Learn more
 
