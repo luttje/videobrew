@@ -11,8 +11,12 @@ export type VideoConfig = {
   command: string;
 }
 
+export type VideoFormat = {
+  extension: string;
+  name: string;
+}
+
 export async function buildVideoConfigFromFrames(framesPath: string, framerate: number, outputPath: string): Promise<VideoConfig> {
-  const output = `${outputPath}/output.mp4`;
   const ffmpegCommand = shell([
     `${pathToFfmpeg}`,
     `-framerate`, `${framerate}`,
@@ -21,11 +25,11 @@ export async function buildVideoConfigFromFrames(framesPath: string, framerate: 
     `-c:v`, `libx264`,
     `-pix_fmt`, `yuv420p`,
     `-y`,
-    `${output}`
+    `${outputPath}`
   ]);
 
   return {
-    output,
+    output: outputPath,
     command: ffmpegCommand,
   }
 }
@@ -38,10 +42,21 @@ export async function renderVideo(videoConfig: VideoConfig) {
   return stderr;
 }
 
-export async function getContainerFormats() {
+export async function getContainerFormats(): Promise<VideoFormat[]> {
   const { stdout } = await execAsync(`${pathToFfmpeg} -formats`, {
     cwd: __dirname,
   });
 
-  return stdout;
+  return stdout
+    .split('\r\n')
+    .filter(line => line.includes('E '))
+    .map(line => line.match(/E\s+(\w+)\s+(.*)/))
+    .filter(match => match)
+    .map(match => match as RegExpMatchArray)
+    .map(match => {
+      return {
+        extension: match[1],
+        name: match[2],
+      }
+  });
 }

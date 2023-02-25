@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { buildVideoConfigFromFrames, getContainerFormats, renderVideo } from './rendering/video-from-frames';
+import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoFormat } from './rendering/video-from-frames';
 import { ArgumentConfig, parse } from 'ts-command-line-args';
 import { recordFrames } from './rendering/record-frames';
 import { inform, debug, panic } from './utils/logging';
@@ -99,21 +99,14 @@ function parseArguments() {
   }, true, true);
 }
 
-async function showRenderFormats() {
+async function showRenderFormats(containerFormats: VideoFormat[]) {
   const formatTable =
   new AsciiTable3()
       .setStyle('none');
   
-  const containerFormats = await getContainerFormats();
-
   containerFormats
-    .split('\r\n')
-    .filter(line => line.includes('E '))
-    .map(line => line.match(/E\s+(\w+)\s+(.*)/))
-    .filter(match => match)
-    .map(match => match as RegExpMatchArray)
-    .forEach(match => {
-      formatTable.addRow(match[1], match[2]);
+    .forEach(format => {
+      formatTable.addRow(format.extension, format.name);
     });
   
   inform('Supported render formats:');
@@ -122,10 +115,9 @@ async function showRenderFormats() {
   inform('\n(These are the container formats as reported by ffmpeg)', chalk.italic.gray, true);
 }
 
-async function render(videoAppPathOrUrl: string, outputPath: string) {
-  inform(`Rendering Video app at path: ${videoAppPathOrUrl}`);
-  
-  const framesOutputPath = path.join(outputPath, 'frames');
+async function render(videoAppPathOrUrl: string, outputPath: string) {  
+  const outputDirectory = path.dirname(outputPath);
+  const framesOutputPath = await fs.mkdtempSync(path.join(outputDirectory, '~tmp-'));
   const {
     framerate,
   } = await recordFrames(videoAppPathOrUrl, framesOutputPath);
@@ -139,7 +131,7 @@ async function render(videoAppPathOrUrl: string, outputPath: string) {
 
   await fs.rmSync(framesOutputPath, { recursive: true });
 
-  inform(`Video rendered to ${output}`);
+  inform(`Video rendered to ${outputPath}`);
 }
 
 async function preview(videoAppPathOrUrl: string) {
@@ -165,43 +157,66 @@ async function preview(videoAppPathOrUrl: string) {
 
 async function main() {
   const args = await parseArguments();
+  const containerFormats = await getContainerFormats();
   
   if (args.action === 'render-formats') {
-    return await showRenderFormats();
+    return await showRenderFormats(containerFormats);
   }
 
   let relativeVideoAppPath = args.videoAppPathOrUrl;
 
   if (!relativeVideoAppPath) {
     if (args._unknown?.length > 0) {
-      // Find an unnamed argument that looks like a path or URL, and does not end in one of the known file extensions
-      relativeVideoAppPath = args._unknown[0];
+      const videoAppPathOrUrl = args._unknown.find(arg => {
+        const extension = path.extname(arg);
 
-      inform(`No video app path explicitly provided. Using unnamed argument: ${relativeVideoAppPath}`);
-    } else {
+        return !containerFormats.some(format => `.${format.extension}` === extension);
+      });
+
+      if (videoAppPathOrUrl) {
+        relativeVideoAppPath = videoAppPathOrUrl;
+
+        inform(`Video app path chosen: ${relativeVideoAppPath}`);
+      }
+    }
+    
+    if (!relativeVideoAppPath) {
       relativeVideoAppPath = DEFAULT_VIDEO_APP_PATH;
       
-      inform(`No video app path explicitly provided. Defaulting to: ${relativeVideoAppPath}`);
-    }
-  }
-
-  let relativeOutputPath = args.output;
-
-  if (!relativeOutputPath) {
-    if (args._unknown?.length > 1) {
-      relativeOutputPath = args._unknown[1];
-
-      inform(`No output path explicitly provided. Using unnamed argument: ${relativeOutputPath}`);
-    } else {
-      relativeOutputPath = DEFAULT_OUTPUT_PATH;
-
-      inform(`No output path explicitly provided. Defaulting to: ${relativeOutputPath}`);
+      inform(`Video app path chosen: ${relativeVideoAppPath} (default)`);
     }
   }
   
   const videoAppPathOrUrl = path.join(workingDirectory, relativeVideoAppPath);
   const videoAppFilePath = path.join(videoAppPathOrUrl, 'index.html');
+  inform(`Video app full path: ${videoAppPathOrUrl}`);
+
+  let relativeOutputPath = args.output;
+
+  if (!relativeOutputPath) {
+    if (args._unknown?.length > 0) {
+      const outputPath = args._unknown.find(arg => {
+        const extension = path.extname(arg);
+
+        return containerFormats.some(format => `.${format.extension}` === extension);
+      });
+
+      if (outputPath) {
+        relativeOutputPath = outputPath;
+
+        inform(`Output path chosen: ${relativeOutputPath}`);
+      }
+    }
+    
+    if (!relativeOutputPath){
+      relativeOutputPath = DEFAULT_OUTPUT_PATH;
+
+      inform(`Output path chosen: ${relativeOutputPath} (default)`);
+    }
+  }
+  
   const output = path.join(workingDirectory, relativeOutputPath);
+  inform(`Output full path: ${output}`);
 
   if (!fs.existsSync(videoAppPathOrUrl)) {
     panic(`Video app path ${videoAppPathOrUrl} does not exist! Please provide a valid path to where your video website is located.`);

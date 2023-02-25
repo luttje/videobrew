@@ -21,7 +21,6 @@ const path_1 = __importDefault(require("path"));
 const execAsync = util_1.default.promisify(child_process_1.exec);
 function buildVideoConfigFromFrames(framesPath, framerate, outputPath) {
     return __awaiter(this, void 0, void 0, function* () {
-        const output = `${outputPath}/output.mp4`;
         const ffmpegCommand = (0, shell_1.shell)([
             `${ffmpeg_static_1.default}`,
             `-framerate`, `${framerate}`,
@@ -30,10 +29,10 @@ function buildVideoConfigFromFrames(framesPath, framerate, outputPath) {
             `-c:v`, `libx264`,
             `-pix_fmt`, `yuv420p`,
             `-y`,
-            `${output}`
+            `${outputPath}`
         ]);
         return {
-            output,
+            output: outputPath,
             command: ffmpegCommand,
         };
     });
@@ -53,7 +52,18 @@ function getContainerFormats() {
         const { stdout } = yield execAsync(`${ffmpeg_static_1.default} -formats`, {
             cwd: __dirname,
         });
-        return stdout;
+        return stdout
+            .split('\r\n')
+            .filter(line => line.includes('E '))
+            .map(line => line.match(/E\s+(\w+)\s+(.*)/))
+            .filter(match => match)
+            .map(match => match)
+            .map(match => {
+            return {
+                extension: match[1],
+                name: match[2],
+            };
+        });
     });
 }
 exports.getContainerFormats = getContainerFormats;

@@ -98,19 +98,13 @@ function parseArguments() {
         ],
     }, true, true);
 }
-function showRenderFormats() {
+function showRenderFormats(containerFormats) {
     return __awaiter(this, void 0, void 0, function* () {
         const formatTable = new ascii_table3_1.AsciiTable3()
             .setStyle('none');
-        const containerFormats = yield (0, video_from_frames_1.getContainerFormats)();
         containerFormats
-            .split('\r\n')
-            .filter(line => line.includes('E '))
-            .map(line => line.match(/E\s+(\w+)\s+(.*)/))
-            .filter(match => match)
-            .map(match => match)
-            .forEach(match => {
-            formatTable.addRow(match[1], match[2]);
+            .forEach(format => {
+            formatTable.addRow(format.extension, format.name);
         });
         (0, logging_1.inform)('Supported render formats:');
         (0, logging_1.inform)(formatTable.toString(), undefined, true);
@@ -120,15 +114,15 @@ function showRenderFormats() {
 }
 function render(videoAppPathOrUrl, outputPath) {
     return __awaiter(this, void 0, void 0, function* () {
-        (0, logging_1.inform)(`Rendering Video app at path: ${videoAppPathOrUrl}`);
-        const framesOutputPath = path_1.default.join(outputPath, 'frames');
+        const outputDirectory = path_1.default.dirname(outputPath);
+        const framesOutputPath = yield fs_1.default.mkdtempSync(path_1.default.join(outputDirectory, '~tmp-'));
         const { framerate, } = yield (0, record_frames_1.recordFrames)(videoAppPathOrUrl, framesOutputPath);
         const videoConfig = yield (0, video_from_frames_1.buildVideoConfigFromFrames)(framesOutputPath, framerate, outputPath);
         (0, logging_1.debug)(`Rendering with command: ${videoConfig.command}`);
         const output = yield (0, video_from_frames_1.renderVideo)(videoConfig);
         (0, logging_1.debug)(output);
         yield fs_1.default.rmSync(framesOutputPath, { recursive: true });
-        (0, logging_1.inform)(`Video rendered to ${output}`);
+        (0, logging_1.inform)(`Video rendered to ${outputPath}`);
     });
 }
 function preview(videoAppPathOrUrl) {
@@ -152,35 +146,49 @@ function main() {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const args = yield parseArguments();
+        const containerFormats = yield (0, video_from_frames_1.getContainerFormats)();
         if (args.action === 'render-formats') {
-            return yield showRenderFormats();
+            return yield showRenderFormats(containerFormats);
         }
         let relativeVideoAppPath = args.videoAppPathOrUrl;
         if (!relativeVideoAppPath) {
             if (((_a = args._unknown) === null || _a === void 0 ? void 0 : _a.length) > 0) {
-                // Find an unnamed argument that looks like a path or URL, and does not end in one of the known file extensions
-                relativeVideoAppPath = args._unknown[0];
-                (0, logging_1.inform)(`No video app path explicitly provided. Using unnamed argument: ${relativeVideoAppPath}`);
+                const videoAppPathOrUrl = args._unknown.find(arg => {
+                    const extension = path_1.default.extname(arg);
+                    return !containerFormats.some(format => `.${format.extension}` === extension);
+                });
+                if (videoAppPathOrUrl) {
+                    relativeVideoAppPath = videoAppPathOrUrl;
+                    (0, logging_1.inform)(`Video app path chosen: ${relativeVideoAppPath}`);
+                }
             }
-            else {
+            if (!relativeVideoAppPath) {
                 relativeVideoAppPath = DEFAULT_VIDEO_APP_PATH;
-                (0, logging_1.inform)(`No video app path explicitly provided. Defaulting to: ${relativeVideoAppPath}`);
-            }
-        }
-        let relativeOutputPath = args.output;
-        if (!relativeOutputPath) {
-            if (((_b = args._unknown) === null || _b === void 0 ? void 0 : _b.length) > 1) {
-                relativeOutputPath = args._unknown[1];
-                (0, logging_1.inform)(`No output path explicitly provided. Using unnamed argument: ${relativeOutputPath}`);
-            }
-            else {
-                relativeOutputPath = DEFAULT_OUTPUT_PATH;
-                (0, logging_1.inform)(`No output path explicitly provided. Defaulting to: ${relativeOutputPath}`);
+                (0, logging_1.inform)(`Video app path chosen: ${relativeVideoAppPath} (default)`);
             }
         }
         const videoAppPathOrUrl = path_1.default.join(workingDirectory, relativeVideoAppPath);
         const videoAppFilePath = path_1.default.join(videoAppPathOrUrl, 'index.html');
+        (0, logging_1.inform)(`Video app full path: ${videoAppPathOrUrl}`);
+        let relativeOutputPath = args.output;
+        if (!relativeOutputPath) {
+            if (((_b = args._unknown) === null || _b === void 0 ? void 0 : _b.length) > 0) {
+                const outputPath = args._unknown.find(arg => {
+                    const extension = path_1.default.extname(arg);
+                    return containerFormats.some(format => `.${format.extension}` === extension);
+                });
+                if (outputPath) {
+                    relativeOutputPath = outputPath;
+                    (0, logging_1.inform)(`Output path chosen: ${relativeOutputPath}`);
+                }
+            }
+            if (!relativeOutputPath) {
+                relativeOutputPath = DEFAULT_OUTPUT_PATH;
+                (0, logging_1.inform)(`Output path chosen: ${relativeOutputPath} (default)`);
+            }
+        }
         const output = path_1.default.join(workingDirectory, relativeOutputPath);
+        (0, logging_1.inform)(`Output full path: ${output}`);
         if (!fs_1.default.existsSync(videoAppPathOrUrl)) {
             (0, logging_1.panic)(`Video app path ${videoAppPathOrUrl} does not exist! Please provide a valid path to where your video website is located.`);
         }

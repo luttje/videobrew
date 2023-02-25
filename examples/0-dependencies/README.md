@@ -1,6 +1,8 @@
 # 📜 Zero Dependencies Video App Example
 
-Just plain old HTML, CSS and Javascript.
+Just plain old HTML, CSS and Javascript. 
+
+This example was rendered by running the command `videobrew render out/output.mp4` in this directory.
 
 ## From scratch
 
