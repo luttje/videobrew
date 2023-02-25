@@ -1,6 +1,6 @@
 import { Browser, chromium, Page } from 'playwright';
 import fs from 'fs';
-import { isVideoAppUrl } from '../utils/is-url';
+import { isVideoAppUrl } from '../utils/is-video-url';
 
 type RecordingResult = {
   width: number,

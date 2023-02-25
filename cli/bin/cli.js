@@ -18,13 +18,14 @@ const video_from_frames_1 = require("./rendering/video-from-frames");
 const ts_command_line_args_1 = require("ts-command-line-args");
 const record_frames_1 = require("./rendering/record-frames");
 const logging_1 = require("./utils/logging");
+const server_1 = require("./server");
+const is_video_url_1 = require("./utils/is-video-url");
 const ascii_table3_1 = require("ascii-table3");
 const editor_1 = require("./editor");
 const process_1 = require("process");
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
-const is_url_1 = require("./utils/is-url");
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
 const EXAMPLE_VIDEO_APP_PATH = './video';
@@ -112,11 +113,11 @@ function showRenderFormats(containerFormats) {
         (0, logging_1.inform)('\n(These are the container formats as reported by ffmpeg)', chalk_1.default.italic.gray, true);
     });
 }
-function render(videoAppPathOrUrl, outputPath) {
+function render(videoAppUrl, outputPath) {
     return __awaiter(this, void 0, void 0, function* () {
         const outputDirectory = path_1.default.dirname(outputPath);
         const framesOutputPath = yield fs_1.default.mkdtempSync(path_1.default.join(outputDirectory, '~tmp-'));
-        const { framerate, } = yield (0, record_frames_1.recordFrames)(videoAppPathOrUrl, framesOutputPath);
+        const { framerate, } = yield (0, record_frames_1.recordFrames)(videoAppUrl, framesOutputPath);
         const videoConfig = yield (0, video_from_frames_1.buildVideoConfigFromFrames)(framesOutputPath, framerate, outputPath);
         (0, logging_1.debug)(`Rendering with command: ${videoConfig.command}`);
         const output = yield (0, video_from_frames_1.renderVideo)(videoConfig);
@@ -125,22 +126,14 @@ function render(videoAppPathOrUrl, outputPath) {
         (0, logging_1.inform)(`Video rendered to ${outputPath}`);
     });
 }
-function preview(videoAppPathOrUrl) {
+function preview(videoAppUrl) {
     return __awaiter(this, void 0, void 0, function* () {
-        const isVideoAppAtUrl = (0, is_url_1.isVideoAppUrl)(videoAppPathOrUrl);
-        let videoAppUrl = videoAppPathOrUrl;
-        (0, logging_1.inform)(`Previewing video app at path: ${videoAppPathOrUrl}`);
-        if (!is_url_1.isVideoAppUrl) {
-            // TODO: Serve the video app @ http://localhost:8088
-            //videoAppUrl = `TODO`;
-        }
         const editorServer = yield (0, editor_1.startEditor)(videoAppUrl);
         editorServer.stdout.on('data', (data) => {
             (0, logging_1.inform)(`Editor Server: ${data}`);
         });
         editorServer.on('close', (code) => {
             (0, logging_1.inform)(`Editor Server exited with code ${code}`);
-            process.exit(code !== null && code !== void 0 ? code : 0);
         });
         editorServer.on('error', (err) => {
             (0, logging_1.inform)(`Editor Server ${err}`, chalk_1.default.red);
@@ -189,7 +182,7 @@ function main() {
                 (0, logging_1.inform)(`Output path chosen: ${relativeOutputPath} (default)`);
             }
         }
-        const isVideoAppAtUrl = (0, is_url_1.isVideoAppUrl)(relativeVideoAppPath);
+        const isVideoAppAtUrl = (0, is_video_url_1.isVideoAppUrl)(relativeVideoAppPath);
         let videoAppPathOrUrl = relativeVideoAppPath;
         if (isVideoAppAtUrl) {
             const response = yield fetch(videoAppPathOrUrl);
@@ -198,7 +191,7 @@ function main() {
         }
         else {
             videoAppPathOrUrl = path_1.default.join(workingDirectory, relativeVideoAppPath);
-            (0, logging_1.inform)(`Video app full path: ${videoAppPathOrUrl}`);
+            (0, logging_1.debug)(`Video app full path: ${videoAppPathOrUrl}`);
             const videoAppFilePath = path_1.default.join(videoAppPathOrUrl, 'index.html');
             if (!fs_1.default.existsSync(videoAppPathOrUrl)) {
                 (0, logging_1.panic)(`Video app path ${videoAppPathOrUrl} does not exist! Please provide a valid path to where your video app is located.`);
@@ -208,16 +201,39 @@ function main() {
             }
         }
         const output = path_1.default.join(workingDirectory, relativeOutputPath);
-        (0, logging_1.inform)(`Output full path: ${output}`);
+        (0, logging_1.debug)(`Output full path: ${output}`);
+        let videoAppUrl = videoAppPathOrUrl;
+        let serverInstance;
+        const startLocalServer = () => __awaiter(this, void 0, void 0, function* () {
+            if (isVideoAppAtUrl)
+                return;
+            serverInstance = yield (0, server_1.createLocalWebServer)(videoAppPathOrUrl);
+            videoAppUrl = serverInstance.url;
+            (0, logging_1.debug)(`Serving video app at URL: ${videoAppUrl}`);
+        });
+        const stopLocalServer = () => __awaiter(this, void 0, void 0, function* () {
+            if (!serverInstance)
+                return;
+            serverInstance.close();
+            (0, logging_1.debug)(`Stopped local server`);
+        });
+        var nodeCleanup = require('node-cleanup');
+        nodeCleanup(function (exitCode, signal) {
+            stopLocalServer();
+        });
         if (args.action === 'render') {
-            yield render(videoAppPathOrUrl, output);
+            yield startLocalServer();
+            (0, logging_1.inform)(`Rendering...`);
+            yield render(videoAppUrl, output);
+            yield stopLocalServer();
         }
         else if (args.action === 'preview') {
-            yield preview(videoAppPathOrUrl);
+            yield startLocalServer();
+            (0, logging_1.inform)(`Previewing...`);
+            yield preview(videoAppUrl);
         }
         else if (args.action === 'help') {
             args._commandLineResults.printHelp();
-            process.exit(0);
         }
         else {
             (0, logging_1.panic)(`Unknown action "${args.action}"! Use "preview", "render" or "render-formats`);

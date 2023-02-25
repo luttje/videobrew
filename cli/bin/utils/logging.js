@@ -12,6 +12,8 @@ function inform(message, chalkFn = chalk_1.default.white, noPrefix = false) {
 }
 exports.inform = inform;
 function debug(message) {
+    if (!process.env.DEBUG)
+        return;
     inform(message, chalk_1.default.gray);
 }
 exports.debug = debug;

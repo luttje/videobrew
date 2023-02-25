@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.recordFrames = void 0;
 const playwright_1 = require("playwright");
 const fs_1 = __importDefault(require("fs"));
-const is_url_1 = require("../utils/is-url");
+const is_video_url_1 = require("../utils/is-video-url");
 function messageVideo(page, type, data) {
     return __awaiter(this, void 0, void 0, function* () {
         yield page.evaluate((message) => {
@@ -32,7 +32,7 @@ function recordFrames(videoAppPathOrUrl, framesOutputPath) {
             page.on('pageerror', (message) => console.log('PAGE ERROR:', message.message));
             if (!fs_1.default.existsSync(framesOutputPath))
                 fs_1.default.mkdirSync(framesOutputPath, { recursive: true });
-            const isVideoAppAtUrl = (0, is_url_1.isVideoAppUrl)(videoAppPathOrUrl);
+            const isVideoAppAtUrl = (0, is_video_url_1.isVideoAppUrl)(videoAppPathOrUrl);
             const videoPath = isVideoAppAtUrl ? videoAppPathOrUrl : `file://${videoAppPathOrUrl}/index.html`;
             yield page.goto(videoPath, {
                 waitUntil: 'domcontentloaded',

@@ -10,6 +10,9 @@ export function inform(message: string, chalkFn = chalk.white, noPrefix = false)
 }
 
 export function debug(message: string) {
+  if (!process.env.DEBUG)
+    return;
+
   inform(message, chalk.gray);
 }
 

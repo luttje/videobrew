@@ -3,13 +3,14 @@ import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoForm
 import { ArgumentConfig, parse } from 'ts-command-line-args';
 import { recordFrames } from './rendering/record-frames';
 import { inform, debug, panic } from './utils/logging';
+import { createLocalWebServer, LocalWebServerInstance } from './server';
+import { isVideoAppUrl } from './utils/is-video-url';
 import { AsciiTable3 } from 'ascii-table3';
 import { startEditor } from './editor';
 import { cwd } from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
-import { isVideoAppUrl } from './utils/is-url';
 
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
@@ -115,12 +116,12 @@ async function showRenderFormats(containerFormats: VideoFormat[]) {
   inform('\n(These are the container formats as reported by ffmpeg)', chalk.italic.gray, true);
 }
 
-async function render(videoAppPathOrUrl: string, outputPath: string) {  
+async function render(videoAppUrl: string, outputPath: string) {  
   const outputDirectory = path.dirname(outputPath);
   const framesOutputPath = await fs.mkdtempSync(path.join(outputDirectory, '~tmp-'));
   const {
     framerate,
-  } = await recordFrames(videoAppPathOrUrl, framesOutputPath);
+  } = await recordFrames(videoAppUrl, framesOutputPath);
 
   const videoConfig = await buildVideoConfigFromFrames(framesOutputPath, framerate, outputPath);
   debug(`Rendering with command: ${videoConfig.command}`);
@@ -134,16 +135,7 @@ async function render(videoAppPathOrUrl: string, outputPath: string) {
   inform(`Video rendered to ${outputPath}`);
 }
 
-async function preview(videoAppPathOrUrl: string) {
-  const isVideoAppAtUrl = isVideoAppUrl(videoAppPathOrUrl);
-  let videoAppUrl = videoAppPathOrUrl;
-  inform(`Previewing video app at path: ${videoAppPathOrUrl}`);
-
-  if (!isVideoAppUrl) {
-    // TODO: Serve the video app @ http://localhost:8088
-    //videoAppUrl = `TODO`;
-  }
-
+async function preview(videoAppUrl: string) {
   const editorServer = await startEditor(videoAppUrl);
 
   editorServer.stdout!.on('data', (data) => {
@@ -152,7 +144,6 @@ async function preview(videoAppPathOrUrl: string) {
 
   editorServer.on('close', (code) => {
     inform(`Editor Server exited with code ${code}`);
-    process.exit(code ?? 0);
   });
 
   editorServer.on('error', (err) => {
@@ -226,7 +217,7 @@ async function main() {
       panic(`Video app URL ${videoAppPathOrUrl} is not responding with 200 OK! Please provide a valid URL to where your video app is being served.`);
   } else {
     videoAppPathOrUrl = path.join(workingDirectory, relativeVideoAppPath);
-    inform(`Video app full path: ${videoAppPathOrUrl}`);
+    debug(`Video app full path: ${videoAppPathOrUrl}`);
     
     const videoAppFilePath = path.join(videoAppPathOrUrl, 'index.html');
     
@@ -240,16 +231,48 @@ async function main() {
   }
 
   const output = path.join(workingDirectory, relativeOutputPath);
-  inform(`Output full path: ${output}`);
+  debug(`Output full path: ${output}`);
 
+  let videoAppUrl = videoAppPathOrUrl;
+  let serverInstance: LocalWebServerInstance | undefined;
+
+  const startLocalServer = async () => {
+    if (isVideoAppAtUrl)
+      return;
+  
+    serverInstance = await createLocalWebServer(videoAppPathOrUrl);
+    videoAppUrl = serverInstance.url;
+
+    debug(`Serving video app at URL: ${videoAppUrl}`);
+  }
+
+  const stopLocalServer = async () => {
+    if (!serverInstance)
+      return;
+    
+    serverInstance.close();
+    debug(`Stopped local server`);
+  }
+
+  var nodeCleanup = require('node-cleanup');
+  nodeCleanup(function (exitCode: number, signal: any) {
+    stopLocalServer();
+  });
 
   if (args.action === 'render') {
-    await render(videoAppPathOrUrl, output);
+    await startLocalServer();
+
+    inform(`Rendering...`);
+    await render(videoAppUrl, output);
+
+    await stopLocalServer();
   } else if (args.action === 'preview') {
-    await preview(videoAppPathOrUrl);
+    await startLocalServer();
+
+    inform(`Previewing...`);
+    await preview(videoAppUrl);
   } else if (args.action === 'help') {
     args._commandLineResults.printHelp();
-    process.exit(0);
   } else {
     panic(`Unknown action "${args.action}"! Use "preview", "render" or "render-formats`);
   }
