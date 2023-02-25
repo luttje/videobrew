@@ -1,10 +1,12 @@
 {
 	"name": "videobrew",
+	"description": "Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
+	"author": "Luttje",
+	"license": "AGPL-3.0-or-later",
 	"version": "0.0.1",
-	"private": true,
 	"type": "module",
 	"bin": {
-		"videobrew": "bin/cli.js"
+		"videobrew": "bin/cli.mjs"
 	},
 	"scripts": {
 		"dev": "vite dev",

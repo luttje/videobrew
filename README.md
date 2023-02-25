@@ -177,3 +177,7 @@ Create videos using any web technologies. Animate a web page with your favorite 
   </body>
 </html>
 ```
+
+## License
+
+You can find the license for this project [here](./LICENSE). All third-party licenses can be found [here](./LICENSES-THIRD-PARTY) (generated with [`license-checker-rseidelsohn --plainVertical > LICENSES-THIRD-PARTY`](https://www.npmjs.com/package/license-checker-rseidelsohn)).
