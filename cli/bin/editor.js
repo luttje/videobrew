@@ -18,25 +18,30 @@ const path_1 = __importDefault(require("path"));
 const util_1 = __importDefault(require("util"));
 const execAsync = util_1.default.promisify(child_process_1.exec);
 const spawnAsync = util_1.default.promisify(child_process_1.spawn);
-const filePrefix = 'file:';
+const EDITOR_PACKAGE_NAME = '@videobrew/editor';
+const FILE_PREFIX = 'file:';
 /**
  * Gets where the editor is installed (globally)
  */
 function getEditorInstallPath() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { stdout, stderr, } = yield execAsync('npm list -g videobrew-editor --json');
-        if (stderr) {
-            console.error(stderr);
+        let json;
+        try {
+            const { stdout, } = yield execAsync(`npm list -g ${EDITOR_PACKAGE_NAME} --json`);
+            json = stdout;
+        }
+        catch (e) {
+            // If the editor is not installed, npm list will exit with code 1
             return null;
         }
-        const { dependencies } = JSON.parse(stdout);
-        const editorPath = dependencies['videobrew-editor'].resolved;
-        if (!editorPath.startsWith(filePrefix)) {
+        const { dependencies } = JSON.parse(json);
+        const editorPath = dependencies[EDITOR_PACKAGE_NAME].resolved;
+        if (!editorPath.startsWith(FILE_PREFIX)) {
             // TODO: support other protocols
-            console.error(`[Videobrew | Editor Server] Unsupported protocol for package: ${editorPath} (only ${filePrefix} is supported)`);
+            console.error(`[Videobrew | Editor Server] Unsupported protocol for package: ${editorPath} (only ${FILE_PREFIX} is supported)`);
             process.exit(1);
         }
-        return editorPath.slice(filePrefix.length);
+        return editorPath.slice(FILE_PREFIX.length);
     });
 }
 /**
@@ -44,7 +49,7 @@ function getEditorInstallPath() {
  */
 function installEditor() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { stdout, stderr, } = yield execAsync('npm install -g videobrew-editor');
+        const { stdout, stderr, } = yield execAsync(`npm install -g ${EDITOR_PACKAGE_NAME}`);
         if (stderr) {
             console.error(stderr);
             return null;

@@ -1,5 +1,5 @@
 {
-	"name": "videobrew",
+	"name": "@videobrew/cli",
 	"description": "Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
@@ -8,6 +8,7 @@
 		"videobrew": "bin/cli.js"
 	},
 	"scripts": {
+		"prebuild": "del-cli bin",
 		"build": "npx tsc --project tsconfig.json",
 		"postbuild": "cp package*.json bin && cd bin && npm ci --omit=dev"
 	},
@@ -18,6 +19,7 @@
 	"devDependencies": {
 		"@tsconfig/recommended": "^1.0.2",
 		"@types/node": "^18.14.1",
+		"del-cli": "^5.0.0",
 		"typescript": "^4.9.5"
 	}
 }

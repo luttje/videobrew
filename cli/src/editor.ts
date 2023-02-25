@@ -4,32 +4,36 @@ import util from 'util';
 
 const execAsync = util.promisify(exec);
 const spawnAsync = util.promisify(spawn);
-const filePrefix = 'file:';
+
+const EDITOR_PACKAGE_NAME = '@videobrew/editor';
+const FILE_PREFIX = 'file:';
 
 /**
  * Gets where the editor is installed (globally)
  */
 async function getEditorInstallPath() {
-  const {
-    stdout,
-    stderr,
-  } = await execAsync('npm list -g videobrew-editor --json');
+  let json: string;
 
-  if (stderr) {
-    console.error(stderr);
+  try {
+    const {
+      stdout,
+    } = await execAsync(`npm list -g ${EDITOR_PACKAGE_NAME} --json`);
+    json = stdout;
+  } catch (e) {
+    // If the editor is not installed, npm list will exit with code 1
     return null;
   }
 
-  const { dependencies } = JSON.parse(stdout);
-  const editorPath = dependencies['videobrew-editor'].resolved;
+  const { dependencies } = JSON.parse(json);
+  const editorPath = dependencies[EDITOR_PACKAGE_NAME].resolved;
 
-  if (!editorPath.startsWith(filePrefix)) {
+  if (!editorPath.startsWith(FILE_PREFIX)) {
     // TODO: support other protocols
-    console.error(`[Videobrew | Editor Server] Unsupported protocol for package: ${editorPath} (only ${filePrefix} is supported)`);
+    console.error(`[Videobrew | Editor Server] Unsupported protocol for package: ${editorPath} (only ${FILE_PREFIX} is supported)`);
     process.exit(1);
   }
 
-  return editorPath.slice(filePrefix.length);
+  return editorPath.slice(FILE_PREFIX.length);
 }
 
 /**
@@ -39,7 +43,7 @@ async function installEditor() {
   const {
     stdout,
     stderr,
-  } = await execAsync('npm install -g videobrew-editor');
+  } = await execAsync(`npm install -g ${EDITOR_PACKAGE_NAME}`);
 
   if (stderr) {
     console.error(stderr);

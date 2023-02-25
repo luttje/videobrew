@@ -1,6 +1,6 @@
 {
-	"name": "videobrew-editor",
-	"description": "Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
+	"name": "@videobrew/editor",
+	"description": "Preview videos created using any web technologies. Requires @videobrew/cli to be installed globally.",
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
 	"version": "0.1.0",
@@ -8,10 +8,8 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-
 		"postbuild": "cp package*.json dist && cd dist && npm ci --omit=dev"
 	},
 	"devDependencies": {
@@ -27,5 +25,8 @@
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
 		"vite": "^4.0.0"
+	},
+	"peerDependencies": {
+		"@videobrew/cli": "^0.1.0"
 	}
 }

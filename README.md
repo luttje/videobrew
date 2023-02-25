@@ -11,7 +11,7 @@
 |                                                   |
 \___________________________________________________/
 ```
-# <span style="display:none">Videobrew</span>
+# Videobrew
 
 Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.
 
@@ -19,27 +19,27 @@ Create videos using any web technologies. Animate a web page with your favorite 
 
 ⚠ **This software is under construction. Things may work or not work and possibly different from the documentation.**
 
+1. Install the `@videobrew/cli` globally with `npm i -g @videobrew/cli`.
+
 ### Pure HTML
 
-1. Install `videobrew` globally with `npm i -g videobrew`.
+1. Create a new web page named `index.html` based on the [Pure HTML Example](./editor/static/tests/pure-html/). *You are free to include css, javascript and any other <u>local</u> content.*
 
-2. Create a new HTML file named `index.html` based on the [Pure HTML Example](#pure-html) below. *You are free to include css, javascript and any other <u>local</u> content.*
+2. Run `videobrew preview` in the directory of the created `index.html`. A preview of the video can be viewed in your preferred browser @ [`http://localhost:3000`](http://localhost:3000).
 
-3. Run `videobrew preview` in the directory of the created `index.html`. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8080`](http://localhost:8080).
-
-4. You can render the video by running `videobrew render . out/` to render the video to the specified path.
+3. You can render the video by running `videobrew render . out/` to render the video to the specified path.
 
 ### Svelte
 
-1. Create a new [Svelte](https://svelte.dev/) project with `npm create svelte@latest my-video-project` and [configure it to generate a static site](https://kit.svelte.dev/docs/adapter-static#usage).
+1. Create a new [Svelte](https://svelte.dev/) project with `npm create svelte@latest my-video-project`.
 
-2. Require `videobrew` in your project by running `npm i videobrew`.
+2. Require `@videobrew/svelte` in your project by running `npm i @videobrew/svelte`. *This contains useful components to help construct your video and communicate with the renderer.*
 
 3. Create a web page that describes the video. For example change the `routes/+page.svelte` file to the [Svelte Example Video](#svelte) below.
 
 4. Run `npm run build` to render your webpage to a static site.
 
-5. Run `videobrew preview build/` with the path to the webpage files. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8080`](http://localhost:8080).
+5. Run `videobrew preview build/` with the path to the webpage files. A preview of the video can be viewed in your preferred browser @ [`http://localhost:3000`](http://localhost:3000).
 
 6. You can render the video by running `videobrew render . out/` to render the video to the specified path.
 
@@ -142,40 +142,6 @@ Create videos using any web technologies. Animate a web page with your favorite 
     </Sequence>
   </Group>
 </Sequence>
-```
-
-### Pure HTML
-**⚠ TODO!**
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-  </head>
-  <body>
-    <div style="width: 100%; height: 100%; background-color: red; display: hidden;" 
-      data-duration="2000" 
-      data-transition-overlap="500"
-      data-transition-in="fadeIn" data-transition-out="fadeOut">
-      <div style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
-        <div style="font-family: Arial; font-size: 50px; color: white;">Hello World</div>
-      </div>
-    </div>
-
-    <div style="width: 100%; height: 100%; background-color: green;">
-      <div style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
-        <div style="font-family: Arial; font-size: 50px; color: white;">Hello World Again</div>
-      </div>
-
-      <div style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
-        <div style="font-family: Arial; font-size: 50px; color: white;">This is another text</div>
-    </div>
-
-    <script>
-      // TODO
-    </script>
-  </body>
-</html>
 ```
 
 ## License
