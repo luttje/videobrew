@@ -1,25 +1,27 @@
-```
- ___________________________________________________
-/                                                   \
-|---------------------------------------------------|
-|   ____________                     ____________   |
-|  /            |    Video Brew     |            \  |
-| (             |                   |             ) |
-| |             |                   |             | |
-| (             |                   |             ) |
-|  \____________|                   |____________/  |
-|                                                   |
-\___________________________________________________/
-```
-# Videobrew
+# 📼 Videobrew
 
-Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.
+Create videos using any web technologies (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript. Animate your web page and have Videobrew render it to a video.
 
-## Usage
+## 📦 Packages
+
+- [@videobrew/cli](./cli) - The command line interface that allows rendering videos. It will install the editor automatically to allow previewing your videos.
+- [@videobrew/editor](./editor) - The editor app that previews your videos.
+- [@videobrew/svelte](./svelte) - A Svelte component library that allows you to create videos using pre-made Svelte components.
+
+## 📚 Terminology
+
+- **Video App** - A web page that describes the video. It can be written in any web technology (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript.
+- **Video** - The output of a video app. It is a video file that can be played in any video player.
+- **Editor** - The app that previews your video app. It is a web page that can be viewed in any browser.
+- **Renderer** - The app that renders your video app to a video. It is a command line interface that can be run in any terminal.
+
+## 📹 Usage
 
 ⚠ **This software is under construction. Things may work or not work and possibly different from the documentation.**
 
 1. Install the `@videobrew/cli` globally with `npm i -g @videobrew/cli`.
+
+2. Ensure that when you host your video app, you allow it to be viewed from any origin. This is required for the editor to be able to preview your video app.
 
 ### Pure HTML
 
@@ -43,7 +45,25 @@ Create videos using any web technologies. Animate a web page with your favorite 
 
 6. You can render the video by running `videobrew render . out/` to render the video to the specified path.
 
-## Example videos
+## 📃 Features
+
+### Rendering
+- [x] `videobrew render [videoAppPath=.] [outputPath=out]`: Render videos from local HTML, CSS and Javascript.
+- [ ] Render videos from hosted HTML, CSS and Javascript.
+- [ ] Provide Svelte components to build videos.
+- [ ] Provide Vue components to build videos.
+- [ ] Provide React components to build videos.
+
+### Previewing
+- [x] `videobrew preview [videoAppPath=.] [outputPath=out]`:  Preview videos from hosted HTML, CSS and Javascript.
+- [ ] Show a timeline of the video.
+- [ ] Show a list of all the elements in the video.
+- [ ] Show a list of all the transitions in the video.
+- [ ] Allow scrubbing through the video.
+
+## 🚀 Example videos
+
+**This is psuedo-code. The features below are not yet implemented.**
 
 ### Svelte
 ```html
