@@ -3,11 +3,8 @@
 	"description": "Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"type": "module",
-	"bin": {
-		"videobrew": "bin/cli.mjs"
-	},
 	"scripts": {
 		"dev": "vite dev",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -17,6 +14,7 @@
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/adapter-static": "^2.0.1",
 		"@sveltejs/kit": "^1.5.0",
+		"@tsconfig/recommended": "^1.0.2",
 		"autoprefixer": "^10.4.13",
 		"postcss": "^8.4.21",
 		"svelte": "^3.54.0",
@@ -25,10 +23,5 @@
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
 		"vite": "^4.0.0"
-	},
-	"dependencies": {
-		"any-shell-escape": "^0.1.1",
-		"ffmpeg-static": "^5.1.0",
-		"playwright": "^1.31.1"
 	}
 }
