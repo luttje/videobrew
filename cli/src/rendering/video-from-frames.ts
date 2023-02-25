@@ -5,6 +5,8 @@ import util from 'util';
 import path from 'path';
 import fs from 'fs';
 
+const execAsync = util.promisify(exec);
+
 export async function videoFromFrames(framesPath: string, framerate: number, outputPath: string) {
   const output = `${outputPath}/output.mp4`;
   const videoConfig = shell([
@@ -20,7 +22,7 @@ export async function videoFromFrames(framesPath: string, framerate: number, out
 
   console.log(`Rendering with command: ${videoConfig}`);
 
-  const { stdout, stderr } = await util.promisify(exec)(videoConfig, {
+  const { stdout, stderr } = await execAsync(videoConfig, {
     cwd: __dirname,
   });
   

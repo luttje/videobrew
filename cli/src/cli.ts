@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import { spawn } from 'child_process';
 import { cwd } from 'process';
 import path from 'path';
 import fs from 'fs';
 import { showHelp } from './show-help';
 import { recordFrames } from './rendering/record-frames';
 import { videoFromFrames } from './rendering/video-from-frames';
+import { startEditor } from './editor';
 
 const args = process.argv.slice(2);
 const action = args[0];
@@ -60,25 +60,9 @@ async function main() {
 
     console.log(`Video rendered to ${outputPath}`);
   } else if (action === 'preview') {
-    // We want to run videobrew with HMR enabled, so we can trigger a rebuild when the video app changes
-    const devServer = spawn('npm', ['run', 'dev'], {
-      cwd: path.join(__dirname, '..'),
-      stdio: 'inherit',
-      shell: true,
-      env: {
-        'VIDEOBREW_TARGET': videoAppPath,
-      },
-    });
+    // TODO: Serve the video app @ http://localhost:8088
 
-    devServer.on('close', (code) => {
-      console.log(`DevServer exited with code ${code}`);
-      process.exit(code ?? 0);
-    });
-
-    devServer.on('error', (err) => {
-      console.error(`Build error: ${err}`);
-      process.exit(1);
-    });
+    startEditor();
   } else {
     console.log('Please provide an action: preview or render');
     showHelp();

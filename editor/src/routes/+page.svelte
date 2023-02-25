@@ -7,8 +7,12 @@
   import Primary from "$lib/components/button/Primary.svelte";
   import Text from "$lib/components/input/Text.svelte";
   import Range from "$lib/components/input/Range.svelte";
-  import videoPath from "@video/index.html?url";
+  import { videoUrl } from "$lib/video";
 
+  let overlay: { heading: string; message: string } = {
+    heading: 'Loading...',
+    message: `Please wait while we load your video @ <a href="${videoUrl}" target="_new">${videoUrl}</a>`,
+  };
   let scaleSetting: number = 0.2;
 
   let width: number;
@@ -74,13 +78,12 @@
       clearInterval(videoInterval);
   }
 
-  onMount(() => {
-    if (!video.contentWindow)
-      throw new Error("Video iframe has no contentWindow");
+  function onVideoLoad() {
+    console.log('Video loaded');
 
     messageVideo('videobrew.init');
     messageVideo('videobrew.tick', { frame: videoPlayback.frame });
-  });
+  }
 
   function onMessage(event: MessageEvent) {
     if (event.origin !== document.location.origin)
@@ -105,6 +108,22 @@
 
     video.classList.remove('hidden');
   }
+
+  onMount(() => {
+    const loadError = () => {
+      overlay = {
+          heading: 'Video not found',
+          message: `We couldn't find your video @ <a href="${videoUrl}" target="_new">${videoUrl}</a><br>You should check that you are serving your video correctly.`,
+        };
+    };
+
+    fetch(videoUrl)
+      .then((response) => {
+        if (!response.ok)
+          return loadError();
+      })
+      .catch((error) => loadError());
+  });
 </script>
 
 <svelte:window on:message={onMessage} />
@@ -145,10 +164,11 @@
         style="width: {width}px; height: {height}px; transform: scale({scaleSetting}); transform-origin: top left;"
       >
         <iframe bind:this={video} 
+          on:load={onVideoLoad}
+          title="Video described by web-app"
+          src={videoUrl}
           class="hidden"
           id="video"
-          title="Video described by web-app"
-          src={videoPath}
           {width}
           {height}>
         </iframe>
@@ -171,3 +191,12 @@
     <pre>videobrew render</pre>
   </div>
 </main>
+
+{#if overlay}
+<div class="fixed text-black bg-black bg-opacity-50 inset-0 z-50 flex flex-col items-center justify-center">
+  <div class="flex flex-col gap-2 p-4 bg-white rounded-lg shadow w-64">
+    <h1 class="text-2xl font-bold">{overlay.heading}</h1>
+    <p class="text-gray-600">{@html overlay.message}</p>
+  </div>
+</div>
+{/if}

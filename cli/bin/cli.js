@@ -13,13 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const child_process_1 = require("child_process");
 const process_1 = require("process");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const show_help_1 = require("./show-help");
 const record_frames_1 = require("./rendering/record-frames");
 const video_from_frames_1 = require("./rendering/video-from-frames");
+const editor_1 = require("./editor");
 const args = process.argv.slice(2);
 const action = args[0];
 function main() {
@@ -63,23 +63,8 @@ function main() {
             console.log(`Video rendered to ${outputPath}`);
         }
         else if (action === 'preview') {
-            // We want to run videobrew with HMR enabled, so we can trigger a rebuild when the video app changes
-            const devServer = (0, child_process_1.spawn)('npm', ['run', 'dev'], {
-                cwd: path_1.default.join(__dirname, '..'),
-                stdio: 'inherit',
-                shell: true,
-                env: {
-                    'VIDEOBREW_TARGET': videoAppPath,
-                },
-            });
-            devServer.on('close', (code) => {
-                console.log(`DevServer exited with code ${code}`);
-                process.exit(code !== null && code !== void 0 ? code : 0);
-            });
-            devServer.on('error', (err) => {
-                console.error(`Build error: ${err}`);
-                process.exit(1);
-            });
+            // TODO: Serve the video app @ http://localhost:8088
+            (0, editor_1.startEditor)();
         }
         else {
             console.log('Please provide an action: preview or render');
