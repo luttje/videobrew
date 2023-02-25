@@ -1,0 +1,22 @@
+{
+	"name": "videobrew",
+	"description": "Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
+	"author": "Luttje",
+	"license": "AGPL-3.0-or-later",
+	"version": "0.1.0",
+	"bin": {
+		"videobrew": "bin/cli.js"
+	},
+	"scripts": {
+		"build": "npx tsc --project tsconfig.json"
+	},
+	"dependencies": {
+		"ffmpeg-static": "^5.1.0",
+		"playwright": "^1.31.1"
+	},
+	"devDependencies": {
+		"@tsconfig/recommended": "^1.0.2",
+		"@types/node": "^18.14.1",
+		"typescript": "^4.9.5"
+	}
+}
