@@ -13,18 +13,23 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 2. Create your video app (a web page that describes the video). *For inspiration check out the [examples](#examples).*
 
 3. Preview your video app in the browser by running (in your video app's directory):
-  
+    
     ```bash
     $ videobrew preview 
     # Serves the editor @ http://localhost:8087
     # (your video app will also be served for you)
     ```
 
+    [<img src="./docs/editor-previewing-video-app.png" alt="Previewing a video app" align="middle" width="150" />](./docs/editor-previewing-video-app.png)
+
+
 4. Render your video app into an `mp4` file:
   
     ```bash
     $ videobrew render my-video.mp4
     ```
+
+    [<img src="./docs/cli-rendering-video-app.png" alt="Rendering a video app" align="middle" width="500" />](./docs/cli-rendering-video-app.png)
 
 ### (Bonus) Serving your video app yourself
 
@@ -67,15 +72,16 @@ Just make sure your server has [CORS](https://developer.mozilla.org/en-US/docs/W
 ## 📃 Features
 
 ### Rendering
-- [x] `videobrew render [videoAppPathOrUrl=.] [output=out/my-video.mp4]`: Render videos from local HTML, CSS and Javascript.
-- [x] Render videos from hosted HTML, CSS and Javascript.
+- [x] Render videos from local HTML, CSS and Javascript *(will be served by the Videobrew)* - `videobrew render`
+- [x] Render videos from self-hosted HTML, CSS and Javascript - `videobrew render http://my-video-app-url.test`
 - [ ] Provide Typescript core to simplify communication with the renderer.
 - [ ] Provide Svelte components to build videos.
 - [ ] Provide Vue components to build videos.
 - [ ] Provide React components to build videos.
 
 ### Previewing
-- [x] `videobrew preview [videoAppPathOrUrl=.] [output=out/my-video.mp4]`:  Preview videos from hosted HTML, CSS and Javascript.
+- [x] Preview videos from local HTML, CSS and Javascript *(will be served by the Videobrew)* - `videobrew preview`
+- [x] Preview videos from self-hosted HTML, CSS and Javascript - `videobrew preview http://my-video-app-url.test`
 - [ ] Show a timeline of the video.
 - [ ] Allow scrubbing through the video.
 
