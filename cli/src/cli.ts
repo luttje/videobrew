@@ -7,6 +7,7 @@ import { cwd } from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
+import { AsciiTable3 } from 'ascii-table3';
 
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out';
@@ -16,20 +17,70 @@ const workingDirectory = cwd();
 interface IVideoBrewArguments {
   action: string;
   videoAppPath?: string;
-  outputPath?: string;
+  output?: string;
   help?: boolean;
 }
 
 export const argumentConfig: ArgumentConfig<IVideoBrewArguments> = {
   action: { type: String, defaultOption: true, description: 'The action to perform. Either "preview", "render" or "help"' },
   videoAppPath: { type: String, alias: 'i', optional: true, description: `The path to the video app. Defaults to "${DEFAULT_VIDEO_APP_PATH}"` },
-  outputPath: { type: String, alias: 'o', optional: true, description: `The path to the output directory. Defaults to "${DEFAULT_OUTPUT_PATH}"` },
+  output: { type: String, alias: 'o', optional: true, description: `The path to the output directory. Defaults to "${DEFAULT_OUTPUT_PATH}"` },
   help: { type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide' },
 };
+
+var actionsTable =
+  new AsciiTable3()
+    .addRowMatrix([
+      [chalk.bold('preview'), 'Preview the video app in the browser'],
+      [chalk.bold('render'), 'Render the video app to a video file'],
+    ])
+    .setStyle('none');
 
 export const args = parse(argumentConfig, {
   hideMissingArgMessages: true,
   stopAtFirstUnknown: true,
+  showHelpWhenArgsMissing: true,
+
+  headerContentSections: [
+    {
+      header: '📼 Videobrew',
+      content: 'Create videos using web technologies.',
+    },
+    {
+      header: 'Usage',
+      content: [
+        '$ videobrew <action> [options]',
+      ],
+    },
+    {
+      header: 'Actions',
+      content: actionsTable.toString().split('\n'),
+    },
+  ],
+  footerContentSections: [
+    {
+      header: 'Examples',
+      content: [
+        chalk.bold('Open a video app, located in the current working directory, in the browser:'),
+        '$ videobrew preview',
+        '',
+        chalk.bold(`Render a video app, located in the current working directory, to the default output directory (${DEFAULT_OUTPUT_PATH}):`),
+        '$ videobrew render',
+        '',
+        chalk.bold(`Render a video app, located in the "./video" directory, to the "./rendered" directory:`),
+        '$ videobrew render ./video ./rendered',
+        chalk.bold('or:'),
+        '$ videobrew render -i ./video -o ./rendered',
+        chalk.bold('or:'),
+        '$ videobrew render --videoAppPath ./video --output ./rendered',
+      ],
+    },
+    {
+      content: [
+        'For more information, see https://github.com/luttje/videobrew/',
+      ],
+    },
+  ],
 }, true, true);
 
 const log = console.log;
@@ -67,7 +118,7 @@ async function render(videoAppPath: string, outputPath: string) {
 
   await fs.rmSync(framesOutputPath, { recursive: true });
 
-  inform(`Video rendered to ${outputPath}`);
+  inform(`Video rendered to ${output}`);
 }
 
 async function preview(videoAppPath: string) {
@@ -106,7 +157,7 @@ async function main() {
     }
   }
 
-  let relativeOutputPath = args.outputPath;
+  let relativeOutputPath = args.output;
 
   if (!relativeOutputPath) {
     if (args._unknown?.length > 1) {
@@ -122,7 +173,7 @@ async function main() {
   
   const videoAppPath = path.join(workingDirectory, relativeVideoAppPath);
   const videoAppFilePath = path.join(videoAppPath, 'index.html');
-  const outputPath = path.join(workingDirectory, relativeOutputPath);
+  const output = path.join(workingDirectory, relativeOutputPath);
 
   if (!fs.existsSync(videoAppPath)) {
     panic(`Video app path ${videoAppPath} does not exist! Please provide a valid path to where your video website is located.`);
@@ -133,7 +184,7 @@ async function main() {
   }
 
   if (args.action === 'render') {
-    await render(videoAppPath, outputPath);
+    await render(videoAppPath, output);
   } else if (args.action === 'preview') {
     await preview(videoAppPath);
   } else if (args.action === 'help') {

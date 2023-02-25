@@ -14,7 +14,8 @@
 		"postbuild": "cp package*.json bin && cd bin && npm ci --omit=dev"
 	},
 	"dependencies": {
-		"chalk": "^5.2.0",
+		"ascii-table3": "^0.8.2",
+		"chalk": "^4.1.2",
 		"ffmpeg-static": "^5.1.0",
 		"playwright": "^1.31.1",
 		"ts-command-line-args": "^2.4.2"

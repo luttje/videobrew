@@ -21,11 +21,11 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 
 1. Install the `@videobrew/cli` globally with `npm i -g @videobrew/cli`.
 
-2. Ensure that when you host your video app, you allow it to be viewed from any origin. This is required for the editor to be able to preview your video app.
+2. Ensure that when you host your video app, you allow it to be viewed from any origin ([CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)). This is required for the editor to be able to preview your video app. 
 
 ### Pure HTML
 
-1. Create a new web page named `index.html` based on the [Pure HTML Example](./editor/static/tests/pure-html/). *You are free to include css, javascript and any other <u>local</u> content.*
+1. Create a new web page based on the [Pure HTML Example](./examples/pure-html/). *You are free to include css, javascript and any other <u>local</u> content.*
 
 2. Run `videobrew preview` in the directory of the created `index.html`. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8087`](http://localhost:8087).
 
