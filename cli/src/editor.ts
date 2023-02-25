@@ -3,7 +3,6 @@ import path from 'path';
 import util from 'util';
 
 const execAsync = util.promisify(exec);
-const spawnAsync = util.promisify(spawn);
 
 const EDITOR_PACKAGE_NAME = '@videobrew/editor';
 const FILE_PREFIX = 'file:';
@@ -65,20 +64,13 @@ export async function startEditor() {
     editorPath = await installEditor();
   }
 
-  const editorServer = <ChildProcess>await spawnAsync('node', ['.'], {
+  const editorServer = spawn('node', ['.'], {
     cwd: path.join(editorPath, 'dist'),
-    stdio: 'inherit',
+    stdio: ['inherit', 'pipe', 'inherit'],
     env: {
       'PORT': '8087',
     },
   });
 
-  editorServer.on('close', (code) => {
-    console.log(`[Videobrew | Editor Server] exited with code ${code}`);
-    process.exit(code ?? 0);
-  });
-
-  editorServer.on('error', (err) => {
-    console.error(`[Videobrew | Editor Server] error: ${err}`);
-  });
+  return editorServer;
 }

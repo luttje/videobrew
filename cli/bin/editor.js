@@ -17,7 +17,6 @@ const child_process_1 = require("child_process");
 const path_1 = __importDefault(require("path"));
 const util_1 = __importDefault(require("util"));
 const execAsync = util_1.default.promisify(child_process_1.exec);
-const spawnAsync = util_1.default.promisify(child_process_1.spawn);
 const EDITOR_PACKAGE_NAME = '@videobrew/editor';
 const FILE_PREFIX = 'file:';
 /**
@@ -67,20 +66,14 @@ function startEditor() {
         if (!editorPath) {
             editorPath = yield installEditor();
         }
-        const editorServer = yield spawnAsync('node', ['.'], {
+        const editorServer = (0, child_process_1.spawn)('node', ['.'], {
             cwd: path_1.default.join(editorPath, 'dist'),
-            stdio: 'inherit',
+            stdio: ['inherit', 'pipe', 'inherit'],
             env: {
                 'PORT': '8087',
             },
         });
-        editorServer.on('close', (code) => {
-            console.log(`[Videobrew | Editor Server] exited with code ${code}`);
-            process.exit(code !== null && code !== void 0 ? code : 0);
-        });
-        editorServer.on('error', (err) => {
-            console.error(`[Videobrew | Editor Server] error: ${err}`);
-        });
+        return editorServer;
     });
 }
 exports.startEditor = startEditor;

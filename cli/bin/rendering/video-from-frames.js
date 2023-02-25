@@ -12,18 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.videoFromFrames = void 0;
+exports.renderVideo = exports.buildVideoConfigFromFrames = void 0;
 const ffmpeg_static_1 = __importDefault(require("ffmpeg-static"));
 const shell_1 = require("../utils/shell");
 const child_process_1 = require("child_process");
 const util_1 = __importDefault(require("util"));
 const path_1 = __importDefault(require("path"));
-const fs_1 = __importDefault(require("fs"));
 const execAsync = util_1.default.promisify(child_process_1.exec);
-function videoFromFrames(framesPath, framerate, outputPath) {
+function buildVideoConfigFromFrames(framesPath, framerate, outputPath) {
     return __awaiter(this, void 0, void 0, function* () {
         const output = `${outputPath}/output.mp4`;
-        const videoConfig = (0, shell_1.shell)([
+        const ffmpegCommand = (0, shell_1.shell)([
             `${ffmpeg_static_1.default}`,
             `-framerate`, `${framerate}`,
             `-i`, path_1.default.join(framesPath, '%08d.jpeg'),
@@ -33,14 +32,19 @@ function videoFromFrames(framesPath, framerate, outputPath) {
             `-y`,
             `${output}`
         ]);
-        console.log(`Rendering with command: ${videoConfig}`);
-        const { stdout, stderr } = yield execAsync(videoConfig, {
-            cwd: __dirname,
-        });
-        console.log('stdout:', stdout);
-        console.log('stderr:', stderr);
-        yield fs_1.default.rmSync(framesPath, { recursive: true });
-        return output;
+        return {
+            output,
+            command: ffmpegCommand,
+        };
     });
 }
-exports.videoFromFrames = videoFromFrames;
+exports.buildVideoConfigFromFrames = buildVideoConfigFromFrames;
+function renderVideo(videoConfig) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { stderr } = yield execAsync(videoConfig.command, {
+            cwd: __dirname,
+        });
+        return stderr;
+    });
+}
+exports.renderVideo = renderVideo;

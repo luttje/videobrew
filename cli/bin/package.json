@@ -8,13 +8,15 @@
 		"videobrew": "bin/cli.js"
 	},
 	"scripts": {
+		"dev": "npx tsc --watch",
 		"prebuild": "del-cli bin",
-		"build": "npx tsc --project tsconfig.json",
+		"build": "npx tsc",
 		"postbuild": "cp package*.json bin && cd bin && npm ci --omit=dev"
 	},
 	"dependencies": {
 		"ffmpeg-static": "^5.1.0",
-		"playwright": "^1.31.1"
+		"playwright": "^1.31.1",
+		"ts-command-line-args": "^2.4.2"
 	},
 	"devDependencies": {
 		"@tsconfig/recommended": "^1.0.2",

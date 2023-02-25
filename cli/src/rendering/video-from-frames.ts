@@ -7,9 +7,14 @@ import fs from 'fs';
 
 const execAsync = util.promisify(exec);
 
-export async function videoFromFrames(framesPath: string, framerate: number, outputPath: string) {
+export type VideoConfig = {
+  output: string;
+  command: string;
+}
+
+export async function buildVideoConfigFromFrames(framesPath: string, framerate: number, outputPath: string): Promise<VideoConfig> {
   const output = `${outputPath}/output.mp4`;
-  const videoConfig = shell([
+  const ffmpegCommand = shell([
     `${pathToFfmpeg}`,
     `-framerate`, `${framerate}`,
     `-i`, path.join(framesPath, '%08d.jpeg'),
@@ -20,16 +25,16 @@ export async function videoFromFrames(framesPath: string, framerate: number, out
     `${output}`
   ]);
 
-  console.log(`Rendering with command: ${videoConfig}`);
+  return {
+    output,
+    command: ffmpegCommand,
+  }
+}
 
-  const { stdout, stderr } = await execAsync(videoConfig, {
+export async function renderVideo(videoConfig: VideoConfig) {
+  const { stderr } = await execAsync(videoConfig.command, {
     cwd: __dirname,
   });
-  
-  console.log('stdout:', stdout);
-  console.log('stderr:', stderr);
 
-  await fs.rmSync(framesPath, { recursive: true });
-
-  return output;
+  return stderr;
 }
