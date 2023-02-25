@@ -17,7 +17,7 @@ const local_web_server_1 = __importDefault(require("local-web-server"));
 function createLocalWebServer(videoAppPath) {
     return __awaiter(this, void 0, void 0, function* () {
         // @ts-ignore 7016
-        const EnableCorsForIframe = (yield import('../../common/mw-cors.mjs')).default;
+        const EnableCorsForIframe = (yield import('./utils/mw-cors.mjs')).default;
         const lws = yield local_web_server_1.default.create({
             port: 8088,
             directory: videoAppPath,

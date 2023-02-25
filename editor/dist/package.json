@@ -1,12 +1,23 @@
 {
 	"name": "@videobrew/editor",
 	"description": "Preview videos created using any web technologies. Requires @videobrew/cli to be installed globally.",
+	"keywords": [
+		"video",
+		"generation",
+		"animation",
+		"api"
+	],
+	"homepage": "https://github.com/luttje/videobrew",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/luttje/videobrew"
+	},
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"type": "module",
 	"scripts": {
-		"serve-test-video-app": "ws --cors.embedder-policy require-corp --cors.resource cross-origin --hostname localhost --port 8088 --directory ../examples/0-dependencies --stack lws-log lws-cors mw-cors.js lws-static",
+		"serve-test-video-app": "ws --hostname localhost --port 8088 --directory ../examples/0-dependencies --stack lws-body-parser lws-request-monitor lws-log lws-cors lws-json lws-compress lws-rewrite lws-blacklist lws-conditional-get lws-mime lws-range lws-spa ./mw-cors.mjs lws-static lws-index",
 		"dev": "cross-env VIDEOBREW_VIDEO_APP_URL=http://localhost:8088 concurrently --kill-others \"vite dev\" \"npm run serve-test-video-app\"",
 		"build": "vite build",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -28,5 +39,10 @@
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
 		"vite": "^4.0.0"
-	}
+	},
+	"files": [
+		"dist",
+		"!dist/node_modules",
+		"LICENSES-THIRD-PARTY"
+	]
 }
