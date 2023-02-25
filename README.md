@@ -27,7 +27,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 
 1. Create a new web page named `index.html` based on the [Pure HTML Example](./editor/static/tests/pure-html/). *You are free to include css, javascript and any other <u>local</u> content.*
 
-2. Run `videobrew preview` in the directory of the created `index.html`. A preview of the video can be viewed in your preferred browser @ [`http://localhost:3000`](http://localhost:3000).
+2. Run `videobrew preview` in the directory of the created `index.html`. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8087`](http://localhost:8087).
 
 3. You can render the video by running `videobrew render . out/` to render the video to the specified path.
 
@@ -41,7 +41,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 
 4. Run `npm run build` to render your webpage to a static site.
 
-5. Run `videobrew preview build/` with the path to the webpage files. A preview of the video can be viewed in your preferred browser @ [`http://localhost:3000`](http://localhost:3000).
+5. Run `videobrew preview build/` with the path to the webpage files. A preview of the video can be viewed in your preferred browser @ [`http://localhost:8087`](http://localhost:8087).
 
 6. You can render the video by running `videobrew render . out/` to render the video to the specified path.
 

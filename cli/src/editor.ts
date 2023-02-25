@@ -68,6 +68,9 @@ export async function startEditor() {
   const editorServer = <ChildProcess>await spawnAsync('node', ['.'], {
     cwd: path.join(editorPath, 'dist'),
     stdio: 'inherit',
+    env: {
+      'PORT': '8087',
+    },
   });
 
   editorServer.on('close', (code) => {

@@ -70,6 +70,9 @@ function startEditor() {
         const editorServer = yield spawnAsync('node', ['.'], {
             cwd: path_1.default.join(editorPath, 'dist'),
             stdio: 'inherit',
+            env: {
+                'PORT': '8087',
+            },
         });
         editorServer.on('close', (code) => {
             console.log(`[Videobrew | Editor Server] exited with code ${code}`);

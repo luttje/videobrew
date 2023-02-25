@@ -1,6 +1,6 @@
 {
 	"name": "@videobrew/editor",
-	"description": "Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
+	"description": "Preview videos created using any web technologies. Requires @videobrew/cli to be installed globally.",
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
 	"version": "0.1.0",
