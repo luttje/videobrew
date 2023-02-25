@@ -82,11 +82,10 @@ const Range = create_ssr_component(($$result, $$props, $$bindings, slots) => {
 
   <input${add_attribute("id", id, 0)} class="${"flex-1 px-4 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent " + escape(small ? "w-20" : "w-auto", true)}"${add_attribute("placeholder", placeholder, 0)} type="${"range"}" ${disabled ? "disabled" : ""} ${required ? "required" : ""}${add_attribute("min", min, 0)}${add_attribute("max", max, 0)}${add_attribute("step", step, 0)}${add_attribute("value", value, 0)}></div>`;
 });
-const videoUrl = "http://localhost:8088";
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
   let overlay = {
     heading: "Loading...",
-    message: `Please wait while we load your video @ <a href="${videoUrl}" target="_new">${videoUrl}</a>`
+    message: `Please wait while we load your video...`
   };
   let scaleSetting = 0.2;
   let width;
@@ -171,7 +170,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
         `;
       }
     })}</div>
-    <div class="${"overflow-hidden m-2"}" style="${"width: " + escape(width * scaleSetting, true) + "px; height: " + escape(height * scaleSetting, true) + "px;"}"><div class="${"relative overflow-hidden inline-block bg-white"}" style="${"width: " + escape(width, true) + "px; height: " + escape(height, true) + "px; transform: scale(" + escape(scaleSetting, true) + "); transform-origin: top left;"}"><iframe title="${"Video described by web-app"}"${add_attribute("src", videoUrl, 0)} class="${"hidden"}" id="${"video"}"${add_attribute("width", width, 0)}${add_attribute("height", height, 0)}${add_attribute("this", video, 0)}></iframe></div></div></div>
+    <div class="${"overflow-hidden m-2"}" style="${"width: " + escape(width * scaleSetting, true) + "px; height: " + escape(height * scaleSetting, true) + "px;"}"><div class="${"relative overflow-hidden inline-block bg-white"}" style="${"width: " + escape(width, true) + "px; height: " + escape(height, true) + "px; transform: scale(" + escape(scaleSetting, true) + "); transform-origin: top left;"}"><iframe title="${"Video described by web-app"}" class="${"hidden"}" id="${"video"}"${add_attribute("width", width, 0)}${add_attribute("height", height, 0)}${add_attribute("this", video, 0)}></iframe></div></div></div>
 
   ${`${validate_component(Primary, "Primary").$$render($$result, {}, {}, {
       default: () => {
@@ -190,4 +189,4 @@ ${overlay ? `<div class="${"fixed text-black bg-black bg-opacity-50 inset-0 z-50
 });
 
 export { Page as default };
-//# sourceMappingURL=_page.svelte-47c3d20b.js.map
+//# sourceMappingURL=_page.svelte-8ae49690.js.map

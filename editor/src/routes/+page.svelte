@@ -7,11 +7,10 @@
   import Primary from "$lib/components/button/Primary.svelte";
   import Text from "$lib/components/input/Text.svelte";
   import Range from "$lib/components/input/Range.svelte";
-  import { videoUrl } from "$lib/video";
-
-  let overlay: { heading: string; message: string } = {
+  
+  let overlay: { heading: string; message: string } | null = {
     heading: 'Loading...',
-    message: `Please wait while we load your video @ <a href="${videoUrl}" target="_new">${videoUrl}</a>`,
+    message: `Please wait while we load your video...`,
   };
   let scaleSetting: number = 0.2;
 
@@ -36,7 +35,7 @@
       throw new Error("Video iframe has no contentWindow");
     }
 
-    video.contentWindow.postMessage({ ...data, type });
+    video.contentWindow.postMessage({ ...data, type }, '*');
   }
 
   function play() {
@@ -86,9 +85,6 @@
   }
 
   function onMessage(event: MessageEvent) {
-    if (event.origin !== document.location.origin)
-      return;
-    
     const { data: message } = event;
     
     switch (message.type) {
@@ -107,9 +103,19 @@
     console.log('Video setup', { width, height, framerate, frameCount });
 
     video.classList.remove('hidden');
+    overlay = null;
   }
 
   onMount(() => {
+    let videoUrl = window.VIDEOBREW_VIDEO_APP_URL;
+
+    video.src = videoUrl;
+
+    overlay = {
+      heading: 'Loading...',
+      message: `Please wait while we load your video @ <a href="${videoUrl}" target="_new">${videoUrl}</a>`,
+    };
+    
     const loadError = () => {
       overlay = {
           heading: 'Video not found',
@@ -166,7 +172,6 @@
         <iframe bind:this={video} 
           on:load={onVideoLoad}
           title="Video described by web-app"
-          src={videoUrl}
           class="hidden"
           id="video"
           {width}

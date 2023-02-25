@@ -24,6 +24,7 @@ const process_1 = require("process");
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const is_url_1 = require("./utils/is-url");
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
 const EXAMPLE_VIDEO_APP_PATH = './video';
@@ -87,7 +88,6 @@ function parseArguments() {
                     '',
                     chalk_1.default.bold('Render a video app being served at an URL to a video file:'),
                     `$ videobrew render ${EXAMPLE_VIDEO_APP_URL}`,
-                    chalk_1.default.bgRed('Note:') + ' This will only work if the video app server has CORS enabled.',
                 ],
             },
             {
@@ -127,9 +127,14 @@ function render(videoAppPathOrUrl, outputPath) {
 }
 function preview(videoAppPathOrUrl) {
     return __awaiter(this, void 0, void 0, function* () {
+        const isVideoAppAtUrl = (0, is_url_1.isVideoAppUrl)(videoAppPathOrUrl);
+        let videoAppUrl = videoAppPathOrUrl;
         (0, logging_1.inform)(`Previewing video app at path: ${videoAppPathOrUrl}`);
-        // TODO: Serve the video app @ http://localhost:8088
-        const editorServer = yield (0, editor_1.startEditor)();
+        if (!is_url_1.isVideoAppUrl) {
+            // TODO: Serve the video app @ http://localhost:8088
+            //videoAppUrl = `TODO`;
+        }
+        const editorServer = yield (0, editor_1.startEditor)(videoAppUrl);
         editorServer.stdout.on('data', (data) => {
             (0, logging_1.inform)(`Editor Server: ${data}`);
         });
@@ -167,9 +172,6 @@ function main() {
                 (0, logging_1.inform)(`Video app path chosen: ${relativeVideoAppPath} (default)`);
             }
         }
-        const videoAppPathOrUrl = path_1.default.join(workingDirectory, relativeVideoAppPath);
-        const videoAppFilePath = path_1.default.join(videoAppPathOrUrl, 'index.html');
-        (0, logging_1.inform)(`Video app full path: ${videoAppPathOrUrl}`);
         let relativeOutputPath = args.output;
         if (!relativeOutputPath) {
             if (((_b = args._unknown) === null || _b === void 0 ? void 0 : _b.length) > 0) {
@@ -187,14 +189,26 @@ function main() {
                 (0, logging_1.inform)(`Output path chosen: ${relativeOutputPath} (default)`);
             }
         }
+        const isVideoAppAtUrl = (0, is_url_1.isVideoAppUrl)(relativeVideoAppPath);
+        let videoAppPathOrUrl = relativeVideoAppPath;
+        if (isVideoAppAtUrl) {
+            const response = yield fetch(videoAppPathOrUrl);
+            if (!response.ok)
+                (0, logging_1.panic)(`Video app URL ${videoAppPathOrUrl} is not responding with 200 OK! Please provide a valid URL to where your video app is being served.`);
+        }
+        else {
+            videoAppPathOrUrl = path_1.default.join(workingDirectory, relativeVideoAppPath);
+            (0, logging_1.inform)(`Video app full path: ${videoAppPathOrUrl}`);
+            const videoAppFilePath = path_1.default.join(videoAppPathOrUrl, 'index.html');
+            if (!fs_1.default.existsSync(videoAppPathOrUrl)) {
+                (0, logging_1.panic)(`Video app path ${videoAppPathOrUrl} does not exist! Please provide a valid path to where your video app is located.`);
+            }
+            if (!fs_1.default.existsSync(videoAppFilePath)) {
+                (0, logging_1.panic)(`Video app path does not contain index.html (${videoAppFilePath} does not exist!) Please provide a valid path to where your video app is located.`);
+            }
+        }
         const output = path_1.default.join(workingDirectory, relativeOutputPath);
         (0, logging_1.inform)(`Output full path: ${output}`);
-        if (!fs_1.default.existsSync(videoAppPathOrUrl)) {
-            (0, logging_1.panic)(`Video app path ${videoAppPathOrUrl} does not exist! Please provide a valid path to where your video website is located.`);
-        }
-        if (!fs_1.default.existsSync(videoAppFilePath)) {
-            (0, logging_1.panic)(`Video app path does not contain index.html (${videoAppFilePath} does not exist!) Please provide a valid path to where your video webpage is located.`);
-        }
         if (args.action === 'render') {
             yield render(videoAppPathOrUrl, output);
         }

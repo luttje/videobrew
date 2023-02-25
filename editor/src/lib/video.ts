@@ -1,1 +1,0 @@
-export const videoUrl = 'http://localhost:8088';

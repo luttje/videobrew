@@ -60,7 +60,7 @@ function installEditor() {
 /**
  * Starts the editor server
  */
-function startEditor() {
+function startEditor(videoAppUrl) {
     return __awaiter(this, void 0, void 0, function* () {
         let editorPath = yield getEditorInstallPath();
         if (!editorPath) {
@@ -71,6 +71,8 @@ function startEditor() {
             stdio: ['inherit', 'pipe', 'inherit'],
             env: {
                 'PORT': '8087',
+                'HOST': 'localhost',
+                'VIDEOBREW_VIDEO_APP_URL': videoAppUrl,
             },
         });
         return editorServer;

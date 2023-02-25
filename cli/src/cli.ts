@@ -9,6 +9,7 @@ import { cwd } from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
+import { isVideoAppUrl } from './utils/is-url';
 
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
@@ -87,7 +88,6 @@ function parseArguments() {
           '',
           chalk.bold('Render a video app being served at an URL to a video file:'),
           `$ videobrew render ${EXAMPLE_VIDEO_APP_URL}`,
-          chalk.bgRed('Note:') + ' This will only work if the video app server has CORS enabled.',
         ],
       },
       {
@@ -135,11 +135,16 @@ async function render(videoAppPathOrUrl: string, outputPath: string) {
 }
 
 async function preview(videoAppPathOrUrl: string) {
+  const isVideoAppAtUrl = isVideoAppUrl(videoAppPathOrUrl);
+  let videoAppUrl = videoAppPathOrUrl;
   inform(`Previewing video app at path: ${videoAppPathOrUrl}`);
 
-  // TODO: Serve the video app @ http://localhost:8088
+  if (!isVideoAppUrl) {
+    // TODO: Serve the video app @ http://localhost:8088
+    //videoAppUrl = `TODO`;
+  }
 
-  const editorServer = await startEditor();
+  const editorServer = await startEditor(videoAppUrl);
 
   editorServer.stdout!.on('data', (data) => {
     inform(`Editor Server: ${data}`);
@@ -187,10 +192,6 @@ async function main() {
     }
   }
   
-  const videoAppPathOrUrl = path.join(workingDirectory, relativeVideoAppPath);
-  const videoAppFilePath = path.join(videoAppPathOrUrl, 'index.html');
-  inform(`Video app full path: ${videoAppPathOrUrl}`);
-
   let relativeOutputPath = args.output;
 
   if (!relativeOutputPath) {
@@ -214,17 +215,33 @@ async function main() {
       inform(`Output path chosen: ${relativeOutputPath} (default)`);
     }
   }
-  
+
+  const isVideoAppAtUrl = isVideoAppUrl(relativeVideoAppPath);
+  let videoAppPathOrUrl = relativeVideoAppPath;
+
+  if (isVideoAppAtUrl) {
+    const response = await fetch(videoAppPathOrUrl);
+
+    if (!response.ok)
+      panic(`Video app URL ${videoAppPathOrUrl} is not responding with 200 OK! Please provide a valid URL to where your video app is being served.`);
+  } else {
+    videoAppPathOrUrl = path.join(workingDirectory, relativeVideoAppPath);
+    inform(`Video app full path: ${videoAppPathOrUrl}`);
+    
+    const videoAppFilePath = path.join(videoAppPathOrUrl, 'index.html');
+    
+    if (!fs.existsSync(videoAppPathOrUrl)) {
+      panic(`Video app path ${videoAppPathOrUrl} does not exist! Please provide a valid path to where your video app is located.`);
+    }
+
+    if (!fs.existsSync(videoAppFilePath)) {
+      panic(`Video app path does not contain index.html (${videoAppFilePath} does not exist!) Please provide a valid path to where your video app is located.`);
+    }
+  }
+
   const output = path.join(workingDirectory, relativeOutputPath);
   inform(`Output full path: ${output}`);
 
-  if (!fs.existsSync(videoAppPathOrUrl)) {
-    panic(`Video app path ${videoAppPathOrUrl} does not exist! Please provide a valid path to where your video website is located.`);
-  }
-
-  if (!fs.existsSync(videoAppFilePath)) {
-    panic(`Video app path does not contain index.html (${videoAppFilePath} does not exist!) Please provide a valid path to where your video webpage is located.`);
-  }
 
   if (args.action === 'render') {
     await render(videoAppPathOrUrl, output);

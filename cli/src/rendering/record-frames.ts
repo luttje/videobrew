@@ -1,5 +1,6 @@
 import { Browser, chromium, Page } from 'playwright';
 import fs from 'fs';
+import { isVideoAppUrl } from '../utils/is-url';
 
 type RecordingResult = {
   width: number,
@@ -26,8 +27,10 @@ export async function recordFrames(videoAppPathOrUrl: string, framesOutputPath: 
     if (!fs.existsSync(framesOutputPath))
       fs.mkdirSync(framesOutputPath, { recursive: true });
 
-    // TODO: Host the video so we can use a URL instead of a file path (and not get CORS problems)
-    await page.goto(`file://${videoAppPathOrUrl}/index.html`, {
+    const isVideoAppAtUrl = isVideoAppUrl(videoAppPathOrUrl);
+    const videoPath = isVideoAppAtUrl ? videoAppPathOrUrl : `file://${videoAppPathOrUrl}/index.html`;
+
+    await page.goto(videoPath, {
       waitUntil: 'domcontentloaded',
     });
     

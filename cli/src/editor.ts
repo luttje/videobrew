@@ -57,7 +57,7 @@ async function installEditor() {
 /**
  * Starts the editor server
  */
-export async function startEditor() {
+export async function startEditor(videoAppUrl: string) {
   let editorPath = await getEditorInstallPath();
     
   if (!editorPath) {
@@ -69,6 +69,8 @@ export async function startEditor() {
     stdio: ['inherit', 'pipe', 'inherit'],
     env: {
       'PORT': '8087',
+      'HOST': 'localhost',
+      'VIDEOBREW_VIDEO_APP_URL': videoAppUrl,
     },
   });
 

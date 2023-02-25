@@ -22,7 +22,9 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 
     - **Serving it yourself** 
     
-      *Be sure to allow it to be viewed from any origin ([CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)) so the editor can preview your video app.*
+      *Ensure your server has [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) configure so the editor can access your video app: 
+        - `Cross-Origin-Embedder-Policy: require-corp` 
+        - `Cross-Origin-Resource-Policy: cross-origin`
 
 4. Open a command prompt in the directory of your video app where your `index.html` is.
 
@@ -38,27 +40,34 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
     $ videobrew render my-video.mp4
     ```
 
+## 🧪 Example Video Apps
+| Example | Description |
+| --- | --- |
+| [Zero Dependencies](./examples/0-dependencies/) | Just plain old HTML, CSS and Javascript. |
+| [Sveltekit](./examples/sveltekit/) | A Sveltekit app. |
+
 ## 📦 Packages
 
-- [@videobrew/cli](./cli) - The command line interface that allows rendering videos. It will install the editor automatically to allow previewing your videos.
-- [@videobrew/editor](./editor) - The editor app that previews your videos.
-- [@videobrew/svelte](./svelte) - A Svelte component library that allows you to create videos using pre-made Svelte components.
+| Package | Description |
+| --- | --- |
+| [@videobrew/cli](./cli) | The command line interface that allows rendering videos. It will install the editor automatically to allow previewing your videos. |
+| [@videobrew/editor](./editor) | The editor app that previews your videos. |
+| [@videobrew/svelte](./svelte) | A Svelte component library that allows you to create videos using pre-made Svelte components. |
 
 ## 📚 Terminology
 
-- **Video App** - A web page that describes the video. It can be written in any web technology (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript.
-- **Editor** - The app that previews your video app. It is a web page that can be viewed in any browser.
-- **Renderer** - The app that renders your video app to a video. It is a command line interface that can be run in any terminal.
-
-## 🧪 Example Video Apps
-- [Zero Dependencies](./examples/0-dependencies/) - Just plain old HTML, CSS and Javascript.
-- [Sveltekit](./examples/sveltekit/) - A Sveltekit app.
+| Term | Description |
+| --- | --- |
+| **Video App** | A web page that describes your video. It can be written in any web technology (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript. |
+| **Editor** | Our app that previews your video app in an iframe. You can use it to test what your video will look like. |
+| **Renderer** | Our app that renders your video app to a video. |
 
 ## 📃 Features
 
 ### Rendering
 - [x] `videobrew render [videoAppPathOrUrl=.] [output=out/my-video.mp4]`: Render videos from local HTML, CSS and Javascript.
-- [ ] Render videos from hosted HTML, CSS and Javascript.
+- [x] Render videos from hosted HTML, CSS and Javascript.
+- [ ] Provide Typescript core to simplify communication with the renderer.
 - [ ] Provide Svelte components to build videos.
 - [ ] Provide Vue components to build videos.
 - [ ] Provide React components to build videos.
@@ -66,8 +75,6 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 ### Previewing
 - [x] `videobrew preview [videoAppPathOrUrl=.] [output=out/my-video.mp4]`:  Preview videos from hosted HTML, CSS and Javascript.
 - [ ] Show a timeline of the video.
-- [ ] Show a list of all the elements in the video.
-- [ ] Show a list of all the transitions in the video.
 - [ ] Allow scrubbing through the video.
 
 ## License

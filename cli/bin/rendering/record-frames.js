@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.recordFrames = void 0;
 const playwright_1 = require("playwright");
 const fs_1 = __importDefault(require("fs"));
+const is_url_1 = require("../utils/is-url");
 function messageVideo(page, type, data) {
     return __awaiter(this, void 0, void 0, function* () {
         yield page.evaluate((message) => {
@@ -31,8 +32,9 @@ function recordFrames(videoAppPathOrUrl, framesOutputPath) {
             page.on('pageerror', (message) => console.log('PAGE ERROR:', message.message));
             if (!fs_1.default.existsSync(framesOutputPath))
                 fs_1.default.mkdirSync(framesOutputPath, { recursive: true });
-            // TODO: Host the video so we can use a URL instead of a file path (and not get CORS problems)
-            yield page.goto(`file://${videoAppPathOrUrl}/index.html`, {
+            const isVideoAppAtUrl = (0, is_url_1.isVideoAppUrl)(videoAppPathOrUrl);
+            const videoPath = isVideoAppAtUrl ? videoAppPathOrUrl : `file://${videoAppPathOrUrl}/index.html`;
+            yield page.goto(videoPath, {
                 waitUntil: 'domcontentloaded',
             });
             let frame = 0;
