@@ -3,7 +3,6 @@ import { shell } from '../utils/shell';
 import { exec } from 'child_process';
 import util from 'util';
 import path from 'path';
-import fs from 'fs';
 
 const execAsync = util.promisify(exec);
 
@@ -37,4 +36,12 @@ export async function renderVideo(videoConfig: VideoConfig) {
   });
 
   return stderr;
+}
+
+export async function getContainerFormats() {
+  const { stdout } = await execAsync(`${pathToFfmpeg} -formats`, {
+    cwd: __dirname,
+  });
+
+  return stdout;
 }

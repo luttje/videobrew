@@ -22,7 +22,7 @@ function messageVideo(page, type, data) {
         }, Object.assign(Object.assign({}, data), { type }));
     });
 }
-function recordFrames(videoAppPath, framesOutputPath) {
+function recordFrames(videoAppPathOrUrl, framesOutputPath) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
             const browser = yield playwright_1.chromium.launch();
@@ -32,7 +32,7 @@ function recordFrames(videoAppPath, framesOutputPath) {
             if (!fs_1.default.existsSync(framesOutputPath))
                 fs_1.default.mkdirSync(framesOutputPath, { recursive: true });
             // TODO: Host the video so we can use a URL instead of a file path (and not get CORS problems)
-            yield page.goto(`file://${videoAppPath}/index.html`, {
+            yield page.goto(`file://${videoAppPathOrUrl}/index.html`, {
                 waitUntil: 'domcontentloaded',
             });
             let frame = 0;

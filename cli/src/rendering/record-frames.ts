@@ -15,7 +15,7 @@ async function messageVideo(page: Page, type: string, data?: any) {
   }, { ...data, type });
 }
 
-export async function recordFrames(videoAppPath: string, framesOutputPath: string) : Promise<RecordingResult> {
+export async function recordFrames(videoAppPathOrUrl: string, framesOutputPath: string) : Promise<RecordingResult> {
   return new Promise(async (resolve) => {
     const browser = await chromium.launch();
     const page = await browser.newPage();
@@ -27,7 +27,7 @@ export async function recordFrames(videoAppPath: string, framesOutputPath: strin
       fs.mkdirSync(framesOutputPath, { recursive: true });
 
     // TODO: Host the video so we can use a URL instead of a file path (and not get CORS problems)
-    await page.goto(`file://${videoAppPath}/index.html`, {
+    await page.goto(`file://${videoAppPathOrUrl}/index.html`, {
       waitUntil: 'domcontentloaded',
     });
     

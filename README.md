@@ -9,7 +9,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 1. Install the Command Line Interface `@videobrew/cli` globally:
 
     ```bash
-    npm i -g @videobrew/cli
+    $ npm i -g @videobrew/cli
     ```
 
 2. Create a web page that describes the video. We call this your video app. *See [our examples](#examples) for more information.*
@@ -18,7 +18,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 
     - **Letting Videobrew serve your video app for you** 
 
-      Use the `--host` option when running Videobrew `preview` or `render`.
+      Simply point Videobrew to your video app directory when using the `preview` or `render` commands.
 
     - **Serving it yourself** 
     
@@ -26,9 +26,17 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 
 4. Open a command prompt in the directory of your video app where your `index.html` is.
 
-5. Run `videobrew preview` to preview your video app in the browser @ [`http://localhost:8087`](http://localhost:8087).
+5. Preview your video app in the browser @ [`http://localhost:8087`](http://localhost:8087):
+  
+    ```bash
+    $ videobrew preview
+    ```
 
-6. Render your video app into an `mp4` file by running `videobrew render my-video.mp4`.
+6. Render your video app into an `mp4` file:
+  
+    ```bash
+    $ videobrew render my-video.mp4
+    ```
 
 ## 📦 Packages
 
@@ -49,14 +57,14 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 ## 📃 Features
 
 ### Rendering
-- [x] `videobrew render [videoAppPath=.] [output=out]`: Render videos from local HTML, CSS and Javascript.
+- [x] `videobrew render [videoAppPathOrUrl=.] [output=out/my-video.mp4]`: Render videos from local HTML, CSS and Javascript.
 - [ ] Render videos from hosted HTML, CSS and Javascript.
 - [ ] Provide Svelte components to build videos.
 - [ ] Provide Vue components to build videos.
 - [ ] Provide React components to build videos.
 
 ### Previewing
-- [x] `videobrew preview [videoAppPath=.] [output=out]`:  Preview videos from hosted HTML, CSS and Javascript.
+- [x] `videobrew preview [videoAppPathOrUrl=.] [output=out/my-video.mp4]`:  Preview videos from hosted HTML, CSS and Javascript.
 - [ ] Show a timeline of the video.
 - [ ] Show a list of all the elements in the video.
 - [ ] Show a list of all the transitions in the video.

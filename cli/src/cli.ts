@@ -1,113 +1,134 @@
 #!/usr/bin/env node
-import { buildVideoConfigFromFrames, renderVideo } from './rendering/video-from-frames';
-import { recordFrames } from './rendering/record-frames';
+import { buildVideoConfigFromFrames, getContainerFormats, renderVideo } from './rendering/video-from-frames';
 import { ArgumentConfig, parse } from 'ts-command-line-args';
+import { recordFrames } from './rendering/record-frames';
+import { inform, debug, panic } from './utils/logging';
+import { AsciiTable3 } from 'ascii-table3';
 import { startEditor } from './editor';
 import { cwd } from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
-import { AsciiTable3 } from 'ascii-table3';
 
 const DEFAULT_VIDEO_APP_PATH = '.';
-const DEFAULT_OUTPUT_PATH = 'out';
+const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
+
+const EXAMPLE_VIDEO_APP_PATH = './video';
+const EXAMPLE_VIDEO_APP_URL = 'https://example.test/video';
+const EXAMPLE_OUTPUT_PATH = './rendered/video.mp4';
 
 const workingDirectory = cwd();
 
 interface IVideoBrewArguments {
   action: string;
-  videoAppPath?: string;
+  videoAppPathOrUrl?: string;
   output?: string;
   help?: boolean;
 }
 
 export const argumentConfig: ArgumentConfig<IVideoBrewArguments> = {
-  action: { type: String, defaultOption: true, description: 'The action to perform. Either "preview", "render" or "help"' },
-  videoAppPath: { type: String, alias: 'i', optional: true, description: `The path to the video app. Defaults to "${DEFAULT_VIDEO_APP_PATH}"` },
-  output: { type: String, alias: 'o', optional: true, description: `The path to the output directory. Defaults to "${DEFAULT_OUTPUT_PATH}"` },
-  help: { type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide' },
+  action: { type: String, defaultOption: true, description: 'Action to perform. Either "preview", "render", "render-formats" or "help"' },
+  videoAppPathOrUrl: { type: String, alias: 'i', optional: true, description: `Relative path or absolute URL to the video app. Defaults to "${DEFAULT_VIDEO_APP_PATH}"` },
+  output: { type: String, alias: 'o', optional: true, description: `Relative path to the output directory. Defaults to "${DEFAULT_OUTPUT_PATH}"` },
+  help: { type: Boolean, optional: true, alias: 'h', description: 'Causes this usage guide to print' },
 };
 
-var actionsTable =
+function parseArguments() {
+  const actionsTable =
   new AsciiTable3()
     .addRowMatrix([
       [chalk.bold('preview'), 'Preview the video app in the browser'],
       [chalk.bold('render'), 'Render the video app to a video file'],
+      [chalk.bold('render-formats'), 'List all supported video render formats'],
     ])
     .setStyle('none');
 
-export const args = parse(argumentConfig, {
-  hideMissingArgMessages: true,
-  stopAtFirstUnknown: true,
-  showHelpWhenArgsMissing: true,
+  return parse(argumentConfig, {
+    hideMissingArgMessages: true,
+    stopAtFirstUnknown: true,
+    showHelpWhenArgsMissing: true,
 
-  headerContentSections: [
-    {
-      header: '📼 Videobrew',
-      content: 'Create videos using web technologies.',
-    },
-    {
-      header: 'Usage',
-      content: [
-        '$ videobrew <action> [options]',
-      ],
-    },
-    {
-      header: 'Actions',
-      content: actionsTable.toString().split('\n'),
-    },
-  ],
-  footerContentSections: [
-    {
-      header: 'Examples',
-      content: [
-        chalk.bold('Open a video app, located in the current working directory, in the browser:'),
-        '$ videobrew preview',
-        '',
-        chalk.bold(`Render a video app, located in the current working directory, to the default output directory (${DEFAULT_OUTPUT_PATH}):`),
-        '$ videobrew render',
-        '',
-        chalk.bold(`Render a video app, located in the "./video" directory, to the "./rendered" directory:`),
-        '$ videobrew render ./video ./rendered',
-        chalk.bold('or:'),
-        '$ videobrew render -i ./video -o ./rendered',
-        chalk.bold('or:'),
-        '$ videobrew render --videoAppPath ./video --output ./rendered',
-      ],
-    },
-    {
-      content: [
-        'For more information, see https://github.com/luttje/videobrew/',
-      ],
-    },
-  ],
-}, true, true);
-
-const log = console.log;
-
-function inform(message: string, chalkFn = chalk.white) {
-  log(
-    chalkFn.underline('[📼 Videobrew]') +
-    chalkFn(` ${message}`)
-  );
+    headerContentSections: [
+      {
+        header: '📼 Videobrew',
+        content: 'Create videos using web technologies.',
+      },
+      {
+        header: 'Usage',
+        content: [
+          '$ videobrew <action> [options]',
+        ],
+      },
+      {
+        header: 'Actions',
+        content: actionsTable.toString().split('\n'),
+      },
+    ],
+    footerContentSections: [
+      {
+        header: 'Examples',
+        content: [
+          chalk.bold('Open a video app located in the current working directory in the browser:'),
+          '$ videobrew preview',
+          '',
+          chalk.bold('Open a video app being served at an URL in the browser:'),
+          `$ videobrew preview ${EXAMPLE_VIDEO_APP_URL}`,
+          chalk.bgRed('Note:') + ' This will only work if the video app server has CORS enabled.',
+          '',
+          chalk.bold(`Render a video app in the current working directory to ${DEFAULT_OUTPUT_PATH}:`),
+          '$ videobrew render',
+          '',
+          chalk.bold(`Render a video app in a subdirectory to "${EXAMPLE_OUTPUT_PATH}":`),
+          `$ videobrew render ${EXAMPLE_VIDEO_APP_PATH} ${EXAMPLE_OUTPUT_PATH}`,
+          chalk.bold('or:'),
+          `$ videobrew render -i ${EXAMPLE_VIDEO_APP_PATH} -o ${EXAMPLE_OUTPUT_PATH}`,
+          chalk.bold('or:'),
+          `$ videobrew render --videoAppPathOrUrl ${EXAMPLE_VIDEO_APP_PATH} --output ${EXAMPLE_OUTPUT_PATH}`,
+          '',
+          chalk.bold('Render a video app being served at an URL to a video file:'),
+          `$ videobrew render ${EXAMPLE_VIDEO_APP_URL}`,
+          chalk.bgRed('Note:') + ' This will only work if the video app server has CORS enabled.',
+        ],
+      },
+      {
+        content: [
+          'For more information, see https://github.com/luttje/videobrew/',
+        ],
+      },
+    ],
+  }, true, true);
 }
 
-function debug(message: string) {
-  inform(message, chalk.gray);
+async function showRenderFormats() {
+  const formatTable =
+  new AsciiTable3()
+      .setStyle('none');
+  
+  const containerFormats = await getContainerFormats();
+
+  containerFormats
+    .split('\r\n')
+    .filter(line => line.includes('E '))
+    .map(line => line.match(/E\s+(\w+)\s+(.*)/))
+    .filter(match => match)
+    .map(match => match as RegExpMatchArray)
+    .forEach(match => {
+      formatTable.addRow(match[1], match[2]);
+    });
+  
+  inform('Supported render formats:');
+  inform(formatTable.toString(), undefined, true);
+  inform('To render as one of these formats suffix the output path with the desired format extension.', undefined, true);
+  inform('\n(These are the container formats as reported by ffmpeg)', chalk.italic.gray, true);
 }
 
-function panic(message: string) {
-  log(chalk.red(message));
-  process.exit(1);
-}
-
-async function render(videoAppPath: string, outputPath: string) {
-  inform(`Rendering Video app at path: ${videoAppPath}`);
+async function render(videoAppPathOrUrl: string, outputPath: string) {
+  inform(`Rendering Video app at path: ${videoAppPathOrUrl}`);
   
   const framesOutputPath = path.join(outputPath, 'frames');
   const {
     framerate,
-  } = await recordFrames(videoAppPath, framesOutputPath);
+  } = await recordFrames(videoAppPathOrUrl, framesOutputPath);
 
   const videoConfig = await buildVideoConfigFromFrames(framesOutputPath, framerate, outputPath);
   debug(`Rendering with command: ${videoConfig.command}`);
@@ -121,8 +142,8 @@ async function render(videoAppPath: string, outputPath: string) {
   inform(`Video rendered to ${output}`);
 }
 
-async function preview(videoAppPath: string) {
-  inform(`Previewing video app at path: ${videoAppPath}`);
+async function preview(videoAppPathOrUrl: string) {
+  inform(`Previewing video app at path: ${videoAppPathOrUrl}`);
 
   // TODO: Serve the video app @ http://localhost:8088
 
@@ -143,10 +164,17 @@ async function preview(videoAppPath: string) {
 }
 
 async function main() {
-  let relativeVideoAppPath = args.videoAppPath;
+  const args = await parseArguments();
+  
+  if (args.action === 'render-formats') {
+    return await showRenderFormats();
+  }
+
+  let relativeVideoAppPath = args.videoAppPathOrUrl;
 
   if (!relativeVideoAppPath) {
     if (args._unknown?.length > 0) {
+      // Find an unnamed argument that looks like a path or URL, and does not end in one of the known file extensions
       relativeVideoAppPath = args._unknown[0];
 
       inform(`No video app path explicitly provided. Using unnamed argument: ${relativeVideoAppPath}`);
@@ -171,12 +199,12 @@ async function main() {
     }
   }
   
-  const videoAppPath = path.join(workingDirectory, relativeVideoAppPath);
-  const videoAppFilePath = path.join(videoAppPath, 'index.html');
+  const videoAppPathOrUrl = path.join(workingDirectory, relativeVideoAppPath);
+  const videoAppFilePath = path.join(videoAppPathOrUrl, 'index.html');
   const output = path.join(workingDirectory, relativeOutputPath);
 
-  if (!fs.existsSync(videoAppPath)) {
-    panic(`Video app path ${videoAppPath} does not exist! Please provide a valid path to where your video website is located.`);
+  if (!fs.existsSync(videoAppPathOrUrl)) {
+    panic(`Video app path ${videoAppPathOrUrl} does not exist! Please provide a valid path to where your video website is located.`);
   }
 
   if (!fs.existsSync(videoAppFilePath)) {
@@ -184,14 +212,14 @@ async function main() {
   }
 
   if (args.action === 'render') {
-    await render(videoAppPath, output);
+    await render(videoAppPathOrUrl, output);
   } else if (args.action === 'preview') {
-    await preview(videoAppPath);
+    await preview(videoAppPathOrUrl);
   } else if (args.action === 'help') {
     args._commandLineResults.printHelp();
     process.exit(0);
   } else {
-    panic(`Unknown action "${args.action}"! Use "preview" or "render"`);
+    panic(`Unknown action "${args.action}"! Use "preview", "render" or "render-formats`);
   }
 }
 

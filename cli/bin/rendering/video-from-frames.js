@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderVideo = exports.buildVideoConfigFromFrames = void 0;
+exports.getContainerFormats = exports.renderVideo = exports.buildVideoConfigFromFrames = void 0;
 const ffmpeg_static_1 = __importDefault(require("ffmpeg-static"));
 const shell_1 = require("../utils/shell");
 const child_process_1 = require("child_process");
@@ -48,3 +48,12 @@ function renderVideo(videoConfig) {
     });
 }
 exports.renderVideo = renderVideo;
+function getContainerFormats() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { stdout } = yield execAsync(`${ffmpeg_static_1.default} -formats`, {
+            cwd: __dirname,
+        });
+        return stdout;
+    });
+}
+exports.getContainerFormats = getContainerFormats;
