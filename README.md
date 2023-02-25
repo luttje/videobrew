@@ -4,41 +4,43 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 
 ## 🚀 Quickstart
 
-> ⚠ **This software is under construction. Things may work or not work and possibly different from the documentation.**
-
 1. Install the Command Line Interface `@videobrew/cli` globally:
 
     ```bash
     $ npm i -g @videobrew/cli
     ```
 
-2. Create a web page that describes the video. We call this your video app. *See [our examples](#examples) for more information.*
+2. Create your video app (a web page that describes the video). *For inspiration check out the [examples](#examples).*
 
-3. Serve your video app by either:
-
-    - **Letting Videobrew serve your video app for you** 
-
-      Simply point Videobrew to your video app directory when using the `preview` or `render` commands.
-
-    - **Serving it yourself** 
-    
-      *Ensure your server has [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) configure so the editor can access your video app: 
-        - `Cross-Origin-Embedder-Policy: require-corp` 
-        - `Cross-Origin-Resource-Policy: cross-origin`
-
-4. Open a command prompt in the directory of your video app where your `index.html` is.
-
-5. Preview your video app in the browser @ [`http://localhost:8087`](http://localhost:8087):
+3. Preview your video app in the browser by running (in your video app's directory):
   
     ```bash
-    $ videobrew preview
+    $ videobrew preview 
+    # Serves the editor @ http://localhost:8087
+    # (your video app will also be served for you)
     ```
 
-6. Render your video app into an `mp4` file:
+4. Render your video app into an `mp4` file:
   
     ```bash
     $ videobrew render my-video.mp4
     ```
+
+### (Bonus) Serving your video app yourself
+
+In the [Quickstart](#quickstart) we let Videobrew server your video app for you. But you can also serve it yourself.
+
+If your served video app is running at `http://localhost:8080` then you can preview and render your video app by running these respective commands:
+
+```bash
+$ videobrew preview http://localhost:8080
+
+$ videobrew render http://localhost:8080
+```
+
+Just make sure your server has [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) configured so the editor can access your video app. To do so set these headers for all requests:
+  - `Cross-Origin-Embedder-Policy: require-corp` 
+  - `Cross-Origin-Resource-Policy: cross-origin`
 
 ## 🧪 Example Video Apps
 | Example | Description |
