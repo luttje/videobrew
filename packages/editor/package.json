@@ -20,9 +20,12 @@
 		"serve-test-video-app": "ws --hostname localhost --port 8088 --directory ../../examples/0-dependencies --stack lws-body-parser lws-request-monitor lws-log lws-cors lws-json lws-compress lws-rewrite lws-blacklist lws-conditional-get lws-mime lws-range lws-spa ./mw-cors.mjs lws-static lws-index",
 		"dev": "cross-env VIDEOBREW_VIDEO_APP_URL=http://localhost:8088 concurrently --kill-others \"vite dev\" \"npm run serve-test-video-app\"",
 		"build": "vite build",
-		"postbuild": "node ../../scripts/readme-build.js .",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+
+		"docs-build": "node ../../scripts/docs-build.mjs .",
+		"package": "node ../../scripts/package.mjs .",
+		"postbuild": "npm run docs-build && npm run package"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^1.2.0",
@@ -41,10 +44,5 @@
 		"typescript": "^4.9.3",
 		"vite": "^4.0.0"
 	},
-	"files": [
-		"dist",
-		"!dist/node_modules",
-		"LICENSES-THIRD-PARTY"
-	],
 	"gitHead": "15c230dee6dace1e5689a244f6d2f9ef49ba30e6"
 }

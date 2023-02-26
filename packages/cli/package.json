@@ -21,7 +21,10 @@
 	"scripts": {
 		"dev": "npx tsc --watch",
 		"build": "npx tsc",
-		"postbuild": "node ../../scripts/readme-build.js ."
+
+		"docs-build": "node ../../scripts/docs-build.mjs .",
+		"package": "node ../../scripts/package.mjs .",
+		"postbuild": "npm run docs-build && npm run package"
 	},
 	"dependencies": {
 		"ascii-table3": "^0.8.2",
@@ -38,10 +41,5 @@
 		"del-cli": "^5.0.0",
 		"typescript": "^4.9.5"
 	},
-	"files": [
-		"dist",
-		"!dist/node_modules",
-		"LICENSES-THIRD-PARTY"
-	],
 	"gitHead": "15c230dee6dace1e5689a244f6d2f9ef49ba30e6"
 }
