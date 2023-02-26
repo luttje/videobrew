@@ -42,5 +42,6 @@
 		"dist",
 		"!dist/node_modules",
 		"LICENSES-THIRD-PARTY"
-	]
+	],
+	"gitHead": "15c230dee6dace1e5689a244f6d2f9ef49ba30e6"
 }
