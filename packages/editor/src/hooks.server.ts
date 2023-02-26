@@ -14,6 +14,11 @@ export const handle = (async ({ event, resolve }) => {
 
   if (!videoAppUrl)
     throw new Error('VIDEOBREW_VIDEO_APP_URL environment variable not set!');
+  
+  const videoAppUrlResponse = await fetch(videoAppUrl);
+
+  if (!videoAppUrlResponse.ok)
+    throw new Error(`Video app URL ${videoAppUrl} is not responding with 200 OK! Please provide a valid URL to where your video app is being served.`);
 
   const body = await response.text();
   const bodyParts = body.split('</body>');
