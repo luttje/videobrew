@@ -14,23 +14,21 @@
 	},
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"type": "module",
 	"publishConfig": {
-    "access": "public",
+		"access": "public",
 		"directory": "dist"
-  },
+	},
 	"scripts": {
 		"serve-test-video-app": "ws --hostname localhost --port 8088 --directory ../../examples/0-dependencies --stack lws-body-parser lws-request-monitor lws-log lws-cors lws-json lws-compress lws-rewrite lws-blacklist lws-conditional-get lws-mime lws-range lws-spa ./mw-cors.mjs lws-static lws-index",
 		"dev": "cross-env VIDEOBREW_VIDEO_APP_URL=http://localhost:8088 concurrently --kill-others \"vite dev\" \"npm run serve-test-video-app\"",
 		"build": "vite build",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		
 		"clear-build": "node ../../scripts/clear-build.mjs .",
 		"docs-build": "node ../../scripts/docs-build.mjs .",
 		"package": "node ../../scripts/package.mjs .",
-
 		"prebuild": "npm run clear-build",
 		"postbuild": "npm run docs-build && npm run package"
 	},
