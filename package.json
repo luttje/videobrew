@@ -6,6 +6,7 @@
     "./packages/*"
   ],
   "devDependencies": {
-    "lerna": "^6.5.1"
+    "lerna": "^6.5.1",
+    "license-checker-rseidelsohn": "^4.1.1"
   }
 }

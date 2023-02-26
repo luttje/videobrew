@@ -26,9 +26,9 @@
 		"build": "vite build",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"clear-build": "node ../../scripts/clear-build.mjs .",
-		"docs-build": "node ../../scripts/docs-build.mjs .",
-		"package": "node ../../scripts/package.mjs .",
+		"clear-build": "node ../../scripts/clear-build.mjs",
+		"docs-build": "node ../../scripts/docs-build.mjs",
+		"package": "node ../../scripts/package.mjs",
 		"prebuild": "npm run clear-build",
 		"postbuild": "npm run docs-build && npm run package"
 	},

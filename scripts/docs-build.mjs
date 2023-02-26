@@ -1,8 +1,9 @@
 import { fileURLToPath } from 'url';
+import { cwd } from 'process';
 import path from 'path';
 import fs from 'fs';
 
-const packagePath = process.argv[2];
+const packagePath = cwd(); // script should only be run from package root
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

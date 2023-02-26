@@ -25,9 +25,9 @@
 	"scripts": {
 		"dev": "npx tsc --watch",
 		"build": "npx tsc",
-		"clear-build": "node ../../scripts/clear-build.mjs .",
-		"docs-build": "node ../../scripts/docs-build.mjs .",
-		"package": "node ../../scripts/package.mjs .",
+		"clear-build": "node ../../scripts/clear-build.mjs",
+		"docs-build": "node ../../scripts/docs-build.mjs",
+		"package": "node ../../scripts/package.mjs",
 		"prebuild": "npm run clear-build",
 		"postbuild": "npm run docs-build && npm run package"
 	},

@@ -1,8 +1,13 @@
-import { runNpm } from './run.mjs';
+import { run, runNpm } from './run.mjs';
+import { fileURLToPath } from 'url';
+import { cwd } from 'process';
 import path from 'path';
 import fs from 'fs';
 
-const packagePath = process.argv[2];
+const packagePath = cwd(); // script should only be run from package root
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const DISTRIBUTION_DIRECTORY = 'dist';
 
@@ -40,9 +45,15 @@ async function main() {
     JSON.stringify(packageJsonParsed, null, 2),
   );
 
-  await runNpm('i --package-lock-only', path.join(packagePath, DISTRIBUTION_DIRECTORY));
-  await runNpm('ci --omit=dev', path.join(packagePath, DISTRIBUTION_DIRECTORY));
-  await runNpm('shrinkwrap', path.join(packagePath, DISTRIBUTION_DIRECTORY));
+  const distributionDirectory = path.join(packagePath, DISTRIBUTION_DIRECTORY);
+
+  runNpm('i --package-lock-only', distributionDirectory);
+  runNpm('ci --omit=dev', distributionDirectory);
+  runNpm('shrinkwrap', distributionDirectory);
+
+  const licenseCheckerPath = path.join(__dirname, '../node_modules/.bin/license-checker-rseidelsohn');
+
+  run(`${licenseCheckerPath} --start ${distributionDirectory} --direct --plainVertical > LICENSES-THIRD-PARTY`, packagePath);
 }
 
 main();
