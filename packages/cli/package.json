@@ -30,7 +30,8 @@
 		"docs-build": "node ../../scripts/docs-build.mjs",
 		"package": "node ../../scripts/package.mjs",
 		"prebuild": "npm run clear-build",
-		"prepack": "npm run docs-build && npm run package"
+		"postbuild": "npm run docs-build",
+		"prepack": "npm run package"
 	},
 	"dependencies": {
 		"ascii-table3": "^0.8.2",

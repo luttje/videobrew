@@ -31,7 +31,8 @@
 		"docs-build": "node ../../scripts/docs-build.mjs",
 		"package": "node ../../scripts/package.mjs",
 		"prebuild": "npm run clear-build",
-		"prepack": "npm run docs-build && npm run package"
+		"postbuild": "npm run docs-build",
+		"prepack": "npm run package"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^1.2.0",

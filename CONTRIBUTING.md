@@ -39,9 +39,22 @@ $ DEBUG=1 videobrew preview
     ```
 
 ## Building
+
+In the root directory, run:
+
 ```bash
 $ npm run build
 ```
+
+This will:
+
+1. Discover third-party licenses used and generate a `THIRD_PARTY_LICENSES` file in root *([`scripts/licenses.mjs`](./scripts/licenses.mjs))*.
+
+2. Clear the `dist` directories in each package *([`scripts/clear-build.mjs`](./scripts/clear-build.mjs))*.
+
+3. Call the `build` script in each package to compile the TypeScript code. Build output is placed in the `dist` directory.
+
+4. Build a readme for each package containing the root readme and a package specific readme. It will also copy LICENSE and LICENSES-THIRD-PARTY. All this will be placed in the `dist` directory *([`scripts/docs-build.mjs`](./scripts/docs-build.mjs))*.
 
 ### Testing before publishing
 
@@ -53,4 +66,20 @@ $ npm run build
 
 4. Run `npm install -g <filename>.tgz` to install the editor globally.
 
-5. You can now run the CLI render and preview action from anywhere.
+5. You can now run the CLI render and preview action from anywhere. This should give you a good idea of what the published package will behave like.
+
+## Publishing
+
+1. In the root directory, run:
+
+    ```bash
+    npx lerna publish --no-private
+    ```
+
+2. Choose the desired version number.
+
+3. The packages will be versioned and pushed to Git for a GitHub release.
+
+4. For each package their package.json will be transformed into the `dist` directory, have a package-lock.json generated, get shrinkwrapped ([`scripts/package.mjs`](./scripts/package.mjs))
+
+5. The `dist` directory will be published to npm.
