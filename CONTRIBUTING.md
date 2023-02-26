@@ -16,9 +16,9 @@ $ DEBUG=1 videobrew preview
 
 2. Install dependencies
 
-3. Run the development servers:
+3. Run the watchers that will build the packages as you make changes:
     ```bash
-    $ npx lerna run dev
+    $ npx lerna run watch
     ```
 
 4. Ensure that the `videobrew` CLI and editor are linked as global packages:
@@ -31,7 +31,8 @@ $ DEBUG=1 videobrew preview
 
 5. You can now run the CLI from anywhere and preview your video app:
     ```bash
-    # Go to a directory with a video app and run
+    # For example
+    $ cd ../../../examples/0-dependencies
     $ videobrew preview
     ```
 

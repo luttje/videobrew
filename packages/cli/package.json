@@ -24,6 +24,7 @@
 	},
 	"scripts": {
 		"dev": "npx tsc --watch",
+		"watch": "npx tsc --watch",
 		"build": "npx tsc",
 		"clear-build": "node ../../scripts/clear-build.mjs",
 		"docs-build": "node ../../scripts/docs-build.mjs",
