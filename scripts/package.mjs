@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 const DISTRIBUTION_DIRECTORY = 'dist';
 
-const OMIT_KEYS = ['devDependencies', 'scripts', 'publishConfig'];
+const OMIT_KEYS = ['devDependencies', 'scripts', 'publishConfig.directory'];
 const NORMALIZE_KEYS = ['main', 'types', 'typings', 'bin'];
 
 async function main() {
@@ -19,7 +19,15 @@ async function main() {
   const packageJsonParsed = JSON.parse(packageJson);
 
   OMIT_KEYS.forEach((key) => {
-    delete packageJsonParsed[key];
+    const keys = key.split('.');
+    const lastKey = keys.pop();
+    let currentObject = packageJsonParsed;
+
+    keys.forEach((key) => {
+      currentObject = currentObject[key];
+    });
+
+    delete currentObject[lastKey];
   });
 
   // Removes the `dist` prefix from keys (since package.json will be in dist)
