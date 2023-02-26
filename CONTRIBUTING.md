@@ -1,6 +1,8 @@
 # Contributing to VideoBrew
 
-**⚠️ This project (and thus this documentation) is still in development.** If you're interested in contributing, please reach out through the issues, or make a pull request.
+> ## 🚧 Work in progress
+> 
+> If you're interested in contributing, please [open an issue](https://github.com/luttje/videobrew/issues/new), or [make a pull request](https://github.com/luttje/videobrew/compare).
 
 ## Debugging
 

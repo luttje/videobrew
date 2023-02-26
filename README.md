@@ -66,25 +66,10 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 | [Zero Dependencies](./examples/0-dependencies/) | Just plain old HTML, CSS and Javascript. |
 | <s>[Sveltekit](./examples/sveltekit/)</s> (wip) | A Sveltekit app. |
 
-## 📃 Features
-
-### Rendering
-- [x] Render videos from local HTML, CSS and Javascript *(will be served by the Videobrew)* - `videobrew render`
-- [x] Render videos from self-hosted HTML, CSS and Javascript - `videobrew render http://my-video-app-url.test`
-- [ ] Provide Typescript core to simplify communication with the renderer.
-- [ ] Provide Svelte components to build videos.
-- [ ] Provide Vue components to build videos.
-- [ ] Provide React components to build videos.
-
-### Previewing
-- [x] Preview videos from local HTML, CSS and Javascript *(will be served by the Videobrew)* - `videobrew preview`
-- [x] Preview videos from self-hosted HTML, CSS and Javascript - `videobrew preview http://my-video-app-url.test`
-- [ ] Show a timeline of the video.
-- [ ] Allow scrubbing through the video.
-
 ## License
 
 > Videobrew - Create videos using any web technologies.
+> 
 > Copyright (C) 2023  Luttje
 > 
 > This program is free software: you can redistribute it and/or modify
