@@ -20,15 +20,8 @@
 	},
 	"scripts": {
 		"dev": "npx tsc --watch",
-		
-		"prebuild": "del-cli dist",
 		"build": "npx tsc",
-		"postbuild": "cp package*.json dist && cd dist && npm ci --omit=dev && npm shrinkwrap",
-
-		"prepack": "npm run readme-build",
-		"postpack": "npm run readme-remove",
-		"readme-build": "node -e \"const fs = require('fs'); fs.writeFileSync('README.md', fs.readFileSync('PACKAGE_README.md', 'utf8') + '\\n' + fs.readFileSync('../README.md', 'utf8'))\"",
-		"readme-remove": "del-cli README.md"
+		"postbuild": "node ../../scripts/readme-build.js ."
 	},
 	"dependencies": {
 		"ascii-table3": "^0.8.2",

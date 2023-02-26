@@ -10,9 +10,9 @@
 
 | Package | Description |
 | --- | --- |
-| [@videobrew/cli](../cli) | The command line interface that allows rendering videos. It will install the editor automatically to allow previewing your videos. |
-| [@videobrew/editor](../editor) | The editor app that previews your videos. |
-| <s>[@videobrew/svelte](../svelte)</s> (wip) | A Svelte component library that allows you to create videos using pre-made Svelte components. |
+| [@videobrew/cli](../packages/cli) | The command line interface that allows rendering videos. It will install the editor automatically to allow previewing your videos. |
+| [@videobrew/editor](../packages/editor) | The editor app that previews your videos. |
+| <s>[@videobrew/svelte](../packages/svelte)</s> (wip) | A Svelte component library that allows you to create videos using pre-made Svelte components. |
 
 ## 📚 Terminology
 
