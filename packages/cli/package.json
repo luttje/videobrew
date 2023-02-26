@@ -1,0 +1,49 @@
+{
+	"name": "@videobrew/cli",
+	"description": "Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
+	"keywords": [
+		"video",
+		"generation",
+		"animation",
+		"api"
+	],
+	"homepage": "https://github.com/luttje/videobrew",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/luttje/videobrew"
+	},
+	"author": "Luttje",
+	"license": "AGPL-3.0-or-later",
+	"version": "0.1.0",
+	"bin": {
+		"videobrew": "dist/cli.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"scripts": {
+		"dev": "npx tsc --watch",
+		"build": "npx tsc",
+		"clear-build": "node ../../scripts/clear-build.mjs .",
+		"docs-build": "node ../../scripts/docs-build.mjs .",
+		"package": "node ../../scripts/package.mjs .",
+		"prebuild": "npm run clear-build",
+		"postbuild": "npm run docs-build && npm run package"
+	},
+	"dependencies": {
+		"ascii-table3": "^0.8.2",
+		"chalk": "^4.1.2",
+		"ffmpeg-static": "^5.1.0",
+		"local-web-server": "^4.2.1",
+		"node-cleanup": "^2.1.2",
+		"playwright": "^1.31.1",
+		"ts-command-line-args": "^2.4.2"
+	},
+	"devDependencies": {
+		"@tsconfig/recommended": "^1.0.2",
+		"@types/node": "^18.14.1",
+		"typescript": "^4.9.5"
+	},
+	"gitHead": "15c230dee6dace1e5689a244f6d2f9ef49ba30e6"
+}

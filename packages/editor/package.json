@@ -1,0 +1,54 @@
+{
+	"name": "@videobrew/editor",
+	"description": "Preview videos created using any web technologies. Requires @videobrew/cli to be installed globally.",
+	"keywords": [
+		"video",
+		"generation",
+		"animation",
+		"api"
+	],
+	"homepage": "https://github.com/luttje/videobrew",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/luttje/videobrew"
+	},
+	"author": "Luttje",
+	"license": "AGPL-3.0-or-later",
+	"version": "0.1.0",
+	"type": "module",
+	"publishConfig": {
+    "access": "public",
+		"directory": "dist"
+  },
+	"scripts": {
+		"serve-test-video-app": "ws --hostname localhost --port 8088 --directory ../../examples/0-dependencies --stack lws-body-parser lws-request-monitor lws-log lws-cors lws-json lws-compress lws-rewrite lws-blacklist lws-conditional-get lws-mime lws-range lws-spa ./mw-cors.mjs lws-static lws-index",
+		"dev": "cross-env VIDEOBREW_VIDEO_APP_URL=http://localhost:8088 concurrently --kill-others \"vite dev\" \"npm run serve-test-video-app\"",
+		"build": "vite build",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		
+		"clear-build": "node ../../scripts/clear-build.mjs .",
+		"docs-build": "node ../../scripts/docs-build.mjs .",
+		"package": "node ../../scripts/package.mjs .",
+
+		"prebuild": "npm run clear-build",
+		"postbuild": "npm run docs-build && npm run package"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-node": "^1.2.0",
+		"@sveltejs/kit": "^1.5.0",
+		"@tsconfig/recommended": "^1.0.2",
+		"autoprefixer": "^10.4.13",
+		"concurrently": "^7.6.0",
+		"cross-env": "^7.0.3",
+		"local-web-server": "^5.3.0",
+		"postcss": "^8.4.21",
+		"svelte": "^3.54.0",
+		"svelte-check": "^3.0.1",
+		"tailwindcss": "^3.2.7",
+		"tslib": "^2.4.1",
+		"typescript": "^4.9.3",
+		"vite": "^4.0.0"
+	},
+	"gitHead": "15c230dee6dace1e5689a244f6d2f9ef49ba30e6"
+}
