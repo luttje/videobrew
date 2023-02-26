@@ -6,7 +6,7 @@ const packagePath = process.argv[2];
 
 const DISTRIBUTION_DIRECTORY = 'dist';
 
-const OMIT_KEYS = ['devDependencies', 'scripts'];
+const OMIT_KEYS = ['devDependencies', 'scripts', 'publishConfig'];
 const NORMALIZE_KEYS = ['main', 'types', 'typings', 'bin'];
 
 async function main() {

@@ -6,7 +6,7 @@ const packagePath = process.argv[2];
 const DISTRIBUTION_DIRECTORY = 'dist';
 
 async function main() {
-  fs.rmdirSync(path.join(packagePath, DISTRIBUTION_DIRECTORY), { recursive: true });
+  fs.rmSync(path.join(packagePath, DISTRIBUTION_DIRECTORY), { recursive: true });
 }
 
 main();

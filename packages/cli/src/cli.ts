@@ -136,17 +136,21 @@ async function render(videoAppUrl: string, outputPath: string) {
 }
 
 async function preview(videoAppUrl: string) {
-  const editorServer = await startEditor(videoAppUrl);
+  const { server, host, port } = await startEditor(videoAppUrl);
 
-  editorServer.stdout!.on('data', (data) => {
+  server.stdout!.on('data', (data) => {
+    if (!data.includes('http://')) {
+      data = data.toString().replace(`${host}:${port}`, `http://${host}:${port}`);
+    }
+
     inform(`Editor Server: ${data}`);
   });
 
-  editorServer.on('close', (code) => {
+  server.on('close', (code) => {
     inform(`Editor Server exited with code ${code}`);
   });
 
-  editorServer.on('error', (err) => {
+  server.on('error', (err) => {
     inform(`Editor Server ${err}`, chalk.red);
   });
 }

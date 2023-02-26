@@ -1,11 +1,21 @@
 import { exec, spawn, ChildProcess } from 'child_process';
+import { debug, panic } from './utils/logging';
 import path from 'path';
 import util from 'util';
+import fs from 'fs';
 
 const execAsync = util.promisify(exec);
 
 const EDITOR_PACKAGE_NAME = '@videobrew/editor';
 const FILE_PREFIX = 'file:';
+const PORT = 8087;
+const HOST = 'localhost';
+
+export type EditorInstance = {
+  server: ChildProcess,
+  port: number,
+  host: string,
+}
 
 /**
  * Gets where the editor is installed (globally)
@@ -24,15 +34,35 @@ async function getEditorInstallPath() {
   }
 
   const { dependencies } = JSON.parse(json);
-  const editorPath = dependencies[EDITOR_PACKAGE_NAME].resolved;
-
-  if (!editorPath.startsWith(FILE_PREFIX)) {
-    // TODO: support other protocols
-    console.error(`[Videobrew | Editor Server] Unsupported protocol for package: ${editorPath} (only ${FILE_PREFIX} is supported)`);
-    process.exit(1);
+  let npmPath: string | undefined;
+  
+  let editorPath = dependencies[EDITOR_PACKAGE_NAME].resolved;
+  
+  // Individual dependencies can be resolved when they're symlinked with `npm link`
+  if (editorPath) {
+    if (!editorPath.startsWith(FILE_PREFIX)) {
+      // TODO: support other protocols
+      panic(`[Videobrew | Editor Server] Unsupported protocol for package: ${editorPath} (only ${FILE_PREFIX} is supported)`);
+    }
+  
+    editorPath = editorPath.substring(FILE_PREFIX.length);
+  } else {
+    // Otherwise they're relative to the where global npm packages are installed 
+    const { stdout } = await execAsync('npm root -g');
+    npmPath = stdout.trim();
+    editorPath = path.join(npmPath, EDITOR_PACKAGE_NAME);
   }
 
-  return editorPath.slice(FILE_PREFIX.length);
+  if (!fs.existsSync(editorPath)) {
+    console.log({
+      npmPath,
+      dependencies,
+      editorPath,
+    });
+    panic(`[Videobrew | Editor Server] Editor package not found at ${editorPath} (but it was installed according to npm list)`);
+  }
+
+  return editorPath;
 }
 
 /**
@@ -45,11 +75,11 @@ async function installEditor() {
   } = await execAsync(`npm install -g ${EDITOR_PACKAGE_NAME}`);
 
   if (stderr) {
-    console.error(stderr);
+    panic(stderr);
     return null;
   }
 
-  console.log(stdout);
+  debug(stdout);
 
   return await getEditorInstallPath();
 }
@@ -57,7 +87,7 @@ async function installEditor() {
 /**
  * Starts the editor server
  */
-export async function startEditor(videoAppUrl: string) {
+export async function startEditor(videoAppUrl: string): Promise<EditorInstance> {
   let editorPath = await getEditorInstallPath();
     
   if (!editorPath) {
@@ -65,14 +95,18 @@ export async function startEditor(videoAppUrl: string) {
   }
 
   const editorServer = spawn('node', ['.'], {
-    cwd: path.join(editorPath, 'dist'),
+    cwd: editorPath!,
     stdio: ['inherit', 'pipe', 'inherit'],
     env: {
-      'PORT': '8087',
-      'HOST': 'localhost',
+      'PORT': `${PORT}`,
+      'HOST': HOST,
       'VIDEOBREW_VIDEO_APP_URL': videoAppUrl,
     },
   });
 
-  return editorServer;
+  return {
+    server: editorServer,
+    port: PORT,
+    host: HOST,
+  }
 }
