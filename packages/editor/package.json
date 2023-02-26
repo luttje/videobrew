@@ -14,7 +14,7 @@
 	},
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
-	"version": "0.1.1",
+	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
 		"serve-test-video-app": "ws --hostname localhost --port 8088 --directory ../../examples/0-dependencies --stack lws-body-parser lws-request-monitor lws-log lws-cors lws-json lws-compress lws-rewrite lws-blacklist lws-conditional-get lws-mime lws-range lws-spa ./mw-cors.mjs lws-static lws-index",
