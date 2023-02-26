@@ -11,8 +11,8 @@ class EnableCorsForIframe {
     return 'Support for setting Cross-Origin-Resource-Policy and Cross-Origin-Embedder-Policy headers.'
   }
 
-  middleware(config) {
-    return async (ctx, next) => {
+  middleware(config: any) {
+    return async (ctx: any, next: any) => {
       ctx.response.set('Cross-Origin-Resource-Policy', 'cross-origin')
       ctx.response.set('Cross-Origin-Embedder-Policy', 'require-corp')
       await next()

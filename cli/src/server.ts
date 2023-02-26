@@ -1,4 +1,5 @@
 import LocalWebServer from 'local-web-server';
+import EnableCorsForIframe from './utils/mw-cors';
 
 export interface LocalWebServerInstance {
   server: any;
@@ -7,8 +8,6 @@ export interface LocalWebServerInstance {
 }
 
 export async function createLocalWebServer(videoAppPath: string) {
-  // @ts-ignore 7016
-  const EnableCorsForIframe = (await import('./utils/mw-cors.mjs')).default;
   const lws = await LocalWebServer.create({
     port: 8088,
     directory: videoAppPath,
