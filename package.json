@@ -8,5 +8,8 @@
   "devDependencies": {
     "lerna": "^6.5.1",
     "license-checker-rseidelsohn": "^4.1.1"
+  },
+  "scripts": {
+    "build": "node ./scripts/licenses.mjs && npx lerna run build"
   }
 }

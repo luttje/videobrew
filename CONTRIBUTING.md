@@ -37,7 +37,7 @@ $ DEBUG=1 videobrew preview
 
 ## Building
 ```bash
-$ npx lerna run build
+$ npm run build
 ```
 
 ### Testing before publishing

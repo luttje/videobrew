@@ -18,17 +18,16 @@ async function main() {
       '\n' +
       fs.readFileSync(path.join(__dirname, '..', 'README.md'), 'utf8'))
   )
-
-  // Copy LICENSES-THIRD-PARTY to dist
-  const thirdPartyLicenseFile = path.join(packagePath, 'LICENSES-THIRD-PARTY');
-
-  if (!fs.existsSync(thirdPartyLicenseFile))
-    return;
   
-  fs.writeFileSync(
-    path.join(packagePath, DISTRIBUTION_DIRECTORY, 'LICENSES-THIRD-PARTY'),
-    fs.readFileSync(thirdPartyLicenseFile, 'utf8')
-  )
+  fs.copyFileSync(
+    path.join(packagePath, 'LICENSE'),
+    path.join(packagePath, DISTRIBUTION_DIRECTORY, 'LICENSE')
+  );
+
+  fs.copyFileSync(
+    path.join(__dirname, '..', 'LICENSES-THIRD-PARTY'),
+    path.join(packagePath, DISTRIBUTION_DIRECTORY, 'LICENSES-THIRD-PARTY')
+  );
 }
 
 main();
