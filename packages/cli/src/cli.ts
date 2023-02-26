@@ -87,7 +87,7 @@ function parseArguments() {
           chalk.bold('or:'),
           `$ videobrew render --videoAppPathOrUrl ${EXAMPLE_VIDEO_APP_PATH} --output ${EXAMPLE_OUTPUT_PATH}`,
           '',
-          chalk.bold('Render a video app being served at an URL to a video file:'),
+          chalk.bold('Render a video app, currently being served at a URL, to a video file:'),
           `$ videobrew render ${EXAMPLE_VIDEO_APP_URL}`,
         ],
       },
