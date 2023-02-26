@@ -18,7 +18,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > <hr> 
 >
 > ### Create your video app
-> Build a web page that describes the video. *For inspiration check out the [examples](#examples).*
+> Build a web page that describes the video. *For inspiration check out the [examples](#🧪-example-video-apps).*
 > 
 > <hr> 
 >
@@ -78,21 +78,21 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 
 ## License
 
-Videobrew - Create videos using any web technologies
+> Videobrew - Create videos using any web technologies.
+> Copyright (C) 2023  Luttje
+> 
+> This program is free software: you can redistribute it and/or modify
+> it under the terms of the GNU Affero General Public License as published
+> by the Free Software Foundation, either version 3 of the License, or
+> (at your option) any later version.
+> 
+> This program is distributed in the hope that it will be useful,
+> but WITHOUT ANY WARRANTY; without even the implied warranty of
+> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> GNU Affero General Public License for more details.
+> 
+> A copy of the GNU Affero General Public License can be found [here](./LICENSE). 
+> The full license text can also be found on <https://www.gnu.org/licenses/>.
 
-Copyright (C) 2023  Luttje
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-A copy of the GNU Affero General Public License can be found [here](./LICENSE). 
-The full license text can also be found on <https://www.gnu.org/licenses/>.
-
-Licenses of third parties we are directly depending on can be found [here for the CLI](./packages/cli/LICENSES-THIRD-PARTY) and [here for the editor](./packages/editor/LICENSES-THIRD-PARTY). These files were automatically generated with [`license-checker-rseidelsohn`](https://www.npmjs.com/package/license-checker-rseidelsohn) upon building.
+### Third Party Licenses
+> Licenses of third parties we are directly depending on can be found [here for the CLI](./packages/cli/LICENSES-THIRD-PARTY) and [here for the editor](./packages/editor/LICENSES-THIRD-PARTY). These files were automatically generated with [`license-checker-rseidelsohn`](https://www.npmjs.com/package/license-checker-rseidelsohn) upon building.
