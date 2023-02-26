@@ -22,8 +22,11 @@
 		"dev": "npx tsc --watch",
 		"build": "npx tsc",
 
+		"clear-build": "node ../../scripts/clear-build.mjs .",
 		"docs-build": "node ../../scripts/docs-build.mjs .",
 		"package": "node ../../scripts/package.mjs .",
+
+		"prebuild": "npm run clear-build",
 		"postbuild": "npm run docs-build && npm run package"
 	},
 	"dependencies": {
@@ -38,7 +41,6 @@
 	"devDependencies": {
 		"@tsconfig/recommended": "^1.0.2",
 		"@types/node": "^18.14.1",
-		"del-cli": "^5.0.0",
 		"typescript": "^4.9.5"
 	},
 	"gitHead": "15c230dee6dace1e5689a244f6d2f9ef49ba30e6"
