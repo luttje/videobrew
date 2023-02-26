@@ -1,5 +1,11 @@
 # 📼 Videobrew
 
+<div align="center">
+
+[![CLI npm version](https://img.shields.io/npm/v/@videobrew/cli)](https://www.npmjs.com/package/@videobrew/cli)
+
+</div>
+
 Create videos using any web technologies (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript. Animate your web page and have Videobrew render it to a video.
 
 > <div align="center">
