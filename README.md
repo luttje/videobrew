@@ -24,7 +24,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > <hr> 
 >
 > ### Create your video app
-> Build a web page that describes the video. *For inspiration check out the [examples](#🧪-example-video-apps).*
+> Build a web page that describes the video. *For inspiration check out the [examples](#examples).*
 > 
 > <hr> 
 >
@@ -60,7 +60,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 * [How to serve your video app yourself](./docs/serving-video-apps.md)
 * [Documentation](./docs/index.md)
 
-## 🧪 Example Video Apps
+## <span id="examples">🧪 Example Video Apps</span>
 | Example | Description |
 | --- | --- |
 | [Zero Dependencies](./examples/0-dependencies/) | Just plain old HTML, CSS and Javascript. |
