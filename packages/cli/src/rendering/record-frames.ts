@@ -12,6 +12,8 @@ type RecordingResult = {
   frameFiles: string[],
 }
 
+type FrameProgressCallback = (currentFrame: number, totalFrames: number) => void;
+
 export function getExtensionByQuality(quality: number) {
   return quality < 100 ? 'jpeg' : 'png';
 }
@@ -19,7 +21,8 @@ export function getExtensionByQuality(quality: number) {
 export async function recordFrames(
   videoAppPathOrUrl: string,
   framesOutputPath: string,
-  renderQuality: number
+  renderQuality: number,
+  onFrameProgress?: FrameProgressCallback,
 ): Promise<RecordingResult> {
   return new Promise(async (resolve) => {
     const browser = await chromium.launch();
@@ -51,7 +54,10 @@ export async function recordFrames(
     await page.setViewportSize({ width, height });
 
     for (let i = 0; i < frameCount; i++) {
-      frameFiles.push(await captureFrame(page, frame++, framesOutputPath, renderQuality));
+      frameFiles.push(await captureFrame(page, frame, framesOutputPath, renderQuality));
+
+      onFrameProgress?.(frame, frameCount);
+      frame++;
     }
 
     teardown(browser);

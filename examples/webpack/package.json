@@ -1,7 +1,7 @@
 {
   "name": "@videobrew/example-webpack",
   "version": "0.1.0",
-  "description": "Example Video App built with Webpack and typescript",   
+  "description": "Example Video App built with Webpack and typescript",
   "private": true,
   "main": "dist/index.js",
   "scripts": {

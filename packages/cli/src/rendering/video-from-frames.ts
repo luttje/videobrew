@@ -16,6 +16,8 @@ export type VideoFormat = {
   name: string;
 }
 
+export type VideoProgressCallback = (progress: number) => void;
+
 export async function buildVideoConfigFromFrames(
   framesPath: string,
   framerate: number,
@@ -39,12 +41,26 @@ export async function buildVideoConfigFromFrames(
   }
 }
 
-export async function renderVideo(videoConfig: VideoConfig) {
-  const { stderr } = await execAsync(videoConfig.command, {
-    cwd: __dirname,
-  });
+export async function renderVideo(videoConfig: VideoConfig, onProgress?: VideoProgressCallback): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const { stderr } = exec(videoConfig.command, {
+      cwd: __dirname,
+    });
+    let output = '';
 
-  return stderr;
+    stderr!.on('data', (data: string) => {
+      output += data;
+      const match = data.match(/frame=\s*(\d+)/);
+      if (match) {
+        const progress = parseInt(match[1]);
+        onProgress?.(progress);
+      }
+    });
+
+    stderr!.on('end', () => {
+      resolve(output);
+    });
+  });
 }
 
 export async function getContainerFormats(): Promise<VideoFormat[]> {

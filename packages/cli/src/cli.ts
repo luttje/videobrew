@@ -2,7 +2,7 @@
 import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoFormat } from './rendering/video-from-frames';
 import { ArgumentConfig, parse } from 'ts-command-line-args';
 import { getExtensionByQuality, recordFrames } from './rendering/record-frames';
-import { inform, debug, panic } from './utils/logging';
+import { inform, debug, panic, newlines } from './utils/logging';
 import { createLocalWebServer, LocalWebServerInstance } from './server';
 import { isVideoAppUrl } from './utils/is-video-url';
 import { AsciiTable3 } from 'ascii-table3';
@@ -11,6 +11,7 @@ import { cwd } from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
+import { SingleBar } from 'cli-progress';
 
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
@@ -122,10 +123,29 @@ async function showRenderFormats(containerFormats: VideoFormat[]) {
 async function render(videoAppUrl: string, outputPath: string, renderQuality: number) {  
   const outputDirectory = path.dirname(outputPath);
   await fs.mkdirSync(outputDirectory, { recursive: true });
+
+  newlines();
+  inform(`Step (1/2) Rendering frames:`);
+  const progressBarFrames = new SingleBar({
+    format: 'Rendering frames [{bar}] {percentage}% | ETA: {eta}s | {value}/{total} frames',
+    hideCursor: true,
+  });
+
   const framesOutputPath = await fs.mkdtempSync(path.join(outputDirectory, '~tmp-'));
+  let totalFrames = 0;
   const {
     framerate,
-  } = await recordFrames(videoAppUrl, framesOutputPath, renderQuality);
+  } = await recordFrames(videoAppUrl, framesOutputPath, renderQuality, (currentFrame, max) => {
+    if (currentFrame === 0) {
+      totalFrames = max;
+      progressBarFrames.start(max, currentFrame);
+    }
+    
+    progressBarFrames.update(currentFrame);
+  });
+
+  progressBarFrames.update(totalFrames);
+  progressBarFrames.stop();
 
   const videoConfig = await buildVideoConfigFromFrames(
     framesOutputPath,
@@ -133,15 +153,36 @@ async function render(videoAppUrl: string, outputPath: string, renderQuality: nu
     outputPath,
     getExtensionByQuality(renderQuality),
   );
+  
+  newlines();
+  inform(`Step (2/2) Rendering video from frames:`);
+  const progressBarRender = new SingleBar({
+    format: 'Rendering video [{bar}] {percentage}% | ETA: {eta}s',
+    hideCursor: true,
+  });
+  
   debug(`Rendering with command: ${videoConfig.command}`);
+  
+  progressBarRender.start(100, 0);
 
-  const output = await renderVideo(videoConfig);
+  const output = await renderVideo(videoConfig, (percentage) => {
+    progressBarRender.update(percentage);
+  });
+
+  progressBarRender.update(100);
+  progressBarRender.stop();
 
   debug(output);
 
   await fs.rmSync(framesOutputPath, { recursive: true });
 
-  inform(`Video rendered to ${outputPath}`);
+  newlines();
+  inform(
+    `Video rendered successfully! 🎉
+    \nYou can find your video here:\n> ` +
+    chalk.underline(`${outputPath}`),
+    chalk.green
+  );
 }
 
 async function preview(videoAppUrl: string) {
@@ -311,14 +352,12 @@ async function main() {
   if (args.action === 'render') {
     await startLocalServer();
 
-    inform(`Rendering...`);
     await render(videoAppUrl, output, quality);
 
     await stopLocalServer();
   } else if (args.action === 'preview') {
     await startLocalServer();
 
-    inform(`Previewing...`);
     await preview(videoAppUrl);
   } else if (args.action === 'help') {
     args._commandLineResults.printHelp();
