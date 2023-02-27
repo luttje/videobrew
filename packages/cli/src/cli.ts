@@ -6,13 +6,16 @@ import { inform, debug, panic, newlines } from './utils/logging';
 import { createLocalWebServer, LocalWebServerInstance } from './server';
 import { isVideoAppUrl } from './utils/is-video-url';
 import { AsciiTable3 } from 'ascii-table3';
-import { startEditor, getEditorInstallPath, installEditor, EDITOR_PACKAGE_NAME } from './editor';
+import { startEditor, getEditorInstallPath, getEditorInstaller, EDITOR_PACKAGE_NAME } from './editor';
 import { cwd } from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
 import { SingleBar } from 'cli-progress';
 import prompts from 'prompts';
+import { exec } from 'child_process';
+
+export const CLI_PACKAGE_NAME = '@videobrew/cli';
 
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
@@ -186,28 +189,51 @@ async function render(videoAppUrl: string, outputPath: string, renderQuality: nu
   );
 }
 
+async function getCliInstalledGlobally() {
+  return new Promise<boolean>((resolve, reject) => {
+    exec(`npm list -g ${CLI_PACKAGE_NAME} --json`, (exception, stdout, stderr) => {
+      if (exception) {
+        resolve(false);
+        return;
+      }
+
+      if (stderr) {
+        resolve(false);
+        return;
+      }
+
+      const installed = JSON.parse(stdout).dependencies[CLI_PACKAGE_NAME];
+      resolve(installed !== undefined);
+    });
+  });
+}
+
 async function confirmPreview() {
-  if (await getEditorInstallPath())
-    return true;
+  const cliInstalledGlobally = await getCliInstalledGlobally();
+  const executePreview = async (videoAppUrl: string) => await preview(videoAppUrl, cliInstalledGlobally);
+
+  if (await getEditorInstallPath(cliInstalledGlobally))
+    return executePreview;
   
   inform(`To preview your video app, you need to install the '${chalk.green(EDITOR_PACKAGE_NAME)}' package`, chalk.red);
+  const installer = getEditorInstaller(cliInstalledGlobally);
   const response = await prompts({
     type: 'confirm',
     name: 'confirmed',
-    message: `Would you like to install the '${chalk.green(EDITOR_PACKAGE_NAME)}' package now? (Runs '${chalk.green('npm install -g ' + EDITOR_PACKAGE_NAME)}')`,
+    message: `Would you like to install the '${chalk.green(EDITOR_PACKAGE_NAME)}' package now? (Runs '${chalk.green(installer.command)}')`,
     initial: true,
   });
 
   if (!response.confirmed)
-    return false;
+    return null;
   
-  await installEditor();
+  await installer.install();
 
-  return true;
+  return executePreview;
 }
 
-async function preview(videoAppUrl: string) {
-  const { server, host, port } = await startEditor(videoAppUrl);
+async function preview(videoAppUrl: string, cliInstalledGlobally: boolean) {
+  const { server, host, port } = await startEditor(videoAppUrl, cliInstalledGlobally);
   let interval: NodeJS.Timer;
   let isRestarting = false;
 
@@ -221,7 +247,7 @@ async function preview(videoAppUrl: string) {
     inform(`Restarting server...`, chalk.yellow);
     server.kill();
 
-    await preview(videoAppUrl);
+    await preview(videoAppUrl, cliInstalledGlobally);
   };
 
   // While the server is running, keep checking it to see if it crashed
@@ -378,15 +404,15 @@ async function main() {
 
     await stopLocalServer();
   } else if (args.action === 'preview') {
-    const proceed = await confirmPreview();
+    const executePreview = await confirmPreview();
 
-    if (!proceed) {
-      panic('Aborting preview');
+    if (!executePreview) {
+      return panic('Aborting preview');
     }
 
     await startLocalServer();
 
-    await preview(videoAppUrl);
+    await executePreview(videoAppUrl);
   } else if (args.action === 'help') {
     args._commandLineResults.printHelp();
   } else {
