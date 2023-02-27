@@ -44,15 +44,19 @@
     if(videoInterval)
       clearInterval(videoInterval);
 
+    if (hasReachedEnd())
+      reset();
+
     videoInterval = setInterval(async () => {
       if(!videoPlayback.playing)
         return;
     
-      if(videoPlayback.frame >= frameCount)
-        stop();
-
       await getVideoApp().tick(videoPlayback.frame);
-      nextFrame();
+
+      if(hasReachedEnd())
+        pause();
+      else
+        nextFrame();
     }, 1000 / framerate);
   }
 
@@ -86,6 +90,10 @@
     await getVideoApp().tick(videoPlayback.frame);
   }
 
+  function hasReachedEnd() {
+    return videoPlayback.frame + 1 >= frameCount;
+  }
+
   function nextFrame() {
     videoPlayback.frame++;
   }
@@ -95,12 +103,12 @@
   }
 
   async function stop() {
+    if(videoInterval)
+      clearInterval(videoInterval);
+
     pause();
     reset();
     await getVideoApp().tick(videoPlayback.frame);
-
-    if(videoInterval)
-      clearInterval(videoInterval);
   }
 
   async function onVideoLoad() {
@@ -204,7 +212,7 @@
       style="width: {videoPlayback.frame / (frameCount - 1) * 100}%;"
     ></div>
     <div class="grid place-content-center text-sm text-slate-100 absolute inset-0 select-none">
-      {videoPlayback.frame + 1} / {frameCount}
+      {videoPlayback.frame} / {frameCount - 1}
     </div>
   </div>
 
