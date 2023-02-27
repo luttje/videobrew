@@ -8,8 +8,8 @@ Run the following command to build the video app:
 npm run build
 ```
 
-Afterwards you can render the video by running:
+Afterwards you can render the video at the highest quality by running:
 
 ```
-videobrew render dist out/weather.mp4
+videobrew render -q 100 dist out/weather.mp4
 ```

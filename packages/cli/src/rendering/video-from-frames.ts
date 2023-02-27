@@ -16,11 +16,16 @@ export type VideoFormat = {
   name: string;
 }
 
-export async function buildVideoConfigFromFrames(framesPath: string, framerate: number, outputPath: string): Promise<VideoConfig> {
+export async function buildVideoConfigFromFrames(
+  framesPath: string,
+  framerate: number,
+  outputPath: string,
+  frameExtension: string,
+): Promise<VideoConfig> {
   const ffmpegCommand = shell([
     `${pathToFfmpeg}`,
     `-framerate`, `${framerate}`,
-    `-i`, path.join(framesPath, '%08d.jpeg'),
+    `-i`, path.join(framesPath, `%08d.${frameExtension}`),
     `-vf`, `pad=ceil(iw/2)*2:ceil(ih/2)*2`,
     `-c:v`, `libx264`,
     `-pix_fmt`, `yuv420p`,

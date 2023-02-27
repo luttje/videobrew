@@ -1,6 +1,8 @@
-import { Browser, chromium, Page } from 'playwright';
+import { Browser, chromium, Page, PageScreenshotOptions } from 'playwright';
 import fs from 'fs';
 import { isVideoAppUrl } from '../utils/is-video-url';
+import { inform } from '../utils/logging';
+import chalk from 'chalk';
 
 type RecordingResult = {
   width: number,
@@ -10,13 +12,21 @@ type RecordingResult = {
   frameFiles: string[],
 }
 
-export async function recordFrames(videoAppPathOrUrl: string, framesOutputPath: string) : Promise<RecordingResult> {
+export function getExtensionByQuality(quality: number) {
+  return quality < 100 ? 'jpeg' : 'png';
+}
+
+export async function recordFrames(
+  videoAppPathOrUrl: string,
+  framesOutputPath: string,
+  renderQuality: number
+): Promise<RecordingResult> {
   return new Promise(async (resolve) => {
     const browser = await chromium.launch();
     const page = await browser.newPage();
 
-    page.on('console', (message) => console.log('PAGE LOG:', message.text()));
-    page.on('pageerror', (message) => console.log('PAGE ERROR:', message.message));
+    page.on('console', (message) => inform(`Video App Browser Log: ${message.text()}`));
+    page.on('pageerror', (message) => inform(`Video App Browser Error: ${message}`, chalk.red));
 
     if (!fs.existsSync(framesOutputPath))
       fs.mkdirSync(framesOutputPath, { recursive: true });
@@ -41,7 +51,7 @@ export async function recordFrames(videoAppPathOrUrl: string, framesOutputPath: 
     await page.setViewportSize({ width, height });
 
     for (let i = 0; i < frameCount; i++) {
-      frameFiles.push(await captureFrame(page, frame++, framesOutputPath));
+      frameFiles.push(await captureFrame(page, frame++, framesOutputPath, renderQuality));
     }
 
     teardown(browser);
@@ -55,17 +65,24 @@ export async function recordFrames(videoAppPathOrUrl: string, framesOutputPath: 
   });
 }
 
-async function captureFrame(page: Page, frameIndex: number, outputPath: string) {
+async function captureFrame(page: Page, frameIndex: number, outputPath: string, renderQuality: number) {
   await page.evaluate(`(async (frameIndex) => {
     await window.videobrew.tick(frameIndex);
   })(${frameIndex})`);
   
-  const output = `${outputPath}/${String(frameIndex).padStart(8, '0')}.jpeg`;
+  const extension = getExtensionByQuality(renderQuality);
+  const output = `${outputPath}/${String(frameIndex).padStart(8, '0')}.${extension}`;
 
-  await page.screenshot({
+  const options: PageScreenshotOptions  = {
     path: output,
-    fullPage: true
-  });
+    fullPage: true,
+    type: extension,
+  };
+
+  if (extension === 'jpeg')
+    options.quality = renderQuality;
+
+  await page.screenshot(options);
 
   return output;
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoFormat } from './rendering/video-from-frames';
 import { ArgumentConfig, parse } from 'ts-command-line-args';
-import { recordFrames } from './rendering/record-frames';
+import { getExtensionByQuality, recordFrames } from './rendering/record-frames';
 import { inform, debug, panic } from './utils/logging';
 import { createLocalWebServer, LocalWebServerInstance } from './server';
 import { isVideoAppUrl } from './utils/is-video-url';
@@ -14,6 +14,7 @@ import fs from 'fs';
 
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
+const DEFAULT_QUALITY = 90;
 
 const EXAMPLE_VIDEO_APP_PATH = './video';
 const EXAMPLE_VIDEO_APP_URL = 'https://example.test/video';
@@ -25,6 +26,7 @@ interface IVideoBrewArguments {
   action: string;
   videoAppPathOrUrl?: string;
   output?: string;
+  renderQuality?: number;
   help?: boolean;
 }
 
@@ -32,6 +34,7 @@ export const argumentConfig: ArgumentConfig<IVideoBrewArguments> = {
   action: { type: String, defaultOption: true, description: 'Action to perform. Either "preview", "render", "render-formats" or "help"' },
   videoAppPathOrUrl: { type: String, alias: 'i', optional: true, description: `Relative path or absolute URL to the video app. Defaults to "${DEFAULT_VIDEO_APP_PATH}"` },
   output: { type: String, alias: 'o', optional: true, description: `Relative path to the output directory. Defaults to "${DEFAULT_OUTPUT_PATH}"` },
+  renderQuality: { type: Number, alias: 'q', optional: true, description: `Quality of the rendered video. 0 is the lowest quality, 100 is the highest quality. Defaults to ${DEFAULT_QUALITY}` },
   help: { type: Boolean, optional: true, alias: 'h', description: 'Causes this usage guide to print' },
 };
 
@@ -80,8 +83,8 @@ function parseArguments() {
           chalk.bold(`Render a video app in the current working directory to ${DEFAULT_OUTPUT_PATH}:`),
           '$ videobrew render',
           '',
-          chalk.bold(`Render a video app in a subdirectory to "${EXAMPLE_OUTPUT_PATH}":`),
-          `$ videobrew render ${EXAMPLE_VIDEO_APP_PATH} ${EXAMPLE_OUTPUT_PATH}`,
+          chalk.bold(`Render a low quality video app in a subdirectory to "${EXAMPLE_OUTPUT_PATH}":`),
+          `$ videobrew render --renderQuality 0 ${EXAMPLE_VIDEO_APP_PATH} ${EXAMPLE_OUTPUT_PATH}`,
           chalk.bold('or:'),
           `$ videobrew render -i ${EXAMPLE_VIDEO_APP_PATH} -o ${EXAMPLE_OUTPUT_PATH}`,
           chalk.bold('or:'),
@@ -116,15 +119,20 @@ async function showRenderFormats(containerFormats: VideoFormat[]) {
   inform('\n(These are the container formats as reported by ffmpeg)', chalk.italic.gray, true);
 }
 
-async function render(videoAppUrl: string, outputPath: string) {  
+async function render(videoAppUrl: string, outputPath: string, renderQuality: number) {  
   const outputDirectory = path.dirname(outputPath);
   await fs.mkdirSync(outputDirectory, { recursive: true });
   const framesOutputPath = await fs.mkdtempSync(path.join(outputDirectory, '~tmp-'));
   const {
     framerate,
-  } = await recordFrames(videoAppUrl, framesOutputPath);
+  } = await recordFrames(videoAppUrl, framesOutputPath, renderQuality);
 
-  const videoConfig = await buildVideoConfigFromFrames(framesOutputPath, framerate, outputPath);
+  const videoConfig = await buildVideoConfigFromFrames(
+    framesOutputPath,
+    framerate,
+    outputPath,
+    getExtensionByQuality(renderQuality),
+  );
   debug(`Rendering with command: ${videoConfig.command}`);
 
   const output = await renderVideo(videoConfig);
@@ -267,6 +275,13 @@ async function main() {
   const output = path.join(workingDirectory, relativeOutputPath);
   debug(`Output full path: ${output}`);
 
+  const quality = args.renderQuality ?? DEFAULT_QUALITY;
+
+  if (quality < 0 || quality > 100)
+    panic(`Render quality must be between 0 and 100! (Provided: ${quality})`);
+  
+  inform(`Render quality chosen: ${quality}% ${(args.renderQuality === undefined ? '(default)' : '')}`);
+
   let videoAppUrl = videoAppPathOrUrl;
   let serverInstance: LocalWebServerInstance | undefined;
 
@@ -297,7 +312,7 @@ async function main() {
     await startLocalServer();
 
     inform(`Rendering...`);
-    await render(videoAppUrl, output);
+    await render(videoAppUrl, output, quality);
 
     await stopLocalServer();
   } else if (args.action === 'preview') {
