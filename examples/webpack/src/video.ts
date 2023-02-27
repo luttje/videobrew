@@ -77,6 +77,10 @@ export class Video {
     private readonly framerate: number = 30,
   ) { }
 
+  public getFrameCount() {
+    return this.videoFrames.length;
+  }
+
   public frameCountFromSeconds(seconds: number): FrameCount {
     return {
       get: () => seconds * this.framerate
@@ -113,7 +117,7 @@ export class Video {
   }
 
   // First try find the reset frame before the given frame, activate it, then activate all frames up to and including the given frame
-  public showFrame(frame: number) {
+  public renderFrame(frame: number) {
     let resetFrame = frame;
 
     while (resetFrame >= 0) {
@@ -135,7 +139,7 @@ export class Video {
     return new Promise((resolve) => {
       let frame = 0;
       let interval = setInterval(() => {
-        this.showFrame(frame);
+        this.renderFrame(frame);
         frame++;
 
         if (frame >= this.videoFrames.length) {

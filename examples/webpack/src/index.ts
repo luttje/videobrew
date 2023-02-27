@@ -78,9 +78,37 @@ video.addToFrames(
 
 video.addToFrames(makeFadeFrames('#screen', 1, 0, video.frameCountFromSeconds(0.2)));
 
-async function main() {
-  await video.play();
-  console.log('Video finished');
+const width = 360;
+const height = 640;
+const framerate = 30;
+const frameCount = video.getFrameCount();
+
+window.addEventListener('message', function (event) {
+  switch (event.data.type) {
+    case 'videobrew.init':
+      setup();
+      break;
+    case 'videobrew.tick':
+      tick(event.data.frame);
+      break;
+    case 'videobrew.setup':
+      break; // renderer side only
+  }
+});
+
+function messageRenderer(type: string, data: any) {
+  parent.postMessage({ ...data, type }, '*');
 }
 
-main();
+function setup() {
+  messageRenderer('videobrew.setup', {
+    width: width,
+    height: height,
+    framerate: framerate,
+    frameCount: frameCount,
+  });
+}
+
+function tick(frame: number) {
+  video.renderFrame(frame);
+}
