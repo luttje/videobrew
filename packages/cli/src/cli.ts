@@ -147,12 +147,15 @@ async function preview(videoAppUrl: string) {
     inform(`Editor Server: ${data}`);
   });
 
-  server.on('close', (code) => {
-    inform(`Editor Server exited with code ${code}`);
+  server.stderr!.on('data', (data) => {
+    // When the server fails, restart it (this is a workaround for errors caused by `watch` causing a rebuild)
+    inform(`Restarting server...`, chalk.yellow);
+    server.kill();
+    preview(videoAppUrl);
   });
 
-  server.on('error', (err) => {
-    inform(`Editor Server ${err}`, chalk.red);
+  server.on('close', (code) => {
+    inform(`Editor Server exited with code ${code}`);
   });
 }
 

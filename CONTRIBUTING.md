@@ -26,6 +26,8 @@ $ DEBUG=1 videobrew preview
     $ npm run watch # run in root
     ```
 
+    **Note: this works a bit finicky at the moment.** You may be better of running the watchers in each package individually (`npm run watch` in `packages/cli` and `packages/editor`)
+
 4. Ensure that the `videobrew` CLI and editor are linked as global packages:
     ```bash
     $ cd packages/cli/dist # start in root

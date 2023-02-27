@@ -94,9 +94,8 @@ export async function startEditor(videoAppUrl: string): Promise<EditorInstance> 
     editorPath = await installEditor();
   }
 
-  const editorServer = spawn('node', ['.'], {
-    cwd: editorPath!,
-    stdio: ['inherit', 'pipe', 'inherit'],
+  const editorServer = spawn('node', [editorPath], {
+    stdio: ['inherit', 'pipe', 'pipe'],
     env: {
       'PORT': `${PORT}`,
       'HOST': HOST,
