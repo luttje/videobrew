@@ -1,6 +1,6 @@
 
 import { makeFadeFrames, makeParallelFrames, makePulseFrames, makeShiftBackgroundFrames, makeWaitFrames } from './make-frames';
-import { Video } from './video';
+import { VideoBuilder } from './video-builder';
 // For demonstration purposes, we are importing a JSON file
 // but you could get this data from an API call or any other source
 import data from './fakeapi.json';
@@ -41,43 +41,44 @@ function startWeatherScene() {
     + `<img class="icon" src="${data.weather.image}" style="transform: translate(-50%, -50%);" />`;
 }
 
-const video = new Video('#screen');
+const videoBuilder = new VideoBuilder('#screen');
 
-video.addSceneToFrames(startIntroScene);
+videoBuilder.addSceneToFrames(startIntroScene);
 
 const duration = 3;
 const fadeTime = 0.2;
 
-video.addToFrames(
+videoBuilder.addToFrames(
   makeParallelFrames(
     // Scene lasts 3 seconds
-    video.frameCountFromSeconds(duration),
+    videoBuilder.frameCountFromSeconds(duration),
 
     // Shifting the whole time
-    makeShiftBackgroundFrames('#screen', 0, -100, video.frameCountFromSeconds(duration)),
+    makeShiftBackgroundFrames('#screen', 0, -100, videoBuilder.frameCountFromSeconds(duration)),
 
     // But only fading out at the end
     [
-      ...makeWaitFrames(video.frameCountFromSeconds(duration - fadeTime)), // fade out starts at 2.8 seconds
-      ...makeFadeFrames('#screen', 1, 0, video.frameCountFromSeconds(fadeTime)) // fade out lasts 0.2 seconds
+      ...makeWaitFrames(videoBuilder.frameCountFromSeconds(duration - fadeTime)), // fade out starts at 2.8 seconds
+      ...makeFadeFrames('#screen', 1, 0, videoBuilder.frameCountFromSeconds(fadeTime)) // fade out lasts 0.2 seconds
     ]
   )
 )
 
-video.addSceneToFrames(startWeatherScene);
+videoBuilder.addSceneToFrames(startWeatherScene);
 
-video.addToFrames(makeFadeFrames('#screen', 0, 1, video.frameCountFromSeconds(0.2)))
+videoBuilder.addToFrames(makeFadeFrames('#screen', 0, 1, videoBuilder.frameCountFromSeconds(0.2)))
 
-video.addToFrames(
+videoBuilder.addToFrames(
   makeParallelFrames(
-    video.frameCountFromSeconds(3),
-    makePulseFrames('.icon', 3, video.frameCountFromSeconds(3)),
-    makeShiftBackgroundFrames('#screen', -100, -200, video.frameCountFromSeconds(3))
+    videoBuilder.frameCountFromSeconds(3),
+    makePulseFrames('.icon', 3, videoBuilder.frameCountFromSeconds(3)),
+    makeShiftBackgroundFrames('#screen', -100, -200, videoBuilder.frameCountFromSeconds(3))
   )
 );
 
-video.addToFrames(makeFadeFrames('#screen', 1, 0, video.frameCountFromSeconds(0.2)));
+videoBuilder.addToFrames(makeFadeFrames('#screen', 1, 0, videoBuilder.frameCountFromSeconds(0.2)));
 
+const video = videoBuilder.build();
 const width = 360;
 const height = 640;
 const framerate = 30;
