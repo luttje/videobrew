@@ -1,32 +1,48 @@
-import { Frame, FrameCount } from "./make-frames";
+import { Scene } from './scene';
 
 export class Video {
-  constructor(
-    private readonly videoFrames: Frame[],
-    private readonly videoResetFrames: Map<number, Frame>,
-  ) { }
+  private readonly sceneLookup: { [key: number]: Scene } = {};
 
-  public getFrameCount() {
-    return this.videoFrames.length;
+  constructor(
+    private readonly scenes: Scene[],
+  ) {
+    this.buildLookup();
   }
 
-  // First try find the reset frame before the given frame, activate it, 
-  // then activate all frames up to and including the given frame
-  public renderFrame(frame: number) {
-    let resetFrame = frame;
+  private buildLookup() {
+    let frameIndex = 0;
 
-    while (resetFrame >= 0) {
-      if (this.videoResetFrames.has(resetFrame)) {
-        this.videoResetFrames.get(resetFrame)?.();
-        break;
+    for (let scene of this.scenes) {
+      for (let i = 0; i < scene.getFrameCount(); i++) {
+        this.sceneLookup[frameIndex] = scene;
+        frameIndex++;
       }
+    }
+  }
 
-      resetFrame--;
+  public getFrameCount() {
+    let frameCount = 0;
+
+    for (let scene of this.scenes) {
+      frameCount += scene.getFrameCount();
     }
 
-    for (let i = resetFrame; i <= frame; i++) {
-      if (this.videoFrames[i])
-        this.videoFrames[i]?.();
+    return frameCount;
+  }
+
+  public renderFrame(frame: number) {
+    const scene = this.getSceneForFrame(frame);
+
+    if (!scene) {
+      throw new Error(`Frame index ${frame} is out of range`);
     }
+
+    scene.renderFrame(
+      scene.normalizeFrameIndex(frame)
+    );
+  }
+
+  private getSceneForFrame(frame: number) {
+    return this.sceneLookup[frame];
   }
 }
