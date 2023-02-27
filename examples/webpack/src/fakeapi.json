@@ -1,0 +1,19 @@
+{
+  "city": "Vancouver",
+  "state": "British Columbia",
+  "country": "CA",
+  "image": "mbenna-unsplash-vancouver.jpg",
+  "weather": {
+    "main": "Drizzle",
+    "description": "light intensity drizzle",
+    "image": "icons8-sun.svg"
+  },
+  "temperature": {
+    "unit": "C",
+    "value": 10
+  },
+  "wind": {
+    "speed": 16,
+    "unit": "km/h"
+  }
+}
