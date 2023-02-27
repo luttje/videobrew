@@ -16,7 +16,10 @@ $ DEBUG=1 videobrew preview
 
 1. Clone the repo
 
-2. Install dependencies
+2. Install dependencies for all packages by running the following in the root directory:
+    ```bash
+    $ npm install
+    ```
 
 3. Run the watchers that will build the packages as you make changes:
     ```bash

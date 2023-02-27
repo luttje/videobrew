@@ -29,8 +29,9 @@
 		"clear-build": "node ../../scripts/clear-build.mjs",
 		"docs-build": "node ../../scripts/docs-build.mjs",
 		"package": "node ../../scripts/package.mjs",
+
 		"prebuild": "npm run clear-build",
-		"postbuild": "npm run docs-build",
+		"postbuild": "npm run docs-build && npm run package",
 		"prepack": "npm run package"
 	},
 	"dependencies": {
