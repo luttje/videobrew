@@ -6,12 +6,13 @@ import { inform, debug, panic, newlines } from './utils/logging';
 import { createLocalWebServer, LocalWebServerInstance } from './server';
 import { isVideoAppUrl } from './utils/is-video-url';
 import { AsciiTable3 } from 'ascii-table3';
-import { startEditor } from './editor';
+import { startEditor, getEditorInstallPath, installEditor, EDITOR_PACKAGE_NAME } from './editor';
 import { cwd } from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
 import { SingleBar } from 'cli-progress';
+import prompts from 'prompts';
 
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
@@ -185,6 +186,26 @@ async function render(videoAppUrl: string, outputPath: string, renderQuality: nu
   );
 }
 
+async function confirmPreview() {
+  if (await getEditorInstallPath())
+    return true;
+  
+  inform(`To preview your video app, you need to install the '${chalk.green(EDITOR_PACKAGE_NAME)}' package`, chalk.red);
+  const response = await prompts({
+    type: 'confirm',
+    name: 'confirmed',
+    message: `Would you like to install the '${chalk.green(EDITOR_PACKAGE_NAME)}' package now? (Runs '${chalk.green('npm install -g ' + EDITOR_PACKAGE_NAME)}')`,
+    initial: true,
+  });
+
+  if (!response.confirmed)
+    return false;
+  
+  await installEditor();
+
+  return true;
+}
+
 async function preview(videoAppUrl: string) {
   const { server, host, port } = await startEditor(videoAppUrl);
   let interval: NodeJS.Timer;
@@ -321,7 +342,8 @@ async function main() {
   if (quality < 0 || quality > 100)
     panic(`Render quality must be between 0 and 100! (Provided: ${quality})`);
   
-  inform(`Render quality chosen: ${quality}% ${(args.renderQuality === undefined ? '(default)' : '')}`);
+  if (args.action === 'render')
+    inform(`Render quality chosen: ${quality}% ${(args.renderQuality === undefined ? '(default)' : '')}`);
 
   let videoAppUrl = videoAppPathOrUrl;
   let serverInstance: LocalWebServerInstance | undefined;
@@ -356,6 +378,12 @@ async function main() {
 
     await stopLocalServer();
   } else if (args.action === 'preview') {
+    const proceed = await confirmPreview();
+
+    if (!proceed) {
+      panic('Aborting preview');
+    }
+
     await startLocalServer();
 
     await preview(videoAppUrl);

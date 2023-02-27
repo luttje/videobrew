@@ -6,7 +6,7 @@ import fs from 'fs';
 
 const execAsync = util.promisify(exec);
 
-const EDITOR_PACKAGE_NAME = '@videobrew/editor';
+export const EDITOR_PACKAGE_NAME = '@videobrew/editor';
 const FILE_PREFIX = 'file:';
 const PORT = 8087;
 const HOST = 'localhost';
@@ -20,7 +20,7 @@ export type EditorInstance = {
 /**
  * Gets where the editor is installed (globally)
  */
-async function getEditorInstallPath() {
+export async function getEditorInstallPath() {
   let json: string;
 
   try {
@@ -68,18 +68,14 @@ async function getEditorInstallPath() {
 /**
  * Installs the editor globally with npm and returns the path
  */
-async function installEditor() {
+export async function installEditor() {
   const {
     stdout,
     stderr,
-  } = await execAsync(`npm install -g ${EDITOR_PACKAGE_NAME}`);
+  } = exec(`npm install -g ${EDITOR_PACKAGE_NAME}`);
 
-  if (stderr) {
-    panic(stderr);
-    return null;
-  }
-
-  debug(stdout);
+  stdout!.pipe(process.stdout);
+  stderr!.pipe(process.stderr);
 
   return await getEditorInstallPath();
 }
@@ -91,7 +87,7 @@ export async function startEditor(videoAppUrl: string): Promise<EditorInstance> 
   let editorPath = await getEditorInstallPath();
     
   if (!editorPath) {
-    editorPath = await installEditor();
+    throw new Error('Editor not installed!');
   }
 
   const editorServer = spawn('node', [editorPath], {
