@@ -1,16 +1,3 @@
-window.addEventListener('message', function (event) {
-  switch (event.data.type) {
-    case 'videobrew.init':
-      setup();
-      break;
-    case 'videobrew.tick':
-      tick(event.data.frame);
-      break;
-    case 'videobrew.setup':
-      break; // renderer side only
-  }
-});
-
 const squares = document.querySelectorAll('.colored-block');
 
 const width = 360;
@@ -37,22 +24,19 @@ for (let frame = 0; frame < frameCount; frame++) {
   };
 }
 
-function messageRenderer(type, data) {
-  parent.postMessage({ ...data, type }, '*');
-}
-
-function setup() {
-  messageRenderer('videobrew.setup', {
-    width: width,
-    height: height,
-    framerate: framerate,
-    frameCount: frameCount,
-  });
-}
-
-function tick(frame) {
-  // run all frames up to the and including the current frame
-  for (let i = 0; i <= frame; i++) {
-    frames[i]();
+window.videobrew = {
+  init: () => {
+    return {
+      width: width,
+      height: height,
+      framerate: framerate,
+      frameCount: frameCount,
+    };
+  },
+  tick: (frame) => {
+    // run all frames up to the and including the current frame
+    for (let i = 0; i <= frame; i++) {
+      frames[i]();
+    }
   }
-}
+};

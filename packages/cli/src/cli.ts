@@ -157,7 +157,7 @@ async function preview(videoAppUrl: string) {
   // While the server is running, keep checking it to see if it crashed
   interval = setInterval(async () => {
     try {
-      const result = await fetch(`http://${host}:${port}/`);
+      const result = await fetch(`http://${host}:${port}/health`);
 
       if (result.status !== 200)
         restart();
@@ -168,7 +168,7 @@ async function preview(videoAppUrl: string) {
 
 
   server.stdout!.on('data', (data) => {
-    if (!data.includes('http://')) {
+    if (!data.includes('http://') && !data.includes('https://')) {
       data = data.toString().replace(`${host}:${port}`, `http://${host}:${port}`);
     }
 

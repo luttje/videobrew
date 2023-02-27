@@ -1,5 +1,3 @@
-declare module 'local-web-server';
-
 // TODO: De-duplicate
 // TODO: also exists @ packages/cli/src/types.d.ts
 // TODO: also exists @ packages/editor/src/types.d.ts
@@ -19,5 +17,7 @@ declare interface VideoApp {
 }
 
 declare interface Window {
+  VIDEOBREW_VIDEO_APP_URL: string;
+
   videobrew: VideoApp;
 }

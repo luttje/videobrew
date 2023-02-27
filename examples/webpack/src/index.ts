@@ -79,38 +79,35 @@ videoBuilder.addScene(startWeatherScene, (scene) => {
 });
 
 const video = videoBuilder.build();
-console.log(video);
 const width = 360;
 const height = 640;
 const framerate = 30;
 const frameCount = video.getFrameCount();
 
-window.addEventListener('message', function (event) {
-  switch (event.data.type) {
-    case 'videobrew.init':
-      setup();
-      break;
-    case 'videobrew.tick':
-      tick(event.data.frame);
-      break;
-    case 'videobrew.setup':
-      break; // renderer side only
+declare global {
+  interface Window {
+    videobrew: {
+      init: () => Promise<{
+        width: number;
+        height: number;
+        framerate: number;
+        frameCount: number;
+      }>;
+      tick: (frame: number) => Promise<void>;
+    };
   }
-});
-
-function messageRenderer(type: string, data: any) {
-  parent.postMessage({ ...data, type }, '*');
 }
 
-function setup() {
-  messageRenderer('videobrew.setup', {
-    width: width,
-    height: height,
-    framerate: framerate,
-    frameCount: frameCount,
-  });
-}
-
-function tick(frame: number) {
-  video.renderFrame(frame);
+window.videobrew = {
+  async init() {
+    return {
+      width: width,
+      height: height,
+      framerate: framerate,
+      frameCount: frameCount,
+    };
+  },
+  async tick(frame: number) {
+    video.renderFrame(frame);
+  }
 }

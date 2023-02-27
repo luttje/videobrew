@@ -7,6 +7,7 @@
   import Primary from "$lib/components/button/Primary.svelte";
   import Text from "$lib/components/input/Text.svelte";
   import Range from "$lib/components/input/Range.svelte";
+  import { VIDEO_APP_PROXY_PATH } from "$lib/video";
   
   let overlay: { heading: string; message: string } | null = {
     heading: 'Loading...',
@@ -33,12 +34,8 @@
     frame: 0,
   };
 
-  function messageVideo(type: string, data?: object) {
-    if (!video.contentWindow) {
-      throw new Error("Video iframe has no contentWindow");
-    }
-
-    video.contentWindow.postMessage({ ...data, type }, '*');
+  function getVideoApp() {
+    return video.contentWindow!.videobrew;
   }
 
   function play() {
@@ -47,14 +44,14 @@
     if(videoInterval)
       clearInterval(videoInterval);
 
-    videoInterval = setInterval(() => {
+    videoInterval = setInterval(async () => {
       if(!videoPlayback.playing)
         return;
     
       if(videoPlayback.frame >= frameCount)
         stop();
 
-      messageVideo('videobrew.tick', { frame: videoPlayback.frame });
+      await getVideoApp().tick(videoPlayback.frame);
       nextFrame();
     }, 1000 / framerate);
   }
@@ -72,7 +69,7 @@
     scrubbing = false;
   }
 
-  function scrub(event: MouseEvent) {
+  async function scrub(event: MouseEvent) {
     if(!scrubbing)
       return;
 
@@ -86,7 +83,7 @@
     const percent = x / width;
 
     videoPlayback.frame = Math.max(0, Math.min(frameCount - 1, Math.floor(percent * frameCount)));
-    messageVideo('videobrew.tick', { frame: videoPlayback.frame });
+    await getVideoApp().tick(videoPlayback.frame);
   }
 
   function nextFrame() {
@@ -97,48 +94,34 @@
     videoPlayback.frame = 0;
   }
 
-  function stop() {
+  async function stop() {
     pause();
     reset();
-    messageVideo('videobrew.tick', { frame: videoPlayback.frame });
+    await getVideoApp().tick(videoPlayback.frame);
 
     if(videoInterval)
       clearInterval(videoInterval);
   }
 
-  function onVideoLoad() {
+  async function onVideoLoad() {
     console.log('Video loaded');
 
-    messageVideo('videobrew.init');
-    messageVideo('videobrew.tick', { frame: videoPlayback.frame });
-  }
-
-  function onMessage(event: MessageEvent) {
-    const { data: message } = event;
+    const setup = await getVideoApp().init();
     
-    switch (message.type) {
-      case 'videobrew.setup':
-        setupVideo(message.width, message.height, message.framerate, message.frameCount);
-        break;
-    }
-  }
-  
-  function setupVideo(desiredWidth: number, desiredHeight: number, desiredFamerate: number, desiredFrameCount: number) {
-    width = desiredWidth;
-    height = desiredHeight;
-    framerate = desiredFamerate;
-    frameCount = desiredFrameCount;
-
-    console.log('Video setup', { width, height, framerate, frameCount });
+    ({ width, height, framerate, frameCount } = setup);
+    
+    console.log('Video setup', setup);
 
     video.classList.remove('hidden');
     overlay = null;
+
+    await getVideoApp().tick(videoPlayback.frame);
   }
 
   onMount(() => {
     let videoUrl = window.VIDEOBREW_VIDEO_APP_URL;
 
-    video.src = videoUrl;
+    video.src = VIDEO_APP_PROXY_PATH;
 
     overlay = {
       heading: 'Loading...',
@@ -161,7 +144,7 @@
   });
 </script>
 
-<svelte:window on:message={onMessage}
+<svelte:window
   on:mousemove={scrub}
   on:mouseup={finishScrubbing} />
 

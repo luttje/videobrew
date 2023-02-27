@@ -10,12 +10,6 @@ type RecordingResult = {
   frameFiles: string[],
 }
 
-async function messageVideo(page: Page, type: string, data?: any) {
-  await page.evaluate((message) => {
-    window.postMessage(message);
-  }, { ...data, type });
-}
-
 export async function recordFrames(videoAppPathOrUrl: string, framesOutputPath: string) : Promise<RecordingResult> {
   return new Promise(async (resolve) => {
     const browser = await chromium.launch();
@@ -38,48 +32,33 @@ export async function recordFrames(videoAppPathOrUrl: string, framesOutputPath: 
     let frameFiles: string[] = [];
     let width, height, framerate, frameCount;
     
-    await page.exposeFunction('__messageForwarder', async (message: any) => {
-      switch (message.type) {
-        case 'videobrew.setup':
-          ({ width, height, framerate, frameCount } = message);
-          await page.setViewportSize({ width, height });
+    const setup = <VideoAppSetup>(await page.evaluate(`(async () => {
+      return await window.videobrew.init();
+    })()`));
 
-          for (let i = 0; i < frameCount; i++) {
-            frameFiles.push(await captureFrame(page, frame++, framesOutputPath));
-          }
+    ({ width, height, framerate, frameCount } = setup);
 
-          teardown(browser);
-          resolve({
-            width,
-            height,
-            framerate,
-            frameCount,
-            frameFiles,
-          });
+    await page.setViewportSize({ width, height });
 
-          break;
-        case 'videobrew.init':
-          break; // video side only
-        case 'videobrew.tick':
-          break; // video side only
-        default:
-          console.error('Unknown message type', message.type);
-      }
+    for (let i = 0; i < frameCount; i++) {
+      frameFiles.push(await captureFrame(page, frame++, framesOutputPath));
+    }
+
+    teardown(browser);
+    resolve({
+      width,
+      height,
+      framerate,
+      frameCount,
+      frameFiles,
     });
-
-    await page.evaluate(() => {
-      window.addEventListener('message', (event) => {
-        // @ts-ignore 2304
-        __messageForwarder(event.data);
-      });
-    });
-
-    messageVideo(page, 'videobrew.init');
   });
 }
 
 async function captureFrame(page: Page, frameIndex: number, outputPath: string) {
-  await messageVideo(page, 'videobrew.tick', { frame: frameIndex });
+  await page.evaluate(`(async (frameIndex) => {
+    await window.videobrew.tick(frameIndex);
+  })(${frameIndex})`);
   
   const output = `${outputPath}/${String(frameIndex).padStart(8, '0')}.jpeg`;
 
