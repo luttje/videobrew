@@ -138,6 +138,34 @@ async function render(videoAppUrl: string, outputPath: string) {
 
 async function preview(videoAppUrl: string) {
   const { server, host, port } = await startEditor(videoAppUrl);
+  let interval: NodeJS.Timer;
+  let isRestarting = false;
+
+  // When the server fails, restart it (this is a workaround for errors caused by `watch` rebuilding the editor with different filenames)
+  const restart = async () => {
+    clearInterval(interval);
+
+    if (isRestarting) return;
+    isRestarting = true;
+    
+    inform(`Restarting server...`, chalk.yellow);
+    server.kill();
+
+    await preview(videoAppUrl);
+  };
+
+  // While the server is running, keep checking it to see if it crashed
+  interval = setInterval(async () => {
+    try {
+      const result = await fetch(`http://${host}:${port}/`);
+
+      if (result.status !== 200)
+        restart();
+    } catch (e) {
+      restart();
+    }
+  }, 1000);
+
 
   server.stdout!.on('data', (data) => {
     if (!data.includes('http://')) {
@@ -148,10 +176,8 @@ async function preview(videoAppUrl: string) {
   });
 
   server.stderr!.on('data', (data) => {
-    // When the server fails, restart it (this is a workaround for errors caused by `watch` causing a rebuild)
-    inform(`Restarting server...`, chalk.yellow);
-    server.kill();
-    preview(videoAppUrl);
+    inform(`Editor Server Error: ${data}`, chalk.red);
+    restart();
   });
 
   server.on('close', (code) => {
