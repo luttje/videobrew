@@ -16,19 +16,19 @@ $ DEBUG=1 videobrew preview
 
 1. Clone the repo
 
-2. Install dependencies for all packages by running the following in the root directory:
+2. Install dependencies for all packages:
     ```bash
-    $ npm install
+    $ npm install # run in root
     ```
 
 3. Run the watchers that will build the packages as you make changes:
     ```bash
-    $ npx lerna run watch
+    $ npm run watch # run in root
     ```
 
 4. Ensure that the `videobrew` CLI and editor are linked as global packages:
     ```bash
-    $ cd packages/cli/dist
+    $ cd packages/cli/dist # start in root
     $ npm link
     $ cd ../../editor/dist
     $ npm link
@@ -43,10 +43,10 @@ $ DEBUG=1 videobrew preview
 
 ## Building
 
-In the root directory, run:
+Run:
 
 ```bash
-$ npm run build
+$ npm run build # run in root
 ```
 
 This will:
@@ -73,10 +73,10 @@ This will:
 
 ## Publishing
 
-1. In the root directory, run:
+1. Run:
 
     ```bash
-    npx lerna publish --no-private
+    npm run publish # run in root
     ```
 
 2. Choose the desired version number.
