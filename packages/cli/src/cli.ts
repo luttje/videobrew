@@ -118,6 +118,7 @@ async function showRenderFormats(containerFormats: VideoFormat[]) {
 
 async function render(videoAppUrl: string, outputPath: string) {  
   const outputDirectory = path.dirname(outputPath);
+  await fs.mkdirSync(outputDirectory, { recursive: true });
   const framesOutputPath = await fs.mkdtempSync(path.join(outputDirectory, '~tmp-'));
   const {
     framerate,
