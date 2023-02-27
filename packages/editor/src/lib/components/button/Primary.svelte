@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let href: string = "";
+    export let href: string = 'javascript:void(00);';
     export let disabled: boolean = false;
     export let selected: boolean = false;
     export let form: string | undefined = undefined;

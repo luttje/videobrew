@@ -18,6 +18,9 @@
   let height: number;
   let framerate: number;
   let frameCount: number;
+  
+  let timeline: HTMLDivElement;
+  let scrubbing = false;
 
   let videoInterval: NodeJS.Timer;
   let video: HTMLIFrameElement;
@@ -58,6 +61,32 @@
 
   function pause() {
     videoPlayback.playing = false;
+  }
+
+  function startScrubbing(event: MouseEvent) {
+    scrubbing = true;
+    scrub(event);
+  }
+
+  function finishScrubbing() {
+    scrubbing = false;
+  }
+
+  function scrub(event: MouseEvent) {
+    if(!scrubbing)
+      return;
+
+    if(!event.buttons){
+      finishScrubbing();
+      return;
+    }
+
+    const { left, width } = timeline.getBoundingClientRect();
+    const x = event.clientX - left;
+    const percent = x / width;
+
+    videoPlayback.frame = Math.max(0, Math.min(frameCount - 1, Math.floor(percent * frameCount)));
+    messageVideo('videobrew.tick', { frame: videoPlayback.frame });
   }
 
   function nextFrame() {
@@ -132,7 +161,9 @@
   });
 </script>
 
-<svelte:window on:message={onMessage} />
+<svelte:window on:message={onMessage}
+  on:mousemove={scrub}
+  on:mouseup={finishScrubbing} />
 
 <main class="flex flex-col gap-4">
   <div
@@ -178,6 +209,19 @@
           {height}>
         </iframe>
       </div>
+    </div>
+  </div>
+
+  <!-- Timeline for scrubbing through the video -->
+  <div class="relative flex flex-row h-8"
+    bind:this={timeline}
+    on:mousedown={startScrubbing}>
+    <div
+      class="bg-slate-700 rounded-lg"
+      style="width: {videoPlayback.frame / (frameCount - 1) * 100}%;"
+    ></div>
+    <div class="grid place-content-center text-sm text-slate-100 absolute inset-0 select-none">
+      {videoPlayback.frame + 1} / {frameCount}
     </div>
   </div>
 
