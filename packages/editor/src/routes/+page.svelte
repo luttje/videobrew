@@ -38,6 +38,10 @@
     return video.contentWindow!.videobrew;
   }
 
+  async function drawCurrentFrame() {
+    await getVideoApp().tick(videoPlayback.frame);
+  }
+
   function play() {
     videoPlayback.playing = true;
 
@@ -51,12 +55,9 @@
       if(!videoPlayback.playing)
         return;
     
-      await getVideoApp().tick(videoPlayback.frame);
+      await drawCurrentFrame();
 
-      if(hasReachedEnd())
-        pause();
-      else
-        nextFrame();
+      nextFrame();
     }, 1000 / framerate);
   }
 
@@ -87,7 +88,11 @@
     const percent = x / width;
 
     videoPlayback.frame = Math.max(0, Math.min(frameCount - 1, Math.floor(percent * frameCount)));
-    await getVideoApp().tick(videoPlayback.frame);
+    await drawCurrentFrame();
+  }
+
+  function hasReachedStart() {
+    return videoPlayback.frame - 1 <= 0;
   }
 
   function hasReachedEnd() {
@@ -95,7 +100,17 @@
   }
 
   function nextFrame() {
-    videoPlayback.frame++;
+    if(hasReachedEnd())
+      pause();
+    else
+      videoPlayback.frame++;
+  }
+
+  function previousFrame() {
+    if(hasReachedStart())
+      pause();
+    else
+      videoPlayback.frame--;
   }
 
   function reset() {
@@ -108,7 +123,7 @@
 
     pause();
     reset();
-    await getVideoApp().tick(videoPlayback.frame);
+    await drawCurrentFrame();
   }
 
   async function onVideoLoad() {
@@ -118,12 +133,10 @@
     
     ({ width, height, framerate, frameCount } = setup);
     
-    console.log('Video setup', setup);
-
     video.classList.remove('hidden');
     overlay = null;
 
-    await getVideoApp().tick(videoPlayback.frame);
+    await drawCurrentFrame();
   }
 
   onMount(() => {
@@ -203,17 +216,31 @@
     </div>
   </div>
 
-  <!-- Timeline for scrubbing through the video -->
-  <div class="relative flex flex-row h-8"
-    bind:this={timeline}
-    on:mousedown={startScrubbing}>
-    <div
-      class="bg-slate-700 rounded-lg"
-      style="width: {videoPlayback.frame / (frameCount - 1) * 100}%;"
-    ></div>
-    <div class="grid place-content-center text-sm text-slate-100 absolute inset-0 select-none">
-      {videoPlayback.frame} / {frameCount - 1}
+  <!-- Timeline -->
+  <div class="flex flex-row gap-2 justify-items-stretch">
+    <Primary shrink
+      title="Previous frame"
+      on:click={() => {
+        previousFrame();
+        drawCurrentFrame();
+      }}>❮</Primary>
+    <div class="relative flex-1 flex flex-row"
+      bind:this={timeline}
+      on:mousedown={startScrubbing}>
+      <div
+        class="bg-slate-700 rounded-lg"
+        style="width: {videoPlayback.frame / (frameCount - 1) * 100}%;"
+      ></div>
+      <div class="grid place-content-center text-sm text-slate-100 absolute inset-0 select-none">
+        {videoPlayback.frame} / {frameCount - 1}
+      </div>
     </div>
+    <Primary shrink
+      title="Next frame"
+      on:click={() => {
+        nextFrame();
+        drawCurrentFrame();
+      }}>❯</Primary>
   </div>
 
   {#if videoPlayback.playing}
