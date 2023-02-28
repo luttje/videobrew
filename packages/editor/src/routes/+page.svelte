@@ -8,6 +8,7 @@
   import Text from "$lib/components/input/Text.svelte";
   import Range from "$lib/components/input/Range.svelte";
   import { VIDEO_APP_PROXY_PATH } from "$lib/video";
+  import Tag from "$lib/components/content/Tag.svelte";
   
   let overlay: { heading: string; message: string } | null = {
     heading: 'Loading...',
@@ -256,6 +257,24 @@
     <h2 class="text-xl">How to render</h2>
     <p>You can render this video by running this command in the root of your video project:</p>
     <pre>videobrew render</pre>
+  </div>
+  
+  <div class="flex flex-col gap-2 rounded bg-slate-700 p-4">
+    <h2 class="text-xl">Video Setup</h2>
+    <div class="flex flex-row flex-wrap gap-2 list-disc list-inside">
+      <Tag>
+        <span>📺</span>
+        <span>{width} x {height}</span>
+      </Tag>
+      <Tag>
+        <span>⌚</span>
+        <span>{framerate} frames per second</span>
+      </Tag>
+      <Tag>
+        <span>🎞</span>
+        <span>{frameCount} frames</span>
+      </Tag>
+    </div>
   </div>
 </main>
 
