@@ -15,7 +15,13 @@ const config = {
     },
     devServer: {
         open: true,
+        port: 8088,
         host: 'localhost',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Cross-Origin-Embedder-Policy': 'require-corp',
+            'Cross-Origin-Resource-Policy': 'cross-origin',
+        }
     },
     plugins: [
         new HtmlWebpackPlugin({

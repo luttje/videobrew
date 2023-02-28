@@ -35,7 +35,10 @@
   };
 
   function getVideoApp() {
-    return video.contentWindow!.videobrew;
+    if(!video.contentWindow)
+      throw new Error('Video app not loaded');
+
+    return video.contentWindow.videobrew;
   }
 
   async function drawCurrentFrame() {
