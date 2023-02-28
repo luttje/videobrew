@@ -176,52 +176,42 @@
   <div
     class="flex flex-col bg-slate-700 border-inside border-2 border-slate-600"
   >
-    <div class="flex flex-col gap-2 p-4 bg-slate-600 items-center">
-      <Setting>
-        Framerate
-        <Text slot="input" disabled value="{framerate?.toString()}" />
-      </Setting>
-      <Setting>
-        Resolution
-        <div slot="input" class="flex flex-row gap-2">
-          <Text small disabled value="{width?.toString()}" />
-          x
-          <Text small disabled value="{height?.toString()}" />
-        </div>
-      </Setting>
-      <Setting>
-        Scale
-        <Range
-          slot="input"
-          step={0.1}
-          min={0.1}
-          max={1}
-          bind:value={scaleSetting}
-        />
-      </Setting>
-    </div>
-    <div class="flex flex-row justify-end p-2">
+    <div class="flex flex-row justify-end p-4 items-center">
+      <div class="flex-1">
+        <Setting>
+          Zoom
+          <Range
+            slot="input"
+            step={0.1}
+            min={0.1}
+            max={1}
+            bind:value={scaleSetting}
+          />
+        </Setting>
+      </div>
       <Primary shrink
         title="Refresh video app"
         on:click={() => video.contentWindow?.location.reload()}>
         ⭯
       </Primary>
     </div>
-    <div class="overflow-hidden m-2"
-      style="width: {width*scaleSetting}px; height: {height*scaleSetting}px;"
-      >
-      <div
-        class="relative overflow-hidden inline-block bg-white"
-        style="width: {width}px; height: {height}px; transform: scale({scaleSetting}); transform-origin: top left;"
-      >
-        <iframe bind:this={video} 
-          on:load={onVideoLoad}
-          title="Video described by web-app"
-          class="hidden"
-          id="video"
-          {width}
-          {height}>
-        </iframe>
+    <div class="flex flex-col items-center p-4 bg-slate-800 rounded">
+      <div class="overflow-hidden"
+        style="width: {width*scaleSetting}px; height: {height*scaleSetting}px;"
+        >
+        <div
+          class="relative overflow-hidden inline-block bg-white"
+          style="width: {width}px; height: {height}px; transform: scale({scaleSetting}); transform-origin: top left;"
+        >
+          <iframe bind:this={video} 
+            on:load={onVideoLoad}
+            title="Video described by web-app"
+            class="hidden"
+            id="video"
+            {width}
+            {height}>
+          </iframe>
+        </div>
       </div>
     </div>
   </div>
@@ -241,7 +231,7 @@
         class="bg-slate-700 rounded-lg"
         style="width: {videoPlayback.frame / (frameCount - 1) * 100}%;"
       ></div>
-      <div class="grid place-content-center text-sm text-slate-100 absolute inset-0 select-none">
+      <div class="grid place-content-center text-sm absolute inset-0 select-none">
         {videoPlayback.frame} / {frameCount - 1}
       </div>
     </div>
