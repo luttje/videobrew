@@ -64,8 +64,9 @@ export const handle = (async ({ event, resolve }) => {
   const [beforeBody, afterBody] = bodyParts;
   const scriptTag = `<script>window.VIDEOBREW_VIDEO_APP_URL = '${videoAppUrl}';</script>`;
   const newBody = `${beforeBody}${scriptTag}</body>${afterBody}`;
+  const newBodySize = new TextEncoder().encode(newBody).length;
 
   const replacementResponse = new Response(newBody, response);
-  replacementResponse.headers.set('content-length', newBody.length.toString());
+  replacementResponse.headers.set('content-length', newBodySize.toString());
   return replacementResponse;
 }) satisfies Handle;
