@@ -33,15 +33,17 @@ export const handle = (async ({ event, resolve }) => {
 
     if (isVideoProxyPath)
       path = path.substring(VIDEO_APP_PROXY_PATH.length);
-
+    
     const rewrittenUrl = videoAppUrl + path;
     const videoAppUrlResponse = await fetch(rewrittenUrl);
-    
+
     if (!videoAppUrlResponse.ok)
       throw new Error(`Video app URL ${videoAppUrl} is not responding with 200 OK! Please provide a valid URL to where your video app is being served.`);
 
-    // Proxy the request to the video app
-    return new Response(videoAppUrlResponse.body, videoAppUrlResponse);
+    // Proxy the request to the video app, removing encoding
+    const response = new Response(videoAppUrlResponse.body, videoAppUrlResponse);
+    response.headers.delete('content-encoding');
+    return response;
   }
 
   const response = await resolve(event);
