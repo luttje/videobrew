@@ -200,6 +200,13 @@
         />
       </Setting>
     </div>
+    <div class="flex flex-row justify-end p-2">
+      <Primary shrink
+        title="Refresh video app"
+        on:click={() => video.contentWindow?.location.reload()}>
+        ⭯
+      </Primary>
+    </div>
     <div class="overflow-hidden m-2"
       style="width: {width*scaleSetting}px; height: {height*scaleSetting}px;"
       >
