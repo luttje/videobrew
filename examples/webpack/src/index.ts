@@ -1,14 +1,14 @@
 
-import { makeFadeFrames, makeParallelFrames, makePulseFrames, makeShiftBackgroundFrames, makeWaitFrames } from './make-frames';
 import { VideoBuilder } from './video-builder';
 // For demonstration purposes, we are importing a JSON file
 // but you could get this data from an API call or any other source
 import data from './fakeapi.json';
 import './index.scss';
+import { FrameCount } from './frames';
 
 const screen = document.getElementById('screen');
 
-// Show an intro screen that has the city image as background and shows the city name and state name
+// Build the scene HTML that shows the city and state
 function startIntroScene() {
   screen.style.backgroundImage = `url(${data.image})`;
   screen.innerHTML = `
@@ -20,7 +20,7 @@ function startIntroScene() {
   </div>`;
 }
 
-// Show the weather screen that has the weather image hovering, showing the temperature and wind speed (with wind icon)
+// Build the scene HTML that shows the weather data
 function startWeatherScene() {
   screen.innerHTML = `
   <div class="container">
@@ -43,41 +43,43 @@ function startWeatherScene() {
 
 const videoBuilder = new VideoBuilder('#screen');
 
+// Add the scene constructor to the video, the builder then describes how frames 
+// should modify the HTML and CSS of the scene constructor
 videoBuilder.addScene(startIntroScene, (scene) => {
   const duration = 3;
   const fadeTime = 0.2;
   
-  scene.addToFrames(
-    makeParallelFrames(
-      // Scene lasts 3 seconds
-      videoBuilder.frameCountFromSeconds(duration),
-  
-      // Shifting the whole time
-      makeShiftBackgroundFrames('#screen', 0, -100, videoBuilder.frameCountFromSeconds(duration)),
-  
-      // But only fading out at the end
-      [
-        ...makeWaitFrames(videoBuilder.frameCountFromSeconds(duration - fadeTime)), // fade out starts at 2.8 seconds
-        ...makeFadeFrames('#screen', 1, 0, videoBuilder.frameCountFromSeconds(fadeTime)) // fade out lasts 0.2 seconds
-      ]
-    )
+  scene.addParallelFrames(
+    FrameCount.fromSeconds(duration),
+    (parallelScene) => {
+      parallelScene.addHorizontalBackgroundShiftFrames('#screen', 0, -100, FrameCount.fromSeconds(duration));
+    },
+    (parallelScene) => {
+      parallelScene
+        .addWaitFrames(FrameCount.fromSeconds(duration - fadeTime))
+        .addFadeFrames('#screen', 1, 0, FrameCount.fromSeconds(fadeTime));
+    }
   )
 });
 
+// Weather Scene
 videoBuilder.addScene(startWeatherScene, (scene) => {
-  scene.addToFrames(makeFadeFrames('#screen', 0, 1, videoBuilder.frameCountFromSeconds(0.2)))
+  scene.addFadeFrames('#screen', 0, 1, FrameCount.fromSeconds(0.2));
 
-  scene.addToFrames(
-    makeParallelFrames(
-      videoBuilder.frameCountFromSeconds(3),
-      makePulseFrames('.icon', 3, videoBuilder.frameCountFromSeconds(3)),
-      makeShiftBackgroundFrames('#screen', -100, -200, videoBuilder.frameCountFromSeconds(3))
-    )
+  scene.addParallelFrames(
+    FrameCount.fromSeconds(3),
+    (scene) => {
+      scene.addPulseFrames('.icon', 3, FrameCount.fromSeconds(3));
+    },
+    (scene) => {
+      scene.addHorizontalBackgroundShiftFrames('#screen', -100, -200, FrameCount.fromSeconds(3));
+    }
   );
   
-  scene.addToFrames(makeFadeFrames('#screen', 1, 0, videoBuilder.frameCountFromSeconds(0.2)));
+  scene.addFadeFrames('#screen', 1, 0, FrameCount.fromSeconds(0.2));
 });
 
+// Build the video into a final object with frames that can be previewed and rendered
 const video = videoBuilder.build();
 const width = 360;
 const height = 640;

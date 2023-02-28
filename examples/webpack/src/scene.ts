@@ -1,4 +1,4 @@
-import { Frame } from './make-frames';
+import { Frame } from "./frames";
 
 export class Scene {
   constructor(

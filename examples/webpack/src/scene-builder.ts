@@ -1,9 +1,16 @@
-import { Frame } from './make-frames';
+import { modifyTransform } from './dom-utils';
+import { Frame, FrameCount } from './frames';
 import { Scene } from './scene';
+
+export type SceneBuilderCallback = (sceneBuilder: SceneBuilder) => void;
 
 export class SceneBuilder {
   private readonly frames: Frame[] = [];
   private isBuilt = false;
+
+  constructor(
+    private readonly framerate: number,
+  ) { }
 
   public addToFrames(frame: Frame | Frame[]) {
     if (this.isBuilt) {
@@ -20,6 +27,85 @@ export class SceneBuilder {
     } else {
       this.frames.push(null);
     }
+
+    return this;
+  }
+    
+  /**
+   * Construct the scene by providing as many callbacks as you want. They frames built by each callback will be run in parallel in the scene.
+   */
+  public addParallelFrames(forDuration: FrameCount, ...sceneBuilderCallbacks: SceneBuilderCallback[]) {
+    const framesSets: Frame[][] = [];
+
+    for (let i = 0; i < sceneBuilderCallbacks.length; i++) {
+      const scene = new SceneBuilder(this.framerate);
+      sceneBuilderCallbacks[i](scene);
+      framesSets.push(scene.frames);
+    }
+
+    const parallelFrames: Frame[] = [];
+
+    for (let i = 0; i < forDuration.get(this.framerate); i++) {
+      const frames: Frame[] = [];
+
+      framesSets.forEach(f => {
+        if (i < f.length) {
+          frames.push(f[i]);
+        }
+      });
+
+      parallelFrames.push(() => {
+        frames.forEach(f => f && f());
+      });
+    }
+
+    this.addToFrames(parallelFrames);
+
+    return this;
+  }
+
+  public addHorizontalBackgroundShiftFrames(selector: string, fromX: number, toY: number, forDuration: FrameCount) {
+    for (let i = 0; i < forDuration.get(this.framerate); i++) {
+      this.addToFrames(() => {
+        const element = document.querySelector(selector) as HTMLElement;
+        const shift = fromX + (toY - fromX) * (i / forDuration.get(this.framerate));
+        element.style.backgroundPositionX = `${shift}px`;
+      });
+    }
+
+    return this;
+  }
+
+  public addFadeFrames(selector: string, fromOpacity: number, toOpacity: number, forDuration: FrameCount) {
+    for (let i = 0; i < forDuration.get(this.framerate); i++) {
+      this.addToFrames(() => {
+        const element = document.querySelector(selector) as HTMLElement;
+        let opacity = fromOpacity + (toOpacity - fromOpacity) * (i / (forDuration.get(this.framerate) - 1));
+        element.style.opacity = `${opacity}`;
+      });
+    }
+
+    return this;
+  }
+
+  public addPulseFrames(selector: string, times: number, forDuration: FrameCount) {
+    for (let i = 0; i < forDuration.get(this.framerate); i++) {
+      this.addToFrames(() => {
+        const element = document.querySelector(selector) as HTMLElement;
+        const scale = 1 - Math.sin(i / forDuration.get(this.framerate) * Math.PI * times) * 0.2;
+        element.style.transform = modifyTransform(element.style.transform, 'scale', scale);
+      });
+    }
+
+    return this;
+  }
+
+  public addWaitFrames(forDuration: FrameCount) {
+    for (let i = 0; i < forDuration.get(this.framerate); i++) {
+      this.addToFrames(null);
+    }
+
+    return this;
   }
 
   public build(resetFrame: Frame, firstFrameIndex: number) {

@@ -1,7 +1,7 @@
-import { Frame, FrameCount } from './make-frames';
-import { SceneBuilder } from './scene-builder';
+import { SceneBuilder, SceneBuilderCallback } from './scene-builder';
 import { Video } from './video';
 import { Scene } from './scene';
+import { Frame } from './frames';
 
 export class VideoBuilder {
   private readonly scenes: Scene[] = [];
@@ -13,14 +13,10 @@ export class VideoBuilder {
     private readonly framerate: number = 30,
   ) { }
 
-  public frameCountFromSeconds(seconds: number): FrameCount {
-    return {
-      get: () => seconds * this.framerate
-    }
-  }
-
-  // Creates a frame whilst also storing the html element state before the frame, so it can be reset later
-  public addScene(frame: Frame, sceneBuilderCallback: (scene: SceneBuilder) => void) {
+  /**
+   * Creates a frame whilst also storing the html element state before the frame, so it can be reset later
+   */
+  public addScene(frame: Frame, sceneBuilderCallback: SceneBuilderCallback) {
     if (this.isBuilt) {
       throw new Error('Cannot add scenes to a video after it has been built');
     }
@@ -37,7 +33,7 @@ export class VideoBuilder {
     frame();
 
     // Call the scene builder to add frames to the scene (pre-rendering them)
-    const sceneBuilder = new SceneBuilder();
+    const sceneBuilder = new SceneBuilder(this.framerate);
     sceneBuilderCallback(sceneBuilder);
 
     // Construct a reset frame that will reset the element to its original state
