@@ -72,7 +72,7 @@ videoBuilder.addScene(startWeatherScene, (scene) => {
       scene.addPulseFrames('.icon', 3, FrameCount.fromSeconds(3));
     },
     (scene) => {
-      scene.addValueTranslationFrames('#screen', 'background-position-x', -100, -200, FrameCount.fromSeconds(3));
+      scene.addValueTranslationFrames('#screen', 'background-position-x', -100, -200, 'px', FrameCount.fromSeconds(3));
     }
   );
   

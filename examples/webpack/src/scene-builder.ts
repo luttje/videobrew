@@ -72,13 +72,14 @@ export class SceneBuilder {
     property: string,
     fromValue: number,
     toValue: number,
+    unit: string | null,
     forDuration: FrameCount
   ) {
     for (let i = 0; i < forDuration.get(this.framerate); i++) {
       this.addToFrames(() => {
         const element = document.querySelector(selector) as HTMLElement;
-        const value = fromValue + (toValue - fromValue) * (i / forDuration.get(this.framerate));
-        element.style.setProperty(property, `${value}px`);
+        const value = fromValue + (toValue - fromValue) * ((i + 1) / forDuration.get(this.framerate));
+        element.style.setProperty(property, `${value}${unit ?? ''}`);
       });
     }
     
@@ -91,15 +92,16 @@ export class SceneBuilder {
     toY: number,
     forDuration: FrameCount
   ) {
-    for (let i = 0; i < forDuration.get(this.framerate); i++) {
-      this.addToFrames(() => {
-        const element = document.querySelector(selector) as HTMLElement;
-        const shift = fromX + (toY - fromX) * (i / forDuration.get(this.framerate));
-        element.style.backgroundPositionX = `${shift}px`;
-      });
-    }
+    // for (let i = 0; i < forDuration.get(this.framerate); i++) {
+    //   this.addToFrames(() => {
+    //     const element = document.querySelector(selector) as HTMLElement;
+    //     const shift = fromX + (toY - fromX) * ((i + 1) / forDuration.get(this.framerate));
+    //     element.style.backgroundPositionX = `${shift}px`;
+    //   });
+    // }
 
-    return this;
+    // return this;
+    return this.addValueTranslationFrames(selector, 'background-position-x', fromX, toY, 'px', forDuration);
   }
 
   public addVerticalBackgroundShiftFrames(
@@ -108,15 +110,16 @@ export class SceneBuilder {
     toY: number,
     forDuration: FrameCount
   ) {
-    for (let i = 0; i < forDuration.get(this.framerate); i++) {
-      this.addToFrames(() => {
-        const element = document.querySelector(selector) as HTMLElement;
-        const shift = fromY + (toY - fromY) * (i / forDuration.get(this.framerate));
-        element.style.backgroundPositionY = `${shift}px`;
-      });
-    }
+    // for (let i = 0; i < forDuration.get(this.framerate); i++) {
+    //   this.addToFrames(() => {
+    //     const element = document.querySelector(selector) as HTMLElement;
+    //     const shift = fromY + (toY - fromY) * ((i + 1) / forDuration.get(this.framerate));
+    //     element.style.backgroundPositionY = `${shift}px`;
+    //   });
+    // }
 
-    return this;
+    // return this;
+    return this.addValueTranslationFrames(selector, 'background-position-y', fromY, toY, 'px', forDuration);
   }
 
   public addFadeFrames(
@@ -125,15 +128,16 @@ export class SceneBuilder {
     toOpacity: number,
     forDuration: FrameCount
   ) {
-    for (let i = 0; i < forDuration.get(this.framerate); i++) {
-      this.addToFrames(() => {
-        const element = document.querySelector(selector) as HTMLElement;
-        let opacity = fromOpacity + (toOpacity - fromOpacity) * (i / (forDuration.get(this.framerate) - 1));
-        element.style.opacity = `${opacity}`;
-      });
-    }
+    // for (let i = 0; i < forDuration.get(this.framerate); i++) {
+    //   this.addToFrames(() => {
+    //     const element = document.querySelector(selector) as HTMLElement;
+    //     let opacity = fromOpacity + (toOpacity - fromOpacity) * ((i + 1) / forDuration.get(this.framerate));
+    //     element.style.opacity = `${opacity}`;
+    //   });
+    // }
 
-    return this;
+    // return this;
+    return this.addValueTranslationFrames(selector, 'opacity', fromOpacity, toOpacity, null, forDuration);
   }
 
   public addPulseFrames(
@@ -144,7 +148,7 @@ export class SceneBuilder {
     for (let i = 0; i < forDuration.get(this.framerate); i++) {
       this.addToFrames(() => {
         const element = document.querySelector(selector) as HTMLElement;
-        const scale = 1 - Math.sin(i / forDuration.get(this.framerate) * Math.PI * times) * 0.2;
+        const scale = 1 - Math.sin(((i + 1) / forDuration.get(this.framerate)) * Math.PI * times) * 0.2;
         element.style.transform = modifyTransform(element.style.transform, 'scale', scale);
       });
     }
