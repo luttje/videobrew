@@ -1,6 +1,6 @@
 {
-	"name": "@videobrew/cli",
-	"description": "Create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
+	"name": "@videobrew/client",
+	"description": "Client library to create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
 	"keywords": [
 		"video",
 		"generation",
@@ -15,15 +15,13 @@
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
 	"version": "0.2.5",
-	"type": "module",
-	"types": "./dist/types/cli.d.ts",
-	"bin": {
-		"videobrew": "./dist/esm/cli.js"
-	},
 	"publishConfig": {
 		"access": "public",
 		"directory": "dist"
 	},
+	"type": "module",
+	"main": "./dist/esm/index.js",
+	"types": "./dist/types/index.d.ts",
 	"scripts": {
 		"dev": "npx tsc --watch",
 		"watch": "npx tsc --watch",
@@ -35,23 +33,7 @@
 		"postbuild": "npm run docs-build && npm run package",
 		"prepack": "npm run package"
 	},
-	"dependencies": {
-		"@videobrew/client": "file:../client/dist",
-		"ascii-table3": "^0.8.2",
-		"chalk": "^4.1.2",
-		"cli-progress": "^3.12.0",
-		"ffmpeg-static": "^5.1.0",
-		"local-web-server": "^4.2.1",
-		"node-cleanup": "^2.1.2",
-		"playwright": "^1.31.1",
-		"prompts": "^2.4.2",
-		"ts-command-line-args": "^2.4.2"
-	},
 	"devDependencies": {
-		"@types/cli-progress": "^3.11.0",
-		"@types/node": "^18.14.1",
-		"@types/node-cleanup": "^2.1.2",
-		"@types/prompts": "^2.4.2",
 		"typescript": "^4.9.5"
 	},
 	"gitHead": "2513190cc1de00d1049e35f9c942b779447530f9"

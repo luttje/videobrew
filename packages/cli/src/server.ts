@@ -1,5 +1,6 @@
+import EnableCorsForIframe from './utils/mw-cors.js';
 import LocalWebServer from 'local-web-server';
-import EnableCorsForIframe from './utils/mw-cors';
+import { Server } from 'tls';
 
 export interface LocalWebServerInstance {
   server: any;
@@ -30,8 +31,7 @@ export async function createLocalWebServer(videoAppPath: string) {
     ],
   });
 
-  const tls = require('tls')
-  const protocol = lws instanceof tls.Server ? 'https' : 'http';
+  const protocol = lws instanceof Server ? 'https' : 'http';
   const url = `${protocol}://${lws.config.hostname || '127.0.0.1'}:${lws.config.port}`;
 
   return {

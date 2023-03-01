@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoFormat } from './rendering/video-from-frames';
+import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoFormat } from './rendering/video-from-frames.js';
+import { startEditor, getEditorInstallPath, getEditorInstaller, EDITOR_PACKAGE_NAME } from './editor.js';
+import { getExtensionByQuality, recordFrames } from './rendering/record-frames.js';
+import { createLocalWebServer, LocalWebServerInstance } from './server.js';
+import { inform, debug, panic, newlines } from './utils/logging.js';
 import { ArgumentConfig, parse } from 'ts-command-line-args';
-import { getExtensionByQuality, recordFrames } from './rendering/record-frames';
-import { inform, debug, panic, newlines } from './utils/logging';
-import { createLocalWebServer, LocalWebServerInstance } from './server';
-import { isVideoAppUrl } from './utils/is-video-url';
+import { isVideoAppUrl } from './utils/is-video-url.js';
 import { AsciiTable3 } from 'ascii-table3';
-import { startEditor, getEditorInstallPath, getEditorInstaller, EDITOR_PACKAGE_NAME } from './editor';
+import nodeCleanup from 'node-cleanup';
 import { cwd } from 'process';
 import chalk from 'chalk';
 import path from 'path';
@@ -392,8 +393,7 @@ async function main() {
     debug(`Stopped local server`);
   }
 
-  var nodeCleanup = require('node-cleanup');
-  nodeCleanup(function (exitCode: number, signal: any) {
+  nodeCleanup(function (exitCode, signal) {
     stopLocalServer();
   });
 

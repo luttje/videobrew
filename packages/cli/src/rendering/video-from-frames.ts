@@ -1,5 +1,5 @@
+import { shell } from '../utils/shell.js';
 import pathToFfmpeg from 'ffmpeg-static';
-import { shell } from '../utils/shell';
 import { exec } from 'child_process';
 import util from 'util';
 import path from 'path';
@@ -43,9 +43,7 @@ export async function buildVideoConfigFromFrames(
 
 export async function renderVideo(videoConfig: VideoConfig, onProgress?: VideoProgressCallback): Promise<string> {
   return new Promise((resolve, reject) => {
-    const { stderr } = exec(videoConfig.command, {
-      cwd: __dirname,
-    });
+    const { stderr } = exec(videoConfig.command);
     let output = '';
 
     stderr!.on('data', (data: string) => {
@@ -64,9 +62,7 @@ export async function renderVideo(videoConfig: VideoConfig, onProgress?: VideoPr
 }
 
 export async function getContainerFormats(): Promise<VideoFormat[]> {
-  const { stdout } = await execAsync(`${pathToFfmpeg} -formats`, {
-    cwd: __dirname,
-  });
+  const { stdout } = await execAsync(`${pathToFfmpeg} -formats`);
 
   return stdout
     .split('\r\n')

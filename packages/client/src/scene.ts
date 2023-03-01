@@ -1,4 +1,4 @@
-import { Frame } from "./frames";
+import { Frame } from "./frames.js";
 
 export class Scene {
   constructor(

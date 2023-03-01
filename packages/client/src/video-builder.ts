@@ -1,7 +1,7 @@
-import { SceneBuilder, SceneBuilderCallback } from './scene-builder';
-import { Video } from './video';
-import { Scene } from './scene';
-import { Frame } from './frames';
+import { SceneBuilder, SceneBuilderCallback } from './scene-builder.js';
+import { Video } from './video.js';
+import { Scene } from './scene.js';
+import { Frame } from './frames.js';
 
 export class VideoBuilder {
   private readonly scenes: Scene[] = [];

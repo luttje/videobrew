@@ -1,4 +1,5 @@
-export type Frame = (() => void) | null;
+export type Frame = () => void;
+export const EmptyFrame: Frame = () => { };
 
 export class FrameCount {
   private static readonly ticksPerSecond: number = 100;

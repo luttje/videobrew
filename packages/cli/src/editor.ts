@@ -1,5 +1,5 @@
 import { exec, spawn, ChildProcess } from 'child_process';
-import { debug, panic } from './utils/logging';
+import { debug, panic } from './utils/logging.js';
 import path from 'path';
 import util from 'util';
 import fs from 'fs';

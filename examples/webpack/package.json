@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/node": "^18.14.2",
     "@types/webpack": "^5.28.0",
+    "@videobrew/client": "file:../../packages/client/dist",
     "@webpack-cli/generators": "^3.0.1",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",

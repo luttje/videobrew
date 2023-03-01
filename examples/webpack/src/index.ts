@@ -1,10 +1,9 @@
 
-import { VideoBuilder } from './video-builder';
+import { VideoBuilder, FrameCount } from '@videobrew/client';
 // For demonstration purposes, we are importing a JSON file
 // but you could get this data from an API call or any other source
 import data from './fakeapi.json';
 import './index.scss';
-import { FrameCount } from './frames';
 
 const screen = document.getElementById('screen');
 

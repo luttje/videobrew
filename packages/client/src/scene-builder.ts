@@ -1,6 +1,6 @@
-import { modifyTransform } from './dom-utils';
-import { Frame, FrameCount } from './frames';
-import { Scene } from './scene';
+import { modifyTransform } from './dom-utils.js';
+import { EmptyFrame, Frame, FrameCount } from './frames.js';
+import { Scene } from './scene.js';
 
 export type SceneBuilderCallback = (sceneBuilder: SceneBuilder) => void;
 
@@ -25,7 +25,7 @@ export class SceneBuilder {
         this.addToFrames(f);
       }
     } else {
-      this.frames.push(null);
+      this.frames.push(EmptyFrame);
     }
 
     return this;
@@ -158,7 +158,7 @@ export class SceneBuilder {
 
   public addWaitFrames(forDuration: FrameCount) {
     for (let i = 0; i < forDuration.get(this.framerate); i++) {
-      this.addToFrames(null);
+      this.addToFrames(EmptyFrame);
     }
 
     return this;
