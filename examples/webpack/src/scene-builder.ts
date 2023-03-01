@@ -34,7 +34,10 @@ export class SceneBuilder {
   /**
    * Construct the scene by providing as many callbacks as you want. They frames built by each callback will be run in parallel in the scene.
    */
-  public addParallelFrames(forDuration: FrameCount, ...sceneBuilderCallbacks: SceneBuilderCallback[]) {
+  public addParallelFrames(
+    forDuration: FrameCount,
+    ...sceneBuilderCallbacks: SceneBuilderCallback[]
+  ) {
     const framesSets: Frame[][] = [];
 
     for (let i = 0; i < sceneBuilderCallbacks.length; i++) {
@@ -64,7 +67,30 @@ export class SceneBuilder {
     return this;
   }
 
-  public addHorizontalBackgroundShiftFrames(selector: string, fromX: number, toY: number, forDuration: FrameCount) {
+  public addValueTranslationFrames(
+    selector: string,
+    property: string,
+    fromValue: number,
+    toValue: number,
+    forDuration: FrameCount
+  ) {
+    for (let i = 0; i < forDuration.get(this.framerate); i++) {
+      this.addToFrames(() => {
+        const element = document.querySelector(selector) as HTMLElement;
+        const value = fromValue + (toValue - fromValue) * (i / forDuration.get(this.framerate));
+        element.style.setProperty(property, `${value}px`);
+      });
+    }
+    
+    return this;
+  }
+
+  public addHorizontalBackgroundShiftFrames(
+    selector: string,
+    fromX: number,
+    toY: number,
+    forDuration: FrameCount
+  ) {
     for (let i = 0; i < forDuration.get(this.framerate); i++) {
       this.addToFrames(() => {
         const element = document.querySelector(selector) as HTMLElement;
@@ -76,7 +102,29 @@ export class SceneBuilder {
     return this;
   }
 
-  public addFadeFrames(selector: string, fromOpacity: number, toOpacity: number, forDuration: FrameCount) {
+  public addVerticalBackgroundShiftFrames(
+    selector: string,
+    fromY: number,
+    toY: number,
+    forDuration: FrameCount
+  ) {
+    for (let i = 0; i < forDuration.get(this.framerate); i++) {
+      this.addToFrames(() => {
+        const element = document.querySelector(selector) as HTMLElement;
+        const shift = fromY + (toY - fromY) * (i / forDuration.get(this.framerate));
+        element.style.backgroundPositionY = `${shift}px`;
+      });
+    }
+
+    return this;
+  }
+
+  public addFadeFrames(
+    selector: string,
+    fromOpacity: number,
+    toOpacity: number,
+    forDuration: FrameCount
+  ) {
     for (let i = 0; i < forDuration.get(this.framerate); i++) {
       this.addToFrames(() => {
         const element = document.querySelector(selector) as HTMLElement;
@@ -88,7 +136,11 @@ export class SceneBuilder {
     return this;
   }
 
-  public addPulseFrames(selector: string, times: number, forDuration: FrameCount) {
+  public addPulseFrames(
+    selector: string,
+    times: number,
+    forDuration: FrameCount
+  ) {
     for (let i = 0; i < forDuration.get(this.framerate); i++) {
       this.addToFrames(() => {
         const element = document.querySelector(selector) as HTMLElement;
