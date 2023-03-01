@@ -4,15 +4,14 @@
 > 
 > This documentation is a work in progress. If you have any questions, please [open an issue](https://github.com/luttje/videobrew/issues/new).
 
-* [How to serve your video app yourself](./serving-video-apps.md)
+## Guides
+* [Code your own video](./code-your-own-video.md)
+* [Serve your video app yourself](./serving-video-apps.md)
 
-## 📦 Packages
-
-| Package | Description |
-| --- | --- |
-| [@videobrew/cli](../packages/cli) | The command line interface that allows rendering videos. It will install the editor automatically to allow previewing your videos. |
-| [@videobrew/editor](../packages/editor) | The editor app that previews your videos. |
-| <s>[@videobrew/svelte](../packages/svelte)</s> (wip) | A Svelte component library that allows you to create videos using pre-made Svelte components. |
+## Technical background
+* [How it works](./how-it-works.md)
+* [The different `@videobrew/*` packages](./packages.md)
+* [`@videobrew/client` API Reference](./api/client.md)
 
 ## 📚 Terminology
 

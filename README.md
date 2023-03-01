@@ -10,7 +10,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 
 > <div align="center">
 >
-> ## 🚀 Quickstart
+> ## 🚀 <span id="quickstart">Quickstart</span>
 > *Start composing your videos with code!*
 > 
 > <hr>
@@ -24,26 +24,32 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > <hr> 
 >
 > ### Create your video app
-> Build a web page that describes the video. *For inspiration check out the [examples](#examples).*
+> Build a web page that describes the video. For now we'll  **serve the webpack example:**
+> 
+> ```bash
+> $ cd examples/webpack
+> $ npm run serve 
+> # Webpack serves to http://localhost:8088
+> ```
 > 
 > <hr> 
 >
 > ### Preview your video
 > 
 > ```bash
-> $ videobrew preview 
+> # Let Videobrew know where to find your video app
+> $ videobrew preview http://localhost:8088
 > ```
+> Open the editor in your browser @ http://localhost:8087
 > 
 > [<img src="./docs/editor-previewing-video-app.png" alt="Previewing a video app" width="150" />](./docs/editor-previewing-video-app.png)
 >
-> *This editor is served @ http://localhost:8087*
-> 
 > <hr> 
 >
-> ### Render
+> ### Render your video
 >   
 > ```bash
-> $ videobrew render my-video.mp4
+> $ videobrew render http://localhost:8088 my-video.mp4
 > ```
 >   
 > [<img src="./docs/cli-rendering-video-app.png" alt="Rendering a video app" align="middle" width="500" />](./docs/cli-rendering-video-app.png)
@@ -51,20 +57,34 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > <hr> 
 >
 > ### Done 🎉
-> See [the example video app](./examples/0-dependencies/) to learn how to make your own and watch [📼 the rendered video](./examples/0-dependencies/out/output.mp4) Videobrew created.
 >   
+> Watch [📼 the video that Videobrew rendered](./examples/webpack/out/weather.mp4).
+>
+> <hr> 
+>
+> ### Next Steps
+>
+> Check out the [🧪 examples](#examples) to see how to use Videobrew with your favorite web technologies.
+>
+> Read the [📖 documentation](./docs/index.md) to learn how to [Code your own video](./docs/code-your-own-video.md)
+>
 > </div>
 
-## 📖 Learn more
+<hr>
 
-* [How to serve your video app yourself](./docs/serving-video-apps.md)
-* [Documentation](./docs/index.md)
+## [📖 Documentation](./docs/index.md)
+
+<hr>
 
 ## <span id="examples">🧪 Example Video Apps</span>
-| Example | Description |
-| --- | --- |
-| [Zero Dependencies](./examples/0-dependencies/) | Just plain old HTML, CSS and Javascript. |
-| <s>[Sveltekit](./examples/sveltekit/)</s> (wip) | A Sveltekit app. |
+| Example | Description | Uses `@videobrew/client`
+| ---: | --- | --- |
+| [Zero Dependencies](./examples/0-dependencies/) | Just plain old HTML, CSS and Javascript. | |
+| [Local Installation](./examples/local-install/) | Shows how to install and use Videobrew with `--save-dev` instead of globally with `-g`. | |
+| <s>[<img src="https://raw.githubusercontent.com/sveltejs/branding/master/svelte-logo.svg" height="12px" alt="Svelte Logo" /> Sveltekit](./examples/sveltekit/)</s> (wip) | A Sveltekit video app example. | ✔ |
+| [<img src="https://raw.githubusercontent.com/webpack/media/master/logo/icon.svg" height="12px" alt="Webpack Logo" /> Webpack + <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/512px-Typescript_logo_2020.svg.png?20221110153201" height="12px" alt="TypeScript Logo" /> TypeScript](./examples/webpack) | Use Webpack and TypeScript to make your video app. | ✔ |
+
+<hr>
 
 ## License
 
@@ -86,4 +106,4 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > The full license text can also be found on <https://www.gnu.org/licenses/>.
 
 ### Third Party Licenses
-> Licenses of third parties we are directly depending on can be found [here for the CLI](./packages/cli/LICENSES-THIRD-PARTY) and [here for the editor](./packages/editor/LICENSES-THIRD-PARTY). These files were automatically generated with [`license-checker-rseidelsohn`](https://www.npmjs.com/package/license-checker-rseidelsohn) upon building.
+> Licenses of third parties we are directly depending on can be found [here](./LICENSES-THIRD-PARTY). This file was automatically generated with [`license-checker-rseidelsohn`](https://www.npmjs.com/package/license-checker-rseidelsohn) upon running `npm run build`.

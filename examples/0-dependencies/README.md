@@ -4,7 +4,7 @@ A video made with plain old HTML, CSS and Javascript.
 
 [[📼 Watch the rendered video]](./out/output.mp4)
 
-This example was rendered by running the command `videobrew render out/output.mp4` in this directory.
+This example video was rendered by running the command `videobrew render out/output.mp4` in this directory.
 
 ## From scratch
 
