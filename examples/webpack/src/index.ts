@@ -68,13 +68,15 @@ videoBuilder.addScene(startWeatherScene, (scene) => {
 
   scene.addParallelFrames(
     FrameCount.fromSeconds(3),
-    (scene) => {
-      scene.addPulseFrames('.icon', 3, FrameCount.fromSeconds(3));
+    (parallelScene) => {
+      parallelScene.addPulseFrames('.icon', 3, FrameCount.fromSeconds(3));
     },
-    (scene) => {
-      //scene.addValueTranslationFrames('#screen', 'background-position-x', -100, -200, 'px', FrameCount.fromSeconds(3));
+    (parallelScene) => {
+      // parallelScene.addHorizontalBackgroundShiftFrames('#screen', -100, -200, FrameCount.fromSeconds(3));
+      // or use a value translation:
+      // parallelScene.addValueTranslationFrames('#screen', 'background-position-x', -100, -200, 'px', FrameCount.fromSeconds(3));
       // or use a @keyframe animation:
-      scene.addKeyframeAnimationFrames('#screen', 'move-background', FrameCount.fromSeconds(3));
+      parallelScene.addKeyframeAnimationFrames('#screen', 'move-background', FrameCount.fromSeconds(3));
     }
   );
   

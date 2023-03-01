@@ -102,25 +102,6 @@ export class SceneBuilder {
 
     return this;
   }
-  
-
-  public addMultipleValueTransformFrames(
-    selector: string,
-    forDuration: FrameCount,
-    transformsCallback: (element: HTMLElement, localFrameIndex: number) => Map<string, string>
-  ) {
-    for (let i = 0; i < forDuration.get(this.framerate); i++) {
-      this.addToFrames(() => {
-        const element = document.querySelector(selector) as HTMLElement;
-        const propertyValues = transformsCallback(element, i);
-        propertyValues.forEach((value, property) => {
-          element.style.setProperty(property, value);
-        });
-      });
-    }
-
-    return this;
-  }
 
   public addHorizontalBackgroundShiftFrames(
     selector: string,
@@ -170,12 +151,58 @@ export class SceneBuilder {
   ) {
     return this.addValueTransformFrames(selector, 'animation', forDuration, (element: HTMLElement, localFrameIndex: number) => {
       const durationInSeconds = forDuration.getSeconds(this.framerate);
-      // Negative animation-delay value causes animation to skip ahead in the animation. 
-      // For example a 10 second animation with a delay of - 1.3s would start at the frame at 13 % of the animation.
-      const startAtFraction = (localFrameIndex + 1) / forDuration.get(this.framerate) * -durationInSeconds;
+      const startAtFraction = forDuration.getFrameStartDelay(this.framerate, localFrameIndex);
       return `${animationName} ${durationInSeconds}s linear 1 forwards normal paused ${startAtFraction}s`;
     });
   }
+
+  // /**
+  //  * Adds frames to the scene that will play the specified transition for the specified duration.
+  //  * 
+  //  * The goal is to have browser transition easing take care of things, but at the moment I haven't
+  //  * been able to have the browser show only a specific frame in the transition.
+  //  */
+  // public addTransitionFrames(
+  //   selector: string,
+  //   transitionProperty: string,
+  //   fromValue: any,
+  //   toValue: any,
+  //   unit: string | null,
+  //   forDuration: FrameCount
+  // ) {
+  //   for (let i = 0; i < forDuration.get(this.framerate); i++) {
+  //     this.addToFrames(() => {
+  //       const element = document.querySelector(selector) as HTMLElement;
+
+  //       // Set the initial value
+  //       element.style.setProperty(transitionProperty, `${fromValue}${unit ?? ''}`);
+  //       console.log('set initial value', `${fromValue}${unit ?? ''}`);
+
+  //       // Add the transition
+  //       const durationInSeconds = forDuration.getSeconds(this.framerate);
+  //       const startAtFraction = forDuration.getFrameStartDelay(this.framerate, i);
+  //       element.style.setProperty('transition', `${transitionProperty} ${durationInSeconds}s linear ${startAtFraction}s`);
+  //       console.log('set transition', `${transitionProperty} ${durationInSeconds}s linear ${startAtFraction}s`);
+
+  //       // Set the new value after the transition has been configured
+  //       element.style.setProperty(transitionProperty, `${toValue}${unit ?? ''}`);
+  //       console.log('set new value', `${toValue}${unit ?? ''}`);
+
+  //       // current calculated value
+  //       const computerValues = window.getComputedStyle(element);
+  //       console.log('computed value', computerValues.getPropertyValue(transitionProperty));
+
+  //       // set current calculated value
+  //       element.style.setProperty(transitionProperty, computerValues.getPropertyValue(transitionProperty));
+
+  //       // Remove the transition
+  //       element.style.setProperty('transition', '');
+  //       console.log('removed transition');
+  //     });
+  //   }
+        
+  //   return this;
+  // }
 
   public addWaitFrames(forDuration: FrameCount) {
     for (let i = 0; i < forDuration.get(this.framerate); i++) {
