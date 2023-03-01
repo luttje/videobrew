@@ -73,7 +73,7 @@ videoBuilder.addScene(startWeatherScene, (scene) => {
     },
     (scene) => {
       //scene.addValueTranslationFrames('#screen', 'background-position-x', -100, -200, 'px', FrameCount.fromSeconds(3));
-      // or use @keyframe animation:
+      // or use a @keyframe animation:
       scene.addKeyframeAnimationFrames('#screen', 'move-background', FrameCount.fromSeconds(3));
     }
   );

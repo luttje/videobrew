@@ -160,6 +160,9 @@ export class SceneBuilder {
     });
   }
 
+  /**
+   * Adds frames to the scene that will play the specified animation for the specified duration.
+   */
   public addKeyframeAnimationFrames(
     selector: string,
     animationName: string,
