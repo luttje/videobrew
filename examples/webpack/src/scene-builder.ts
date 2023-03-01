@@ -86,21 +86,29 @@ export class SceneBuilder {
     return this;
   }
 
+  public addValueTransformFrames(
+    selector: string,
+    property: string,
+    forDuration: FrameCount,
+    transformCallback: (element: HTMLElement, localFrameIndex: number) => string
+  ) {
+    for (let i = 0; i < forDuration.get(this.framerate); i++) {
+      this.addToFrames(() => {
+        const element = document.querySelector(selector) as HTMLElement;
+        const value = transformCallback(element, i);
+        element.style.setProperty(property, value);
+      });
+    }
+
+    return this;
+  }
+
   public addHorizontalBackgroundShiftFrames(
     selector: string,
     fromX: number,
     toY: number,
     forDuration: FrameCount
   ) {
-    // for (let i = 0; i < forDuration.get(this.framerate); i++) {
-    //   this.addToFrames(() => {
-    //     const element = document.querySelector(selector) as HTMLElement;
-    //     const shift = fromX + (toY - fromX) * ((i + 1) / forDuration.get(this.framerate));
-    //     element.style.backgroundPositionX = `${shift}px`;
-    //   });
-    // }
-
-    // return this;
     return this.addValueTranslationFrames(selector, 'background-position-x', fromX, toY, 'px', forDuration);
   }
 
@@ -110,15 +118,6 @@ export class SceneBuilder {
     toY: number,
     forDuration: FrameCount
   ) {
-    // for (let i = 0; i < forDuration.get(this.framerate); i++) {
-    //   this.addToFrames(() => {
-    //     const element = document.querySelector(selector) as HTMLElement;
-    //     const shift = fromY + (toY - fromY) * ((i + 1) / forDuration.get(this.framerate));
-    //     element.style.backgroundPositionY = `${shift}px`;
-    //   });
-    // }
-
-    // return this;
     return this.addValueTranslationFrames(selector, 'background-position-y', fromY, toY, 'px', forDuration);
   }
 
@@ -128,15 +127,6 @@ export class SceneBuilder {
     toOpacity: number,
     forDuration: FrameCount
   ) {
-    // for (let i = 0; i < forDuration.get(this.framerate); i++) {
-    //   this.addToFrames(() => {
-    //     const element = document.querySelector(selector) as HTMLElement;
-    //     let opacity = fromOpacity + (toOpacity - fromOpacity) * ((i + 1) / forDuration.get(this.framerate));
-    //     element.style.opacity = `${opacity}`;
-    //   });
-    // }
-
-    // return this;
     return this.addValueTranslationFrames(selector, 'opacity', fromOpacity, toOpacity, null, forDuration);
   }
 
@@ -145,15 +135,10 @@ export class SceneBuilder {
     times: number,
     forDuration: FrameCount
   ) {
-    for (let i = 0; i < forDuration.get(this.framerate); i++) {
-      this.addToFrames(() => {
-        const element = document.querySelector(selector) as HTMLElement;
-        const scale = 1 - Math.sin(((i + 1) / forDuration.get(this.framerate)) * Math.PI * times) * 0.2;
-        element.style.transform = modifyTransform(element.style.transform, 'scale', scale);
-      });
-    }
-
-    return this;
+    return this.addValueTransformFrames(selector, 'transform', forDuration, (element: HTMLElement, localFrameIndex: number) => {
+      const scale = 1 - Math.sin(((localFrameIndex + 1) / forDuration.get(this.framerate)) * Math.PI * times) * 0.2;
+      return modifyTransform(element.style.transform, 'scale', scale);
+    });
   }
 
   public addWaitFrames(forDuration: FrameCount) {
