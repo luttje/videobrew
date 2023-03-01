@@ -102,3 +102,12 @@ footer {
   font-size: 0.8em;
   box-shadow: 0 0 0.2em rgba(0, 0, 0, 0.5);
 }
+
+@keyframes move-background {
+  0% {
+    background-position-x: -100px;
+  }
+  100% {
+    background-position-x: -200px;
+  }
+}

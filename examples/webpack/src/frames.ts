@@ -25,4 +25,8 @@ export class FrameCount {
   public get(framerate: number) {
     return Math.ceil(this.ticks * (framerate / FrameCount.ticksPerSecond));
   }
+
+  public getSeconds(framerate: number) {
+    return this.get(framerate) / framerate;
+  }
 }

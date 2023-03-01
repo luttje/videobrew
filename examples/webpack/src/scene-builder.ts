@@ -102,6 +102,25 @@ export class SceneBuilder {
 
     return this;
   }
+  
+
+  public addMultipleValueTransformFrames(
+    selector: string,
+    forDuration: FrameCount,
+    transformsCallback: (element: HTMLElement, localFrameIndex: number) => Map<string, string>
+  ) {
+    for (let i = 0; i < forDuration.get(this.framerate); i++) {
+      this.addToFrames(() => {
+        const element = document.querySelector(selector) as HTMLElement;
+        const propertyValues = transformsCallback(element, i);
+        propertyValues.forEach((value, property) => {
+          element.style.setProperty(property, value);
+        });
+      });
+    }
+
+    return this;
+  }
 
   public addHorizontalBackgroundShiftFrames(
     selector: string,
@@ -138,6 +157,20 @@ export class SceneBuilder {
     return this.addValueTransformFrames(selector, 'transform', forDuration, (element: HTMLElement, localFrameIndex: number) => {
       const scale = 1 - Math.sin(((localFrameIndex + 1) / forDuration.get(this.framerate)) * Math.PI * times) * 0.2;
       return modifyTransform(element.style.transform, 'scale', scale);
+    });
+  }
+
+  public addKeyframeAnimationFrames(
+    selector: string,
+    animationName: string,
+    forDuration: FrameCount
+  ) {
+    return this.addValueTransformFrames(selector, 'animation', forDuration, (element: HTMLElement, localFrameIndex: number) => {
+      const durationInSeconds = forDuration.getSeconds(this.framerate);
+      // Negative animation-delay value causes animation to skip ahead in the animation. 
+      // For example a 10 second animation with a delay of - 1.3s would start at the frame at 13 % of the animation.
+      const startAtFraction = (localFrameIndex + 1) / forDuration.get(this.framerate) * -durationInSeconds;
+      return `${animationName} ${durationInSeconds}s linear 1 forwards normal paused ${startAtFraction}s`;
     });
   }
 
