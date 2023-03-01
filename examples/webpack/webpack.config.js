@@ -17,6 +17,9 @@ const config = {
         open: true,
         port: 8088,
         host: 'localhost',
+        devMiddleware: {
+            writeToDisk: true
+        },
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Cross-Origin-Embedder-Policy': 'require-corp',
