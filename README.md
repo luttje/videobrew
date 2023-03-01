@@ -1,12 +1,17 @@
-# 📼 Videobrew
+# 📼 Videobrew [![CLI npm version](https://img.shields.io/npm/v/@videobrew/cli)](https://www.npmjs.com/package/@videobrew/cli)
+
+Create videos using any web technologies (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript. Animate your web page and have Videobrew render it to a video.
 
 <div align="center">
 
-[![CLI npm version](https://img.shields.io/npm/v/@videobrew/cli)](https://www.npmjs.com/package/@videobrew/cli)
+<hr>
+
+## 🚧 Work in progress
+This project is a work in progress. If you have any questions, please [open an issue](https://github.com/luttje/videobrew/issues/new).
 
 </div>
 
-Create videos using any web technologies (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript. Animate your web page and have Videobrew render it to a video.
+<hr>
 
 > <div align="center">
 >
@@ -24,19 +29,19 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > <hr> 
 >
 > ### Create your video app
-> Build a web page that describes the video. For now we'll **build the webpack example:**
+> Let's **build the webpack example Video App:**
 > 
 > ```bash
 > $ cd examples/webpack
-> $ npm run build # builds to dist/
+> $ npm run build
 > ```
+> *The webpack example video app is built to `dist/`*
 > 
 > <hr> 
 >
 > ### Preview your video
-> 
+> See your video app in action by letting Videobrew know where it is:
 > ```bash
-> # Let Videobrew know where to find your video app
 > $ videobrew preview dist/
 > ```
 > Open the editor in your browser @ http://localhost:8087
@@ -57,21 +62,38 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 >
 > ### Done 🎉
 >   
-> Watch [📼 the video that Videobrew rendered](./examples/webpack/out/weather.mp4).
+> Watch [📼 the video that Videobrew rendered](./examples/webpack/out/weather.mp4)
 >
 > <hr> 
 >
 > ### Next Steps
 >
-> Check out the [🧪 examples](#examples) to see how to use Videobrew with your favorite web technologies.
+> Check out the [🧪 Example Video Apps](#examples) to see how your favorite web technologies work with Videobrew.
 >
-> Read the [📖 documentation](./docs/index.md) to learn how to [Code your own video](./docs/code-your-own-video.md)
+> Read the [📖 Documentation](#documentation) to learn [how Videobrew works](./docs/how-it-works.md) and how to start [coding your own video](./docs/code-your-own-video.md)
 >
 > </div>
 
 <hr>
 
-## [📖 Documentation](./docs/index.md)
+## <span id="documentation">📖 Documentation</span>
+
+### Guides
+* [Code your own video](./docs/code-your-own-video.md)
+* [Serve your video app yourself](./docs/serving-video-apps.md)
+
+### Technical background
+* [How it works](./docs/how-it-works.md)
+* [The different `@videobrew/*` packages](./docs/packages.md)
+* [`@videobrew/client` API Reference](./docs/api/client.md)
+
+### 📚 Terminology
+
+| Term | Description |
+| --- | --- |
+| **Video App** | A web page that describes your video. It can be written in any web technology (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript. |
+| **Editor** | Our app that previews your video app in an iframe. You can use it to test what your video will look like. |
+| **Renderer** | Our app that renders your video app to a video. |
 
 <hr>
 
@@ -82,6 +104,13 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 | [Local Installation](./examples/local-install/) | Shows how to install and use Videobrew with `--save-dev` instead of globally with `-g`. | |
 | <s>[<img src="https://raw.githubusercontent.com/sveltejs/branding/master/svelte-logo.svg" height="12px" alt="Svelte Logo" /> Sveltekit](./examples/sveltekit/)</s> (wip) | A Sveltekit video app example. | ✔ |
 | [<img src="https://raw.githubusercontent.com/webpack/media/master/logo/icon.svg" height="12px" alt="Webpack Logo" /> Webpack + <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/512px-Typescript_logo_2020.svg.png?20221110153201" height="12px" alt="TypeScript Logo" /> TypeScript](./examples/webpack) | Use Webpack and TypeScript to make your video app. | ✔ |
+
+<hr>
+
+## 😍 Special Thanks
+
+Videobrew wouldn't be here without these awesome projects:
+[Playwright](https://playwright.dev/), [FFmpeg](https://ffmpeg.org/), [Chalk](https://www.npmjs.com/package/chalk), [Prompts](https://www.npmjs.com/package/prompts), [TypeScript](https://www.typescriptlang.org/), [TailwindCSS](https://tailwindcss.com/), [Vite](https://vitejs.dev/), [Svelte](https://svelte.dev/) and more!
 
 <hr>
 
