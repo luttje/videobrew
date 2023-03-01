@@ -43,6 +43,8 @@ export const handle = (async ({ event, resolve }) => {
     // Proxy the request to the video app, removing encoding
     const response = new Response(videoAppUrlResponse.body, videoAppUrlResponse);
     response.headers.delete('content-encoding');
+    response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+    response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
     return response;
   }
 

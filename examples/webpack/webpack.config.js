@@ -21,8 +21,6 @@ const config = {
         },
         headers: {
             'Access-Control-Allow-Origin': '*',
-            'Cross-Origin-Embedder-Policy': 'require-corp',
-            'Cross-Origin-Resource-Policy': 'cross-origin',
         }
     },
     plugins: [
