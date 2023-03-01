@@ -156,54 +156,6 @@ export class SceneBuilder {
     });
   }
 
-  // /**
-  //  * Adds frames to the scene that will play the specified transition for the specified duration.
-  //  * 
-  //  * The goal is to have browser transition easing take care of things, but at the moment I haven't
-  //  * been able to have the browser show only a specific frame in the transition.
-  //  */
-  // public addTransitionFrames(
-  //   selector: string,
-  //   transitionProperty: string,
-  //   fromValue: any,
-  //   toValue: any,
-  //   unit: string | null,
-  //   forDuration: FrameCount
-  // ) {
-  //   for (let i = 0; i < forDuration.get(this.framerate); i++) {
-  //     this.addToFrames(() => {
-  //       const element = document.querySelector(selector) as HTMLElement;
-
-  //       // Set the initial value
-  //       element.style.setProperty(transitionProperty, `${fromValue}${unit ?? ''}`);
-  //       console.log('set initial value', `${fromValue}${unit ?? ''}`);
-
-  //       // Add the transition
-  //       const durationInSeconds = forDuration.getSeconds(this.framerate);
-  //       const startAtFraction = forDuration.getFrameStartDelay(this.framerate, i);
-  //       element.style.setProperty('transition', `${transitionProperty} ${durationInSeconds}s linear ${startAtFraction}s`);
-  //       console.log('set transition', `${transitionProperty} ${durationInSeconds}s linear ${startAtFraction}s`);
-
-  //       // Set the new value after the transition has been configured
-  //       element.style.setProperty(transitionProperty, `${toValue}${unit ?? ''}`);
-  //       console.log('set new value', `${toValue}${unit ?? ''}`);
-
-  //       // current calculated value
-  //       const computerValues = window.getComputedStyle(element);
-  //       console.log('computed value', computerValues.getPropertyValue(transitionProperty));
-
-  //       // set current calculated value
-  //       element.style.setProperty(transitionProperty, computerValues.getPropertyValue(transitionProperty));
-
-  //       // Remove the transition
-  //       element.style.setProperty('transition', '');
-  //       console.log('removed transition');
-  //     });
-  //   }
-        
-  //   return this;
-  // }
-
   public addWaitFrames(forDuration: FrameCount) {
     for (let i = 0; i < forDuration.get(this.framerate); i++) {
       this.addToFrames(null);

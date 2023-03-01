@@ -51,7 +51,7 @@ This example was rendered by running the command `videobrew render out/output.mp
     };
     ```
 
-   **Do not use transitions or animations!** Rendering wont be in sync with the real time framerate. Instead each frame will render as fast as possible. For this reason you must know exactly what to draw for each frame.
+   **Do not use transitions!** Rendering wont be in sync with the real time framerate. Instead each frame will render as fast as possible. For this reason you must know exactly what to draw for each frame.
 
 3. Run `videobrew preview` to test your video in the browser. You can view it @ `http://localhost:8087`.
 
