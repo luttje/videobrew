@@ -269,7 +269,7 @@ async function preview(videoAppUrl: string, cliInstalledGlobally: boolean) {
       data = data.toString().replace(`${host}:${port}`, `http://${host}:${port}`);
     }
 
-    inform(`Editor Server: ${data}`);
+    inform(`Editor Server: ${data}`, chalk.yellow);
   });
 
   server.stderr!.on('data', (data) => {
@@ -314,30 +314,6 @@ async function main() {
     }
   }
   
-  let relativeOutputPath = args.output;
-
-  if (!relativeOutputPath) {
-    if (args._unknown?.length > 0) {
-      const outputPath = args._unknown.find(arg => {
-        const extension = path.extname(arg);
-
-        return containerFormats.some(format => `.${format.extension}` === extension);
-      });
-
-      if (outputPath) {
-        relativeOutputPath = outputPath;
-
-        inform(`Output path chosen: ${relativeOutputPath}`);
-      }
-    }
-    
-    if (!relativeOutputPath){
-      relativeOutputPath = DEFAULT_OUTPUT_PATH;
-
-      inform(`Output path chosen: ${relativeOutputPath} (default)`);
-    }
-  }
-
   const isVideoAppAtUrl = isVideoAppUrl(relativeVideoAppPath);
   let videoAppPathOrUrl = relativeVideoAppPath;
 
@@ -361,24 +337,13 @@ async function main() {
     }
   }
 
-  const output = path.join(workingDirectory, relativeOutputPath);
-  debug(`Output full path: ${output}`);
-
-  const quality = args.renderQuality ?? DEFAULT_QUALITY;
-
-  if (quality < 0 || quality > 100)
-    panic(`Render quality must be between 0 and 100! (Provided: ${quality})`);
-  
-  if (args.action === 'render')
-    inform(`Render quality chosen: ${quality}% ${(args.renderQuality === undefined ? '(default)' : '')}`);
-
   let videoAppUrl = videoAppPathOrUrl;
   let serverInstance: LocalWebServerInstance | undefined;
 
   const startLocalServer = async () => {
     if (isVideoAppAtUrl)
       return;
-  
+    
     serverInstance = await createLocalWebServer(videoAppPathOrUrl);
     videoAppUrl = serverInstance.url;
 
@@ -398,14 +363,50 @@ async function main() {
   });
 
   if (args.action === 'render') {
+    let relativeOutputPath = args.output;
+  
+    if (!relativeOutputPath) {
+      if (args._unknown?.length > 0) {
+        const outputPath = args._unknown.find(arg => {
+          const extension = path.extname(arg);
+  
+          return containerFormats.some(format => `.${format.extension}` === extension);
+        });
+  
+        if (outputPath) {
+          relativeOutputPath = outputPath;
+  
+          inform(`Output path chosen: ${relativeOutputPath}`);
+        }
+      }
+      
+      if (!relativeOutputPath){
+        relativeOutputPath = DEFAULT_OUTPUT_PATH;
+  
+        inform(`Output path chosen: ${relativeOutputPath} (default)`);
+      }
+    }
+  
+    const quality = args.renderQuality ?? DEFAULT_QUALITY;
+  
+    if (quality < 0 || quality > 100)
+      panic(`Render quality must be between 0 and 100! (Provided: ${quality})`);
+    
+    inform(`Render quality chosen: ${quality}% ${(args.renderQuality === undefined ? '(default)' : '')}`);
+  
+    const output = path.join(workingDirectory, relativeOutputPath);
+    debug(`Output full path: ${output}`);
+  
     await startLocalServer();
 
     await render(videoAppUrl, output, quality);
 
     await stopLocalServer();
   } else if (args.action === 'preview') {
+    inform(`Preparing @videobrew/editor...`);
+  
     const executePreview = await confirmPreview();
-
+    
     if (!executePreview) {
       return panic('Aborting preview');
     }
