@@ -24,12 +24,11 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > <hr> 
 >
 > ### Create your video app
-> Build a web page that describes the video. For now we'll  **serve the webpack example:**
+> Build a web page that describes the video. For now we'll **build the webpack example:**
 > 
 > ```bash
 > $ cd examples/webpack
-> $ npm run serve 
-> # Webpack serves to http://localhost:8088
+> $ npm run build # builds to dist/
 > ```
 > 
 > <hr> 
@@ -38,7 +37,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > 
 > ```bash
 > # Let Videobrew know where to find your video app
-> $ videobrew preview http://localhost:8088
+> $ videobrew preview dist/
 > ```
 > Open the editor in your browser @ http://localhost:8087
 > 
@@ -49,7 +48,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 > ### Render your video
 >   
 > ```bash
-> $ videobrew render http://localhost:8088 my-video.mp4
+> $ videobrew render dist/ my-video.mp4
 > ```
 >   
 > [<img src="./docs/cli-rendering-video-app.png" alt="Rendering a video app" align="middle" width="500" />](./docs/cli-rendering-video-app.png)

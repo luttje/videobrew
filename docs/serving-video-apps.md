@@ -1,8 +1,8 @@
-# Serving your video app yourself
+# 🔌 Serving your video app yourself
 
-You can have Videobrew take care of serving your video app for you or serve it yourself.
+Videobrew needs to access your video app to preview and render it. In the [🚀 Quickstart](../README.md#quickstart) we let Videobrew serve our video app for us. But you can also serve your video app yourself. 
 
-If your served video app is running at `http://localhost:8080` then you can preview and render your video app by running these respective commands:
+Serve your video app at `http://localhost:8080` and then preview and render it by running these respective commands:
 
 ```bash
 $ videobrew preview http://localhost:8080
@@ -10,7 +10,10 @@ $ videobrew preview http://localhost:8080
 $ videobrew render http://localhost:8080
 ```
 
-Just make sure your server has [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) configured so the editor can access your video app. To do so set these headers for all requests:
-  - `Access-Control-Allow-Origin: *`
-  - `Cross-Origin-Embedder-Policy: require-corp` 
-  - `Cross-Origin-Resource-Policy: cross-origin`
+> ## ⚠ <u>Insecure</u> [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) headers required
+> In order for the editor to access your video app you need to set these headers for all requests to your video app:
+>  - `Access-Control-Allow-Origin: *`
+>  - `Cross-Origin-Embedder-Policy: require-corp` 
+>  - `Cross-Origin-Resource-Policy: cross-origin`
+>
+> **You should never run a Video app (or any app) with these settings in a live environment.** With these CORS settings a bad actor could do serious harm to your users' privacy. Videobrew is only intended for local use.
