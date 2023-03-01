@@ -2,6 +2,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { exec } from 'child_process';
 import { defineConfig } from 'vite';
 import util from 'util';
+import fs from 'fs';
+import path from 'path';
 
 export default defineConfig({
 	plugins: [
@@ -9,7 +11,8 @@ export default defineConfig({
 		{
 			name: 'run-package-scripts',
 			async closeBundle() {
-				await util.promisify(exec)('npm run package');
+				if (fs.existsSync(path.resolve('dist')))
+					await util.promisify(exec)('npm run package');
 			}
 		}
 	],
