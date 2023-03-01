@@ -1,0 +1,40 @@
+{
+	"name": "@videobrew/client",
+	"description": "Client library to create videos using any web technologies. Animate a web page with your favorite web framework and have Videobrew render it to a video.",
+	"keywords": [
+		"video",
+		"generation",
+		"animation",
+		"api"
+	],
+	"homepage": "https://github.com/luttje/videobrew",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/luttje/videobrew"
+	},
+	"author": "Luttje",
+	"license": "AGPL-3.0-or-later",
+	"version": "0.3.0",
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"type": "module",
+	"main": "./dist/esm/index.js",
+	"types": "./dist/types/index.d.ts",
+	"scripts": {
+		"dev": "npx tsc --watch",
+		"watch": "npx tsc --watch",
+		"build": "npx tsc",
+		"clear-build": "node ../../scripts/clear-build.mjs",
+		"docs-build": "node ../../scripts/docs-build.mjs",
+		"package": "node ../../scripts/package.mjs",
+		"prebuild": "npm run clear-build",
+		"postbuild": "npm run docs-build && npm run package",
+		"prepack": "npm run package"
+	},
+	"devDependencies": {
+		"typescript": "^4.9.5"
+	},
+	"gitHead": "2513190cc1de00d1049e35f9c942b779447530f9"
+}

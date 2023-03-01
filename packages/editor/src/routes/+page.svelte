@@ -7,6 +7,8 @@
   import Primary from "$lib/components/button/Primary.svelte";
   import Text from "$lib/components/input/Text.svelte";
   import Range from "$lib/components/input/Range.svelte";
+  import { VIDEO_APP_PROXY_PATH } from "$lib/video";
+  import Tag from "$lib/components/content/Tag.svelte";
   
   let overlay: { heading: string; message: string } | null = {
     heading: 'Loading...',
@@ -18,6 +20,9 @@
   let height: number;
   let framerate: number;
   let frameCount: number;
+  
+  let timeline: HTMLDivElement;
+  let scrubbing = false;
 
   let videoInterval: NodeJS.Timer;
   let video: HTMLIFrameElement;
@@ -30,12 +35,15 @@
     frame: 0,
   };
 
-  function messageVideo(type: string, data?: object) {
-    if (!video.contentWindow) {
-      throw new Error("Video iframe has no contentWindow");
-    }
+  function getVideoApp() {
+    if(!video.contentWindow)
+      throw new Error('Video app not loaded');
 
-    video.contentWindow.postMessage({ ...data, type }, '*');
+    return video.contentWindow.videobrew;
+  }
+
+  async function drawCurrentFrame() {
+    await getVideoApp().tick(videoPlayback.frame);
   }
 
   function play() {
@@ -44,14 +52,15 @@
     if(videoInterval)
       clearInterval(videoInterval);
 
-    videoInterval = setInterval(() => {
+    if (hasReachedEnd())
+      reset();
+
+    videoInterval = setInterval(async () => {
       if(!videoPlayback.playing)
         return;
     
-      if(videoPlayback.frame >= frameCount)
-        stop();
+      await drawCurrentFrame();
 
-      messageVideo('videobrew.tick', { frame: videoPlayback.frame });
       nextFrame();
     }, 1000 / framerate);
   }
@@ -60,56 +69,84 @@
     videoPlayback.playing = false;
   }
 
+  function startScrubbing(event: MouseEvent) {
+    scrubbing = true;
+    scrub(event);
+  }
+
+  function finishScrubbing() {
+    scrubbing = false;
+  }
+
+  async function scrub(event: MouseEvent) {
+    if(!scrubbing)
+      return;
+
+    if(!event.buttons){
+      finishScrubbing();
+      return;
+    }
+
+    const { left, width } = timeline.getBoundingClientRect();
+    const x = event.clientX - left;
+    const percent = x / width;
+
+    videoPlayback.frame = Math.max(0, Math.min(frameCount - 1, Math.floor(percent * frameCount)));
+    await drawCurrentFrame();
+  }
+
+  function hasReachedStart() {
+    return videoPlayback.frame - 1 <= 0;
+  }
+
+  function hasReachedEnd() {
+    return videoPlayback.frame + 1 >= frameCount;
+  }
+
   function nextFrame() {
-    videoPlayback.frame++;
+    if(hasReachedEnd())
+      pause();
+    else
+      videoPlayback.frame++;
+  }
+
+  function previousFrame() {
+    if(hasReachedStart())
+      pause();
+    else
+      videoPlayback.frame--;
   }
 
   function reset() {
     videoPlayback.frame = 0;
   }
 
-  function stop() {
-    pause();
-    reset();
-    messageVideo('videobrew.tick', { frame: videoPlayback.frame });
-
+  async function stop() {
     if(videoInterval)
       clearInterval(videoInterval);
+
+    pause();
+    reset();
+    await drawCurrentFrame();
   }
 
-  function onVideoLoad() {
+  async function onVideoLoad() {
     console.log('Video loaded');
 
-    messageVideo('videobrew.init');
-    messageVideo('videobrew.tick', { frame: videoPlayback.frame });
-  }
-
-  function onMessage(event: MessageEvent) {
-    const { data: message } = event;
+    const setup = await getVideoApp().init();
     
-    switch (message.type) {
-      case 'videobrew.setup':
-        setupVideo(message.width, message.height, message.framerate, message.frameCount);
-        break;
-    }
-  }
-  
-  function setupVideo(desiredWidth: number, desiredHeight: number, desiredFamerate: number, desiredFrameCount: number) {
-    width = desiredWidth;
-    height = desiredHeight;
-    framerate = desiredFamerate;
-    frameCount = desiredFrameCount;
-
-    console.log('Video setup', { width, height, framerate, frameCount });
-
+    ({ width, height, framerate, frameCount } = setup);
+    
     video.classList.remove('hidden');
     overlay = null;
+
+    await drawCurrentFrame();
   }
 
   onMount(() => {
     let videoUrl = window.VIDEOBREW_VIDEO_APP_URL;
 
-    video.src = videoUrl;
+    video.src = VIDEO_APP_PROXY_PATH;
 
     overlay = {
       heading: 'Loading...',
@@ -132,53 +169,79 @@
   });
 </script>
 
-<svelte:window on:message={onMessage} />
+<svelte:window
+  on:mousemove={scrub}
+  on:mouseup={finishScrubbing} />
 
 <main class="flex flex-col gap-4">
   <div
     class="flex flex-col bg-slate-700 border-inside border-2 border-slate-600"
   >
-    <div class="flex flex-col gap-2 p-4 bg-slate-600 items-center">
-      <Setting>
-        Framerate
-        <Text slot="input" disabled value="{framerate?.toString()}" />
-      </Setting>
-      <Setting>
-        Resolution
-        <div slot="input" class="flex flex-row gap-2">
-          <Text small disabled value="{width?.toString()}" />
-          x
-          <Text small disabled value="{height?.toString()}" />
-        </div>
-      </Setting>
-      <Setting>
-        Scale
-        <Range
-          slot="input"
-          step={0.1}
-          min={0.1}
-          max={1}
-          bind:value={scaleSetting}
-        />
-      </Setting>
+    <div class="flex flex-row justify-end p-4 items-center">
+      <div class="flex-1">
+        <Setting>
+          Zoom
+          <Range
+            slot="input"
+            step={0.1}
+            min={0.1}
+            max={1}
+            bind:value={scaleSetting}
+          />
+        </Setting>
+      </div>
+      <Primary shrink
+        title="Refresh video app"
+        on:click={() => video.contentWindow?.location.reload()}>
+        ⭯
+      </Primary>
     </div>
-    <div class="overflow-hidden m-2"
-      style="width: {width*scaleSetting}px; height: {height*scaleSetting}px;"
-      >
-      <div
-        class="relative overflow-hidden inline-block bg-white"
-        style="width: {width}px; height: {height}px; transform: scale({scaleSetting}); transform-origin: top left;"
-      >
-        <iframe bind:this={video} 
-          on:load={onVideoLoad}
-          title="Video described by web-app"
-          class="hidden"
-          id="video"
-          {width}
-          {height}>
-        </iframe>
+    <div class="flex flex-col items-center p-4 bg-slate-800 rounded">
+      <div class="overflow-hidden"
+        style="width: {width*scaleSetting}px; height: {height*scaleSetting}px;"
+        >
+        <div
+          class="relative overflow-hidden inline-block bg-white"
+          style="width: {width}px; height: {height}px; transform: scale({scaleSetting}); transform-origin: top left;"
+        >
+          <iframe bind:this={video} 
+            on:load={onVideoLoad}
+            title="Video described by web-app"
+            class="hidden"
+            id="video"
+            {width}
+            {height}>
+          </iframe>
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="flex flex-row gap-2 justify-items-stretch">
+    <Primary shrink
+      title="Previous frame"
+      on:click={() => {
+        previousFrame();
+        drawCurrentFrame();
+      }}>❮</Primary>
+    <div class="relative flex-1 flex flex-row"
+      bind:this={timeline}
+      on:mousedown={startScrubbing}>
+      <div
+        class="bg-slate-700 rounded-lg"
+        style="width: {videoPlayback.frame / (frameCount - 1) * 100}%;"
+      ></div>
+      <div class="grid place-content-center text-sm absolute inset-0 select-none">
+        {videoPlayback.frame} / {frameCount - 1}
+      </div>
+    </div>
+    <Primary shrink
+      title="Next frame"
+      on:click={() => {
+        nextFrame();
+        drawCurrentFrame();
+      }}>❯</Primary>
   </div>
 
   {#if videoPlayback.playing}
@@ -194,6 +257,24 @@
     <h2 class="text-xl">How to render</h2>
     <p>You can render this video by running this command in the root of your video project:</p>
     <pre>videobrew render</pre>
+  </div>
+  
+  <div class="flex flex-col gap-2 rounded bg-slate-700 p-4">
+    <h2 class="text-xl">Video Setup</h2>
+    <div class="flex flex-row flex-wrap gap-2 list-disc list-inside">
+      <Tag>
+        <span>📺</span>
+        <span>{width} x {height}</span>
+      </Tag>
+      <Tag>
+        <span>⌚</span>
+        <span>{framerate} frames per second</span>
+      </Tag>
+      <Tag>
+        <span>🎞</span>
+        <span>{frameCount} frames</span>
+      </Tag>
+    </div>
   </div>
 </main>
 

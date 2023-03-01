@@ -1,19 +1,26 @@
 #!/usr/bin/env node
-import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoFormat } from './rendering/video-from-frames';
+import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoFormat } from './rendering/video-from-frames.js';
+import { startEditor, getEditorInstallPath, getEditorInstaller, EDITOR_PACKAGE_NAME } from './editor.js';
+import { getExtensionByQuality, recordFrames } from './rendering/record-frames.js';
+import { createLocalWebServer, LocalWebServerInstance } from './server.js';
+import { inform, debug, panic, newlines } from './utils/logging.js';
 import { ArgumentConfig, parse } from 'ts-command-line-args';
-import { recordFrames } from './rendering/record-frames';
-import { inform, debug, panic } from './utils/logging';
-import { createLocalWebServer, LocalWebServerInstance } from './server';
-import { isVideoAppUrl } from './utils/is-video-url';
+import { isVideoAppUrl } from './utils/is-video-url.js';
 import { AsciiTable3 } from 'ascii-table3';
-import { startEditor } from './editor';
+import nodeCleanup from 'node-cleanup';
 import { cwd } from 'process';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
+import { SingleBar } from 'cli-progress';
+import prompts from 'prompts';
+import { exec } from 'child_process';
+
+export const CLI_PACKAGE_NAME = '@videobrew/cli';
 
 const DEFAULT_VIDEO_APP_PATH = '.';
 const DEFAULT_OUTPUT_PATH = 'out/my-video.mp4';
+const DEFAULT_QUALITY = 90;
 
 const EXAMPLE_VIDEO_APP_PATH = './video';
 const EXAMPLE_VIDEO_APP_URL = 'https://example.test/video';
@@ -25,6 +32,7 @@ interface IVideoBrewArguments {
   action: string;
   videoAppPathOrUrl?: string;
   output?: string;
+  renderQuality?: number;
   help?: boolean;
 }
 
@@ -32,6 +40,7 @@ export const argumentConfig: ArgumentConfig<IVideoBrewArguments> = {
   action: { type: String, defaultOption: true, description: 'Action to perform. Either "preview", "render", "render-formats" or "help"' },
   videoAppPathOrUrl: { type: String, alias: 'i', optional: true, description: `Relative path or absolute URL to the video app. Defaults to "${DEFAULT_VIDEO_APP_PATH}"` },
   output: { type: String, alias: 'o', optional: true, description: `Relative path to the output directory. Defaults to "${DEFAULT_OUTPUT_PATH}"` },
+  renderQuality: { type: Number, alias: 'q', optional: true, description: `Quality of the rendered video. 0 is the lowest quality, 100 is the highest quality. Defaults to ${DEFAULT_QUALITY}` },
   help: { type: Boolean, optional: true, alias: 'h', description: 'Causes this usage guide to print' },
 };
 
@@ -80,8 +89,8 @@ function parseArguments() {
           chalk.bold(`Render a video app in the current working directory to ${DEFAULT_OUTPUT_PATH}:`),
           '$ videobrew render',
           '',
-          chalk.bold(`Render a video app in a subdirectory to "${EXAMPLE_OUTPUT_PATH}":`),
-          `$ videobrew render ${EXAMPLE_VIDEO_APP_PATH} ${EXAMPLE_OUTPUT_PATH}`,
+          chalk.bold(`Render a low quality video app in a subdirectory to "${EXAMPLE_OUTPUT_PATH}":`),
+          `$ videobrew render --renderQuality 0 ${EXAMPLE_VIDEO_APP_PATH} ${EXAMPLE_OUTPUT_PATH}`,
           chalk.bold('or:'),
           `$ videobrew render -i ${EXAMPLE_VIDEO_APP_PATH} -o ${EXAMPLE_OUTPUT_PATH}`,
           chalk.bold('or:'),
@@ -116,42 +125,160 @@ async function showRenderFormats(containerFormats: VideoFormat[]) {
   inform('\n(These are the container formats as reported by ffmpeg)', chalk.italic.gray, true);
 }
 
-async function render(videoAppUrl: string, outputPath: string) {  
+async function render(videoAppUrl: string, outputPath: string, renderQuality: number) {  
   const outputDirectory = path.dirname(outputPath);
+  await fs.mkdirSync(outputDirectory, { recursive: true });
+
+  newlines();
+  inform(`Step (1/2) Rendering frames:`);
+  const progressBarFrames = new SingleBar({
+    format: 'Rendering frames [{bar}] {percentage}% | ETA: {eta}s | {value}/{total} frames',
+    hideCursor: true,
+  });
+
   const framesOutputPath = await fs.mkdtempSync(path.join(outputDirectory, '~tmp-'));
+  let totalFrames = 0;
   const {
     framerate,
-  } = await recordFrames(videoAppUrl, framesOutputPath);
+  } = await recordFrames(videoAppUrl, framesOutputPath, renderQuality, (currentFrame, max) => {
+    if (currentFrame === 0) {
+      totalFrames = max;
+      progressBarFrames.start(max, currentFrame);
+    }
+    
+    progressBarFrames.update(currentFrame);
+  });
 
-  const videoConfig = await buildVideoConfigFromFrames(framesOutputPath, framerate, outputPath);
+  progressBarFrames.update(totalFrames);
+  progressBarFrames.stop();
+
+  const videoConfig = await buildVideoConfigFromFrames(
+    framesOutputPath,
+    framerate,
+    outputPath,
+    getExtensionByQuality(renderQuality),
+  );
+  
+  newlines();
+  inform(`Step (2/2) Rendering video from frames:`);
+  const progressBarRender = new SingleBar({
+    format: 'Rendering video [{bar}] {percentage}% | ETA: {eta}s',
+    hideCursor: true,
+  });
+  
   debug(`Rendering with command: ${videoConfig.command}`);
+  
+  progressBarRender.start(100, 0);
 
-  const output = await renderVideo(videoConfig);
+  const output = await renderVideo(videoConfig, (percentage) => {
+    progressBarRender.update(percentage);
+  });
+
+  progressBarRender.update(100);
+  progressBarRender.stop();
 
   debug(output);
 
   await fs.rmSync(framesOutputPath, { recursive: true });
 
-  inform(`Video rendered to ${outputPath}`);
+  newlines();
+  inform(
+    `Video rendered successfully! 🎉
+    \nYou can find your video here:\n> ` +
+    chalk.underline(`${outputPath}`),
+    chalk.green
+  );
 }
 
-async function preview(videoAppUrl: string) {
-  const { server, host, port } = await startEditor(videoAppUrl);
+async function getCliInstalledGlobally() {
+  return new Promise<boolean>((resolve, reject) => {
+    exec(`npm list -g ${CLI_PACKAGE_NAME} --json`, (exception, stdout, stderr) => {
+      if (exception) {
+        resolve(false);
+        return;
+      }
+
+      if (stderr) {
+        resolve(false);
+        return;
+      }
+
+      const installed = JSON.parse(stdout).dependencies[CLI_PACKAGE_NAME];
+      resolve(installed !== undefined);
+    });
+  });
+}
+
+async function confirmPreview() {
+  const cliInstalledGlobally = await getCliInstalledGlobally();
+  const executePreview = async (videoAppUrl: string) => await preview(videoAppUrl, cliInstalledGlobally);
+
+  if (await getEditorInstallPath(cliInstalledGlobally))
+    return executePreview;
+  
+  inform(`To preview your video app, you need to install the '${chalk.green(EDITOR_PACKAGE_NAME)}' package`, chalk.red);
+  const installer = getEditorInstaller(cliInstalledGlobally);
+  const response = await prompts({
+    type: 'confirm',
+    name: 'confirmed',
+    message: `Would you like to install the '${chalk.green(EDITOR_PACKAGE_NAME)}' package now? (Runs '${chalk.green(installer.command)}')`,
+    initial: true,
+  });
+
+  if (!response.confirmed)
+    return null;
+  
+  await installer.install();
+
+  return executePreview;
+}
+
+async function preview(videoAppUrl: string, cliInstalledGlobally: boolean) {
+  const { server, host, port } = await startEditor(videoAppUrl, cliInstalledGlobally);
+  let interval: NodeJS.Timer;
+  let isRestarting = false;
+
+  // When the server fails, restart it (this is a workaround for errors caused by `watch` rebuilding the editor with different filenames)
+  const restart = async () => {
+    clearInterval(interval);
+
+    if (isRestarting) return;
+    isRestarting = true;
+    
+    inform(`Restarting server...`, chalk.yellow);
+    server.kill();
+
+    await preview(videoAppUrl, cliInstalledGlobally);
+  };
+
+  // While the server is running, keep checking it to see if it crashed
+  interval = setInterval(async () => {
+    try {
+      const result = await fetch(`http://${host}:${port}/health`);
+
+      if (result.status !== 200)
+        restart();
+    } catch (e) {
+      restart();
+    }
+  }, 1000);
+
 
   server.stdout!.on('data', (data) => {
-    if (!data.includes('http://')) {
+    if (!data.includes('http://') && !data.includes('https://')) {
       data = data.toString().replace(`${host}:${port}`, `http://${host}:${port}`);
     }
 
     inform(`Editor Server: ${data}`);
   });
 
-  server.on('close', (code) => {
-    inform(`Editor Server exited with code ${code}`);
+  server.stderr!.on('data', (data) => {
+    inform(`Editor Server Error: ${data}`, chalk.red);
+    restart();
   });
 
-  server.on('error', (err) => {
-    inform(`Editor Server ${err}`, chalk.red);
+  server.on('close', (code) => {
+    inform(`Editor Server exited with code ${code}`);
   });
 }
 
@@ -237,6 +364,14 @@ async function main() {
   const output = path.join(workingDirectory, relativeOutputPath);
   debug(`Output full path: ${output}`);
 
+  const quality = args.renderQuality ?? DEFAULT_QUALITY;
+
+  if (quality < 0 || quality > 100)
+    panic(`Render quality must be between 0 and 100! (Provided: ${quality})`);
+  
+  if (args.action === 'render')
+    inform(`Render quality chosen: ${quality}% ${(args.renderQuality === undefined ? '(default)' : '')}`);
+
   let videoAppUrl = videoAppPathOrUrl;
   let serverInstance: LocalWebServerInstance | undefined;
 
@@ -258,23 +393,26 @@ async function main() {
     debug(`Stopped local server`);
   }
 
-  var nodeCleanup = require('node-cleanup');
-  nodeCleanup(function (exitCode: number, signal: any) {
+  nodeCleanup(function (exitCode, signal) {
     stopLocalServer();
   });
 
   if (args.action === 'render') {
     await startLocalServer();
 
-    inform(`Rendering...`);
-    await render(videoAppUrl, output);
+    await render(videoAppUrl, output, quality);
 
     await stopLocalServer();
   } else if (args.action === 'preview') {
+    const executePreview = await confirmPreview();
+
+    if (!executePreview) {
+      return panic('Aborting preview');
+    }
+
     await startLocalServer();
 
-    inform(`Previewing...`);
-    await preview(videoAppUrl);
+    await executePreview(videoAppUrl);
   } else if (args.action === 'help') {
     args._commandLineResults.printHelp();
   } else {

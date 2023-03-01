@@ -1,0 +1,4 @@
+node_modules
+
+# Ignore rendered output for this example
+out/

@@ -1,8 +1,8 @@
 # 📜 Zero Dependencies Video App Example
 
-A video made with plain old HTML, CSS and Javascript. 
+A video made with plain old HTML, CSS and Javascript.
 
-[[ 📼 Watch the rendered video ]](./out/output.mp4)
+[[📼 Watch the rendered video]](./out/output.mp4)
 
 This example was rendered by running the command `videobrew render out/output.mp4` in this directory.
 
@@ -10,54 +10,49 @@ This example was rendered by running the command `videobrew render out/output.mp
 
 1. Create a new web page based on this example. Ensure there's a `index.html`.
 
-2. Write some Javascript that listens for the `message` event. The Videobrew renderer will send two events:
+2. Create a `window.videobrew` object and add the following functions:
 
-    * `videobrew.init` (no data) - when the renderer wants you to set up your video.
-    * `videobrew.tick` (`frame`) - when the renderer wants you to render the provided frame.
+    - `init(): Promise<VideoAppSetup> | VideoAppSetup`:
+      - Should return the video specifications:
+       ```js
+       interface VideoAppSetup {
+         width: number;
+         height: number;
+         framerate: number;
+         frameCount: number;
+       }
+       ```
+      - Can be asynchronous (return a `Promise`) to preload data, call api's, etc... 
+      - When this function returns, the renderer is signalled that the video app is ready to start rendering frames.
+
+    - `tick(frame): Promise<void> | void`:
+      - Should draw the specified frame.
+      - Can be asynchronous (return a `Promise`) to take your time drawing the frame
+      - When this function returns, the renderer is signalled that the frame has been rendered and the next frame can be drawn (it will send another `tick` for that).
 
     **For example:**
-    
+
     ```js
-    window.addEventListener('message', function (event) {
-      switch (event.data.type) {
-        case 'videobrew.init':
-          setup();
-          break;
-        case 'videobrew.tick':
-          tick(event.data.frame);
-          break;
+    window.videobrew = {
+      init: () => {
+        return {
+          width: width,
+          height: height,
+          framerate: framerate,
+          frameCount: frameCount,
+        };
+      },
+      tick: (frame) => {
+        // run all frames up to the and including the current frame
+        for (let i = 0; i <= frame; i++) {
+          frames[i]();
+        }
       }
-    });
+    };
     ```
 
-3. After receiving `videobrew.init` you should inform the renderer of your video specifications. Send a message to the renderer like this:
+   **Do not use transitions!** Rendering wont be in sync with the real time framerate. Instead each frame will render as fast as possible. For this reason you must know exactly what to draw for each frame.
 
-    ```js
-    function setup() {
-      parent.postMessage({
-        type: 'videobrew.setup',
-        width: 1920,
-        height: 1080,
-        framerate: 30,
-        frameCount: 30 * 5, // 5 seconds
-      }, '*');
-    }
-    ```
+3. Run `videobrew preview` to test your video in the browser. You can view it @ `http://localhost:8087`.
 
-4. Now the renderer may start asking you to render a specific frame. You should draw the frame immediately:
-
-    ```js
-    function tick(frame) {
-      if (frame === 0) {
-        // Reset your video app to the start state
-      }
-
-      // Draw the specified frame
-    }
-    ```
-
-    **Do not use transitions or animations!** Rendering wont be in sync with the frame rate, but will happen as fast as possible. For this reason you must know exactly what to draw for each frame.
-
-5. Run `videobrew preview` to test your video in the browser. You can view it @ `http://localhost:8087`.
-
-6. Render it with `videobrew render my-video.mp4`
+4. Render it with `videobrew render my-video.mp4`

@@ -1,0 +1,24 @@
+<!-- 
+  This example is identical to 0-dependencies. The only difference is that 
+  we are showing a local installation of the library instead of a global
+  installation.
+ -->
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100%; margin: 0">
+  <div></div> <!-- empty div, so we can see if the style.css is loaded (should be black)-->
+  <div class="colored-block"></div>
+  <div class="colored-block"></div>
+  <div class="colored-block"></div>
+  
+  <script src="script.js" defer></script>
+</body>
+</html>

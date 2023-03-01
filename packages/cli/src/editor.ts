@@ -1,12 +1,12 @@
 import { exec, spawn, ChildProcess } from 'child_process';
-import { debug, panic } from './utils/logging';
+import { debug, panic } from './utils/logging.js';
 import path from 'path';
 import util from 'util';
 import fs from 'fs';
 
 const execAsync = util.promisify(exec);
 
-const EDITOR_PACKAGE_NAME = '@videobrew/editor';
+export const EDITOR_PACKAGE_NAME = '@videobrew/editor';
 const FILE_PREFIX = 'file:';
 const PORT = 8087;
 const HOST = 'localhost';
@@ -20,13 +20,14 @@ export type EditorInstance = {
 /**
  * Gets where the editor is installed (globally)
  */
-async function getEditorInstallPath() {
+export async function getEditorInstallPath(installedGlobally: boolean): Promise<string | null> {
+  const globalOption = installedGlobally ? '-g ' : '';
   let json: string;
 
   try {
     const {
       stdout,
-    } = await execAsync(`npm list -g ${EDITOR_PACKAGE_NAME} --json`);
+    } = await execAsync(`npm list ${globalOption}${EDITOR_PACKAGE_NAME} --json`);
     json = stdout;
   } catch (e) {
     // If the editor is not installed, npm list will exit with code 1
@@ -37,9 +38,11 @@ async function getEditorInstallPath() {
   let npmPath: string | undefined;
   
   let editorPath = dependencies[EDITOR_PACKAGE_NAME].resolved;
-  
-  // Individual dependencies can be resolved when they're symlinked with `npm link`
-  if (editorPath) {
+
+  if (!installedGlobally) {
+    editorPath = path.join(process.cwd(), 'node_modules', EDITOR_PACKAGE_NAME);
+  } else if (editorPath) {
+    // Individual dependencies can be resolved when they're symlinked with `npm link`
     if (!editorPath.startsWith(FILE_PREFIX)) {
       // TODO: support other protocols
       panic(`[Videobrew | Editor Server] Unsupported protocol for package: ${editorPath} (only ${FILE_PREFIX} is supported)`);
@@ -68,35 +71,38 @@ async function getEditorInstallPath() {
 /**
  * Installs the editor globally with npm and returns the path
  */
-async function installEditor() {
-  const {
-    stdout,
-    stderr,
-  } = await execAsync(`npm install -g ${EDITOR_PACKAGE_NAME}`);
+export function getEditorInstaller(installGlobally: boolean) {
+  const installOption = installGlobally ? '-g' : '--save-dev';
+  const command = `npm install ${installOption} ${EDITOR_PACKAGE_NAME}`;
 
-  if (stderr) {
-    panic(stderr);
-    return null;
-  }
-
-  debug(stdout);
-
-  return await getEditorInstallPath();
+  return {
+    command,
+    install: async () => {
+      return new Promise((resolve, reject) => {
+        const { stdout, stderr } = exec(command, async (exception, stdout, stderr) => {
+          if (exception) {
+            reject(exception);
+          }
+          
+          resolve(await getEditorInstallPath(installGlobally));
+        });
+      });
+    },
+  };
 }
 
 /**
  * Starts the editor server
  */
-export async function startEditor(videoAppUrl: string): Promise<EditorInstance> {
-  let editorPath = await getEditorInstallPath();
+export async function startEditor(videoAppUrl: string, isGloballyInstalled: boolean): Promise<EditorInstance> {
+  let editorPath = await getEditorInstallPath(isGloballyInstalled);
     
   if (!editorPath) {
-    editorPath = await installEditor();
+    throw new Error('Editor not installed!');
   }
 
-  const editorServer = spawn('node', ['.'], {
-    cwd: editorPath!,
-    stdio: ['inherit', 'pipe', 'inherit'],
+  const editorServer = spawn('node', [editorPath], {
+    stdio: ['inherit', 'pipe', 'pipe'],
     env: {
       'PORT': `${PORT}`,
       'HOST': HOST,

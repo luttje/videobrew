@@ -1,5 +1,5 @@
+import { shell } from '../utils/shell.js';
 import pathToFfmpeg from 'ffmpeg-static';
-import { shell } from '../utils/shell';
 import { exec } from 'child_process';
 import util from 'util';
 import path from 'path';
@@ -16,11 +16,18 @@ export type VideoFormat = {
   name: string;
 }
 
-export async function buildVideoConfigFromFrames(framesPath: string, framerate: number, outputPath: string): Promise<VideoConfig> {
+export type VideoProgressCallback = (progress: number) => void;
+
+export async function buildVideoConfigFromFrames(
+  framesPath: string,
+  framerate: number,
+  outputPath: string,
+  frameExtension: string,
+): Promise<VideoConfig> {
   const ffmpegCommand = shell([
     `${pathToFfmpeg}`,
     `-framerate`, `${framerate}`,
-    `-i`, path.join(framesPath, '%08d.jpeg'),
+    `-i`, path.join(framesPath, `%08d.${frameExtension}`),
     `-vf`, `pad=ceil(iw/2)*2:ceil(ih/2)*2`,
     `-c:v`, `libx264`,
     `-pix_fmt`, `yuv420p`,
@@ -34,18 +41,28 @@ export async function buildVideoConfigFromFrames(framesPath: string, framerate: 
   }
 }
 
-export async function renderVideo(videoConfig: VideoConfig) {
-  const { stderr } = await execAsync(videoConfig.command, {
-    cwd: __dirname,
-  });
+export async function renderVideo(videoConfig: VideoConfig, onProgress?: VideoProgressCallback): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const { stderr } = exec(videoConfig.command);
+    let output = '';
 
-  return stderr;
+    stderr!.on('data', (data: string) => {
+      output += data;
+      const match = data.match(/frame=\s*(\d+)/);
+      if (match) {
+        const progress = parseInt(match[1]);
+        onProgress?.(progress);
+      }
+    });
+
+    stderr!.on('end', () => {
+      resolve(output);
+    });
+  });
 }
 
 export async function getContainerFormats(): Promise<VideoFormat[]> {
-  const { stdout } = await execAsync(`${pathToFfmpeg} -formats`, {
-    cwd: __dirname,
-  });
+  const { stdout } = await execAsync(`${pathToFfmpeg} -formats`);
 
   return stdout
     .split('\r\n')
