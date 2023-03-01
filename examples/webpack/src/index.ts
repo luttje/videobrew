@@ -1,5 +1,4 @@
-
-import { VideoBuilder, FrameCount } from '@videobrew/client';
+import { VideoBuilder, FrameCount, VideoApp } from '@videobrew/client';
 // For demonstration purposes, we are importing a JSON file
 // but you could get this data from an API call or any other source
 import data from './fakeapi.json';
@@ -91,15 +90,7 @@ const frameCount = video.getFrameCount();
 
 declare global {
   interface Window {
-    videobrew: {
-      init: () => Promise<{
-        width: number;
-        height: number;
-        framerate: number;
-        frameCount: number;
-      }>;
-      tick: (frame: number) => Promise<void>;
-    };
+    videobrew: VideoApp;
   }
 }
 

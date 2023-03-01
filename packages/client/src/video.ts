@@ -5,6 +5,7 @@ export class Video {
 
   constructor(
     private readonly scenes: Scene[],
+    private readonly framerate: number,
   ) {
     this.buildLookup();
   }
@@ -18,6 +19,10 @@ export class Video {
         frameIndex++;
       }
     }
+  }
+
+  public getFramerate() {
+    return this.framerate;
   }
 
   public getFrameCount() {

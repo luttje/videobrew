@@ -57,6 +57,6 @@ export class VideoBuilder {
 
   public build() {
     this.isBuilt = true;
-    return new Video(this.scenes);
+    return new Video(this.scenes, this.framerate);
   }
 }
