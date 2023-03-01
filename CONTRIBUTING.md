@@ -53,13 +53,13 @@ $ npm run build # run in root
 
 This will:
 
-1. Discover third-party licenses used and generate a `THIRD_PARTY_LICENSES` file in root *([`scripts/licenses.mjs`](./scripts/licenses.mjs))*.
+1. Discover third-party licenses used and generate a `LICENSES-THIRD-PARTY` file in root *([`scripts/licenses.mjs`](./scripts/licenses.mjs))*.
 
 2. Clear the `dist` directories in each package *([`scripts/clear-build.mjs`](./scripts/clear-build.mjs))*.
 
 3. Call the `build` script in each package to compile the TypeScript code. Build output is placed in the `dist` directory.
 
-4. Build a readme for each package containing the root readme and a package specific readme. It will also copy LICENSE and LICENSES-THIRD-PARTY. All this will be placed in the `dist` directory *([`scripts/docs-build.mjs`](./scripts/docs-build.mjs))*.
+4. Build a readme for each package containing the root readme and a package specific readme. It will also copy `LICENSE` and `LICENSES-THIRD-PARTY`. All this will be placed in the `dist` directory *([`scripts/docs-build.mjs`](./scripts/docs-build.mjs))*.
 
 ### Testing before publishing
 
