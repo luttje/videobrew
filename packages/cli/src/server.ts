@@ -1,4 +1,3 @@
-import EnableCorsForIframe from './utils/mw-cors.js';
 import LocalWebServer from 'local-web-server';
 import { Server } from 'tls';
 
@@ -25,7 +24,6 @@ export async function createLocalWebServer(videoAppPath: string) {
       'lws-mime',
       'lws-range',
       'lws-spa',
-      EnableCorsForIframe,
       'lws-static',
       'lws-index'
     ],

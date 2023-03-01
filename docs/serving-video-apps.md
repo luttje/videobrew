@@ -10,10 +10,4 @@ $ videobrew preview http://localhost:8080
 $ videobrew render http://localhost:8080
 ```
 
-> ## ⚠ <u>Insecure</u> [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) headers required
-> In order for the editor to access your video app you need to set these headers for all requests to your video app:
->  - `Access-Control-Allow-Origin: *`
->  - `Cross-Origin-Embedder-Policy: require-corp` 
->  - `Cross-Origin-Resource-Policy: cross-origin`
->
-> **You should never run a Video app (or any app) with these settings in a live environment.** With these CORS settings a bad actor could do serious harm to your users' privacy. Videobrew is only intended for local use.
+*⚠ If you are working with webpack or another HMR server, you will have to ensure this header is served: `Access-Control-Allow-Origin: *`. This is because Videobrew exposes your video app to the editor through a proxy (`/video`) and any `fetch` done will break [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) protection.*

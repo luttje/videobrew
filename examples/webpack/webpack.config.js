@@ -20,6 +20,7 @@ const config = {
             writeToDisk: true
         },
         headers: {
+            // Needed because Videobrew exposes the app through a proxy in the editor (/video)
             'Access-Control-Allow-Origin': '*',
         }
     },
