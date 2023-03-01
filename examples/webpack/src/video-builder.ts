@@ -22,11 +22,12 @@ export class VideoBuilder {
     }
 
     const element = document.querySelector(this.screenElementSelector) as HTMLElement;
-    
+
     // Store the state of the element so we can track anything that changes
     const originalElementState = {
       innerHTML: element.innerHTML,
       style: element.style.cssText,
+      classes: element.classList,
     };
 
     // Pre-render the frame as the first of the scene
@@ -40,6 +41,8 @@ export class VideoBuilder {
     const resetFrame = () => {
       element.innerHTML = originalElementState.innerHTML;
       element.style.cssText = originalElementState.style;
+      element.className = '';
+      originalElementState.classes.forEach(c => element.classList.add(c));
 
       frame();
     }

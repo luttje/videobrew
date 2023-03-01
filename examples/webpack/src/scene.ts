@@ -14,10 +14,14 @@ export class Scene {
   public normalizeFrameIndex(videoFrame: number) {
     return videoFrame - this.firstFrameIndex;
   }
+  
+  // Reset to how the scene started
+  public reset() {
+    this.resetFrame();
+  }
    
   public renderFrame(frame: number) {
-    // Reset to how the scene started
-    this.resetFrame();
+    this.reset();
 
     // Then activate all frames up to and including the given frame
     for (let i = 0; i <= frame; i++) {
