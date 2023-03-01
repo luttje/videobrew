@@ -14,7 +14,7 @@
 	},
 	"author": "Luttje",
 	"license": "AGPL-3.0-or-later",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"type": "module",
 	"types": "./dist/types/cli.d.ts",
 	"bin": {
