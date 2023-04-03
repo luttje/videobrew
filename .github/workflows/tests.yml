@@ -1,0 +1,22 @@
+name: Run tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: 
+      - '**'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npx lerna bootstrap
+      - run: npx lerna run ci:test
+      - name: Coveralls for @videobrew/client
+        uses: coverallsapp/github-action@v2.0.0
+        with:
+          base-path: ./packages/client

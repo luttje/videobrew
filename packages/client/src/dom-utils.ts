@@ -8,6 +8,9 @@ export function modifyTransform(transform: string, name: string, value: number):
   if (match) {
     return transform.replace(regex, `${name}(${value})`);
   } else {
-    return `${transform} ${name}(${value})`;
+    if (transform.length > 0)
+    transform += ' ';
+    
+    return `${transform}${name}(${value})`;
   }
 }

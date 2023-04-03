@@ -2,17 +2,13 @@ export type Frame = () => void;
 export const EmptyFrame: Frame = () => { };
 
 export class FrameCount {
-  private static readonly ticksPerSecond: number = 100;
+  public static readonly ticksPerSecond: number = 100;
 
-  constructor(
+  private constructor(
     private readonly ticks: number,
   ) { 
     if (ticks < 1)
       throw new Error('Frame count must be greater than 0');
-  }
-
-  public static fromFrames(frames: number) {
-    return new FrameCount(frames);
   }
 
   public static fromMilliseconds(milliseconds: number) {

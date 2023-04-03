@@ -7,8 +7,3 @@ export interface VideoAppSetup {
   framerate: number;
   frameCount: number;
 }
-
-export interface VideoApp {
-  init(): Promise<VideoAppSetup> | VideoAppSetup;
-  tick(frame: number): Promise<void> | void;
-}
