@@ -1,6 +1,6 @@
 export default {
-  // A preset that is used as a base for Jest's configuration
   preset: "ts-jest",
+  resolver: "ts-jest-resolver",
 
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
@@ -15,14 +15,14 @@ export default {
   ],
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "coverage",
+  // coverageDirectory: "coverage",
 
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: "v8",
 
   // A list of reporter names that Jest uses when writing coverage reports
   coverageReporters: [
-    "json",
+    // "json",
     "text",
     // "lcov",
     // "clover"

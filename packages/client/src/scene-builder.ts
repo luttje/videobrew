@@ -17,15 +17,13 @@ export class SceneBuilder {
       throw new Error('Cannot add frames to a scene after it has been built');
     }
 
-    if (frame instanceof Function) {
-      this.frames.push(frame);
-      frame();
-    } else if (frame instanceof Array) {
+    if (frame instanceof Array) {
       for (let f of frame) {
         this.addToFrames(f);
       }
     } else {
-      this.frames.push(EmptyFrame);
+      this.frames.push(frame);
+      frame();
     }
 
     return this;
