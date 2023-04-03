@@ -12,6 +12,7 @@ export default {
   collectCoverageFrom: [
     "src/**/*.{js,ts}",
     "!src/**/*.d.ts",
+    "!src/**/interfaces/*.ts",
   ],
 
   // The directory where Jest should output its coverage files
