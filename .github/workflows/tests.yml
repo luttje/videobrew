@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
       - run: npx lerna bootstrap
       - run: npx lerna run ci:test
       - name: Coveralls for @videobrew/client
@@ -24,3 +26,7 @@ jobs:
         uses: coverallsapp/github-action@v2.0.0
         with:
           base-path: ./packages/cli
+      - name: Coveralls for @videobrew/editor
+        uses: coverallsapp/github-action@v2.0.0
+        with:
+          base-path: ./packages/editor
