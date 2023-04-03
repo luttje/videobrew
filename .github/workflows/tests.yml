@@ -16,3 +16,7 @@ jobs:
           node-version: '18'
       - run: npx lerna bootstrap
       - run: npx lerna run ci:test
+      - name: Coveralls for @videobrew/client
+        uses: coverallsapp/github-action@v2.0.0
+        with:
+          base-path: ./packages/client

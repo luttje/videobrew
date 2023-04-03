@@ -22,9 +22,9 @@ export default {
   // A list of reporter names that Jest uses when writing coverage reports
   coverageReporters: [
     // "json",
-    "json-summary",
+    // "json-summary",
     "text",
-    // "lcov",
+    "lcov",
     // "clover"
   ],
 
