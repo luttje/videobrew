@@ -29,7 +29,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "npx playwright test",
-    "ci:test": "npx playwright test --coverage",
+    "ci:test": "cross-env COLLECT_COVERAGE=1 npx playwright test",
     "clear-build": "node ../../scripts/clear-build.mjs",
     "docs-build": "node ../../scripts/docs-build.mjs",
     "package": "node ../../scripts/package.mjs",
