@@ -17,16 +17,20 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - run: npx lerna bootstrap
+      - run: npx lerna run build
       - run: npx lerna run ci:test
       - name: Coveralls for @videobrew/client
         uses: coverallsapp/github-action@v2.0.0
         with:
           base-path: ./packages/client
+          flag-name: client
       - name: Coveralls for @videobrew/cli
         uses: coverallsapp/github-action@v2.0.0
         with:
           base-path: ./packages/cli
+          flag-name: cli
       - name: Coveralls for @videobrew/editor
         uses: coverallsapp/github-action@v2.0.0
         with:
           base-path: ./packages/editor
+          flag-name: editor
