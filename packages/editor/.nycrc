@@ -1,0 +1,16 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "all": true,
+  "include": [
+    "src/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "__tests__"
+  ],
+  "extension": [
+    ".js",
+    ".ts",
+    ".svelte"
+  ]
+}
