@@ -3,7 +3,8 @@
   "description": "Monorepo for Videobrew containing all packages and tools to publish them",
   "private": true,
   "workspaces": [
-    "./packages/*"
+    "./packages/*",
+    "./examples/*"
   ],
   "devDependencies": {
     "lerna": "^6.5.1",
