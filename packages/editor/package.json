@@ -1,60 +1,60 @@
 {
-  "name": "@videobrew/editor",
-  "description": "Preview videos created using any web technologies. Requires @videobrew/cli to be installed globally.",
-  "keywords": [
-    "video",
-    "generation",
-    "animation",
-    "api"
-  ],
-  "homepage": "https://github.com/luttje/videobrew",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/luttje/videobrew"
-  },
-  "author": "Luttje",
-  "license": "AGPL-3.0-or-later",
-  "version": "0.3.1",
-  "type": "module",
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "serve-test-video-app": "ws --hostname localhost --port 8088 --directory ../../examples/0-dependencies --stack lws-body-parser lws-request-monitor lws-log lws-cors lws-json lws-compress lws-rewrite lws-blacklist lws-conditional-get lws-mime lws-range lws-spa ./mw-cors.mjs lws-static lws-index",
-    "dev": "cross-env VIDEOBREW_VIDEO_APP_URL=http://localhost:8088 concurrently --kill-others \"npm run serve-test-video-app\" \"vite dev\"",
-    "dev-self-serve": "cross-env VIDEOBREW_VIDEO_APP_URL=http://localhost:8088 vite dev",
-    "build": "vite build",
-    "watch": "vite build --watch",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+	"name": "@videobrew/editor",
+	"description": "Preview videos created using any web technologies. Requires @videobrew/cli to be installed globally.",
+	"keywords": [
+		"video",
+		"generation",
+		"animation",
+		"api"
+	],
+	"homepage": "https://github.com/luttje/videobrew",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/luttje/videobrew"
+	},
+	"author": "Luttje",
+	"license": "AGPL-3.0-or-later",
+	"version": "0.3.1",
+	"type": "module",
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"scripts": {
+		"serve-test-video-app": "ws --hostname localhost --port 8088 --directory ../../examples/0-dependencies --stack lws-body-parser lws-request-monitor lws-log lws-cors lws-json lws-compress lws-rewrite lws-blacklist lws-conditional-get lws-mime lws-range lws-spa ./mw-cors.mjs lws-static lws-index",
+		"dev": "cross-env VIDEOBREW_VIDEO_APP_URL=http://localhost:8088 concurrently --kill-others \"npm run serve-test-video-app\" \"vite dev\"",
+		"dev-self-serve": "cross-env VIDEOBREW_VIDEO_APP_URL=http://localhost:8088 vite dev",
+		"build": "vite build",
+		"watch": "vite build --watch",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "npx playwright test",
     "ci:test": "cross-env COLLECT_COVERAGE=1 npx playwright test",
-    "clear-build": "node ../../scripts/clear-build.mjs",
-    "docs-build": "node ../../scripts/docs-build.mjs",
-    "package": "node ../../scripts/package.mjs",
-    "prebuild": "npm run clear-build",
-    "postbuild": "npm run docs-build",
-    "prepack": "npm run package"
-  },
-  "devDependencies": {
+		"clear-build": "node ../../scripts/clear-build.mjs",
+		"docs-build": "node ../../scripts/docs-build.mjs",
+		"package": "node ../../scripts/package.mjs",
+		"prebuild": "npm run clear-build",
+		"postbuild": "npm run docs-build",
+		"prepack": "npm run package"
+	},
+	"devDependencies": {
     "@playwright/test": "^1.32.1",
-    "@sveltejs/adapter-node": "^1.2.0",
-    "@sveltejs/kit": "^1.15.0",
-    "@tsconfig/recommended": "^1.0.2",
-    "@videobrew/client": "^0.3.0",
-    "autoprefixer": "^10.4.13",
-    "concurrently": "^7.6.0",
-    "cross-env": "^7.0.3",
-    "local-web-server": "^5.3.0",
-    "postcss": "^8.4.21",
-    "svelte": "^3.54.0",
-    "svelte-check": "^3.0.1",
-    "tailwindcss": "^3.2.7",
-    "tslib": "^2.4.1",
-    "typescript": "^4.9.3",
+		"@sveltejs/adapter-node": "^1.2.0",
+		"@sveltejs/kit": "^1.15.1",
+		"@tsconfig/recommended": "^1.0.2",
+		"@videobrew/client": "^0.3.0",
+		"autoprefixer": "^10.4.13",
+		"concurrently": "^7.6.0",
+		"cross-env": "^7.0.3",
+		"local-web-server": "^5.3.0",
+		"postcss": "^8.4.21",
+		"svelte": "^3.54.0",
+		"svelte-check": "^3.0.1",
+		"tailwindcss": "^3.2.7",
+		"tslib": "^2.4.1",
+		"typescript": "^4.9.3",
     "v8-to-istanbul": "^9.1.0",
-    "vite": "^4.0.0"
-  },
-  "gitHead": "2513190cc1de00d1049e35f9c942b779447530f9"
+		"vite": "^4.0.0"
+	},
+	"gitHead": "2513190cc1de00d1049e35f9c942b779447530f9"
 }
