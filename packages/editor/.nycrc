@@ -10,6 +10,7 @@
   ],
   "extension": [
     ".js",
-    ".ts"
+    ".ts",
+    ".svelte"
   ]
 }
