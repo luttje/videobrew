@@ -18,19 +18,17 @@ $ DEBUG=1 videobrew preview
 
 2. Install dependencies for all packages:
     ```bash
-    $ npm install # run in root
+    $ npm install # run in project root
     ```
 
-3. Run the watchers that will build the packages as you make changes:
+3. Go into the package you wish to maintain and watch for changes using:
     ```bash
-    $ npm run watch # run in root
+    $ npm run watch # run in packages/<package to maintain>
     ```
-
-    **Note: this works a bit finicky at the moment.** You may be better of running the watchers in each package individually (`npm run watch` in `packages/cli` and `packages/editor`)
 
 4. Ensure that the `videobrew` CLI and editor are linked as global packages:
     ```bash
-    $ cd packages/cli/dist # start in root
+    $ cd packages/cli/dist # run this in project root to get to the CLI dist (ensure it's built first)
     $ npm link
     $ cd ../../editor/dist
     $ npm link
@@ -43,25 +41,36 @@ $ DEBUG=1 videobrew preview
     $ videobrew preview
     ```
 
+## Testing
+
+Most packages are tested using [Jest](https://jestjs.io/) and some with additional [Playwright](https://playwright.dev/) end-to-end tests (`e2e`). To run tests go into the package you wish to test and run:
+```bash
+$ npm run ci:test # run in packages/<package to test>
+```
+
+*To run all tests for all testable packages run that command in the project root.*
+
 ## Building
 
 Run:
 
 ```bash
-$ npm run build # run in root
+$ npm run build # run in project root
 ```
 
 This will:
 
-1. Discover third-party licenses used and generate a `LICENSES-THIRD-PARTY` file in root *([`scripts/licenses.mjs`](./scripts/licenses.mjs))*.
+1. Discover third-party licenses used and generate a `LICENSES-THIRD-PARTY` file in the project root *([`scripts/licenses.mjs`](./scripts/licenses.mjs))*.
 
-2. Clear the `dist` directories in each package *([`scripts/clear-build.mjs`](./scripts/clear-build.mjs))*.
+2. Clear the `dist` directories in each package *(using [`scripts/clear-build.mjs`](./scripts/clear-build.mjs))*.
 
-3. Call the `build` script in each package to compile the TypeScript code. Build output is placed in the `dist` directory.
+3. Call the `build` script in each package to compile its TypeScript code. Build output is placed in the `dist` directory of each package.
 
-4. Build a readme for each package containing the root readme and a package specific readme. It will also copy `LICENSE` and `LICENSES-THIRD-PARTY`. All this will be placed in the `dist` directory *([`scripts/docs-build.mjs`](./scripts/docs-build.mjs))*.
+4. Build a readme for each package containing the project root readme and a package specific readme. It will also copy `LICENSE` and `LICENSES-THIRD-PARTY`. All this will be placed in the `dist` directory *(using [`scripts/docs-build.mjs`](./scripts/docs-build.mjs))*.
 
 ### Testing before publishing
+
+It may be helpful to test the published package before publishing it. To do this, you can run the following steps:
 
 1. Go into the `packages/cli/dist` and run `npm pack`. 
 
@@ -78,13 +87,13 @@ This will:
 1. Run:
 
     ```bash
-    npm run publish # run in root
+    npm run publish # run in project root
     ```
 
 2. Choose the desired version number.
 
 3. The packages will be versioned and pushed to Git for a GitHub release.
 
-4. For each package their package.json will be transformed into the `dist` directory, have a package-lock.json generated, get shrinkwrapped ([`scripts/package.mjs`](./scripts/package.mjs))
+4. For each package their package.json will be transformed into the `dist` directory, have a package-lock.json generated, get shrinkwrapped *(using [`scripts/package.mjs`](./scripts/package.mjs))*
 
-5. The `dist` directory will be published to npm.
+5. The contents of the `dist` directory will be published to npm.

@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "node ./scripts/licenses.mjs && npx lerna run build",
-    "watch": "npx lerna run watch",
+    "ci:test": "npx lerna run ci:test",
     "publish": "npx lerna publish --no-private"
   }
 }
