@@ -1,7 +1,8 @@
 # 📼 Videobrew 
 
 [![CLI npm version](https://img.shields.io/npm/v/@videobrew/cli)](https://www.npmjs.com/package/@videobrew/cli)
-[![Coverage Status](https://coveralls.io/repos/github/luttje/videobrew/badge.svg?branch=main)](https://coveralls.io/github/luttje/videobrew?branch=main)
+[![GitHub Tests Action](https://github.com/luttje/videobrew/actions/workflows/tests.yml/badge.svg)](https://github.com/luttje/videobrew/actions/workflows/tests.yml)
+[![Test Coverage Status](https://coveralls.io/repos/github/luttje/videobrew/badge.svg?branch=main)](https://coveralls.io/github/luttje/videobrew?branch=main)
 
 Create videos using any web technologies (like Svelte, Vue and React) or just plain old HTML, CSS and Javascript. Animate your web page and have Videobrew render it to a video.
 
