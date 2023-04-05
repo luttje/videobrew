@@ -27,7 +27,7 @@
     "watch": "npx tsc --watch",
     "build": "npx tsc",
     "test": "npx jest",
-    "ci:test": "npx jest --ci --coverage",
+    "ci:test": "npm run test -- --ci --coverage",
     "clear-build": "node ../../scripts/clear-build.mjs",
     "docs-build": "node ../../scripts/docs-build.mjs",
     "package": "node ../../scripts/package.mjs",
