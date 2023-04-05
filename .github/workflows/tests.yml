@@ -14,9 +14,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
+      - run: npx lerna bootstrap
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - run: npx lerna bootstrap
       - run: npx lerna run build
       - run: npx lerna run ci:test
       - name: Coveralls for @videobrew/client
