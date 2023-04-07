@@ -17,20 +17,33 @@ jobs:
       - run: npx lerna bootstrap
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - run: npx lerna run build
-      - run: npx lerna run ci:test
-      - name: Coveralls for @videobrew/client
-        uses: coverallsapp/github-action@v2.0.0
+      - name: Build all packages
+        run: npx lerna run build
+      - name: Test all packages
+        run: npm run ci:test
+  upload-coveralls:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        packages: [
+          { base-path: ./scripts, flag-name: scripts },
+          { base-path: ./packages/client, flag-name: client },
+          { base-path: ./packages/cli, flag-name: cli },
+          { base-path: ./packages/editor, flag-name: editor },
+        ]
+    steps:
+      - uses: coverallsapp/github-action@v2
         with:
-          base-path: ./packages/client
-          flag-name: client
-      - name: Coveralls for @videobrew/cli
-        uses: coverallsapp/github-action@v2.0.0
+          base-path: ${{ matrix.packages.base-path }}
+          flag-name: ${{ matrix.packages.flag-name }}
+          parallel: true
+  finish:
+    needs: upload-coveralls
+    if: "!cancelled()"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
         with:
-          base-path: ./packages/cli
-          flag-name: cli
-      - name: Coveralls for @videobrew/editor
-        uses: coverallsapp/github-action@v2.0.0
-        with:
-          base-path: ./packages/editor
-          flag-name: editor
+          parallel-finished: true
