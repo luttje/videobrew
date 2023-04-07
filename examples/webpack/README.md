@@ -1,6 +1,6 @@
 # [<img src="https://raw.githubusercontent.com/webpack/media/master/logo/icon.svg" height="20px" alt="Webpack Logo" /> Webpack](https://webpack.js.org/) + [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/512px-Typescript_logo_2020.svg.png?20221110153201" height="20px" alt="TypeScript Logo" /> TypeScript](https://www.typescriptlang.org)  Video App Example
 
-[[📼 Watch the rendered video]](./out/weather.mp4)
+[[📼 Watch the rendered video]](https://github.com/luttje/videobrew/blob/main/examples/webpack/out/weather.mp4)
 
 This example video was rendered by running the command `videobrew render -q 100 dist out/weather.mp4` in this directory.
 

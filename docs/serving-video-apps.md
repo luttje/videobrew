@@ -1,6 +1,6 @@
 # 🔌 Serving your video app yourself
 
-Videobrew needs to access your video app to preview and render it. In the [🚀 Quickstart](../README.md#quickstart) we let Videobrew serve our video app for us. But you can also serve your video app yourself. 
+Videobrew needs to access your video app to preview and render it. In the [🚀 Quickstart](https://github.com/luttje/videobrew/blob/main/README.md#quickstart) we let Videobrew serve our video app for us. But you can also serve your video app yourself. 
 
 Serve your video app at `http://localhost:8080` and then preview and render it by running these respective commands:
 

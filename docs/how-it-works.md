@@ -16,6 +16,6 @@ Here is a short overview of the process that Videobrew uses to render your video
 
 <div align="center">
 
-  [Learn how to code your own video](./code-your-own-video.md)
+  [Learn how to code your own video](https://github.com/luttje/videobrew/blob/main/docs/code-your-own-video.md)
 
 </div>

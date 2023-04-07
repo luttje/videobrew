@@ -60,13 +60,13 @@ $ npm run build # run in project root
 
 This will:
 
-1. Discover third-party licenses used and generate a `LICENSES-THIRD-PARTY` file in the project root *([`scripts/licenses.mjs`](./scripts/licenses.mjs))*.
+1. Discover third-party licenses used and generate a `LICENSES-THIRD-PARTY` file in the project root *([`scripts/licenses.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/licenses.mjs))*.
 
-2. Clear the `dist` directories in each package *(using [`scripts/clear-build.mjs`](./scripts/clear-build.mjs))*.
+2. Clear the `dist` directories in each package *(using [`scripts/clear-build.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/clear-build.mjs))*.
 
 3. Call the `build` script in each package to compile its TypeScript code. Build output is placed in the `dist` directory of each package.
 
-4. Build a readme for each package containing the project root readme and a package specific readme. It will also copy `LICENSE` and `LICENSES-THIRD-PARTY`. All this will be placed in the `dist` directory *(using [`scripts/docs-build.mjs`](./scripts/docs-build.mjs))*.
+4. Build a readme for each package containing the project root readme and a package specific readme. It will also copy `LICENSE` and `LICENSES-THIRD-PARTY`. All this will be placed in the `dist` directory *(using [`scripts/docs-build.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/docs-build.mjs))*.
 
 ### Testing before publishing
 
@@ -94,6 +94,6 @@ It may be helpful to test the published package before publishing it. To do this
 
 3. The packages will be versioned and pushed to Git for a GitHub release.
 
-4. For each package their package.json will be transformed into the `dist` directory, have a package-lock.json generated, get shrinkwrapped *(using [`scripts/package.mjs`](./scripts/package.mjs))*
+4. For each package their package.json will be transformed into the `dist` directory, have a package-lock.json generated, get shrinkwrapped *(using [`scripts/package.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/package.mjs))*
 
 5. The contents of the `dist` directory will be published to npm.

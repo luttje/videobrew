@@ -1,6 +1,6 @@
 # 📹 Code your own video
 
-Before you get started, you might want to read about [how Videobrew works](./how-it-works.md). In short it takes screenshots of your video app, instructing it to draw each frame. **Your video app must implement the correct methods, so Videobrew can call them.**
+Before you get started, you might want to read about [how Videobrew works](https://github.com/luttje/videobrew/blob/main/docs/how-it-works.md). In short it takes screenshots of your video app, instructing it to draw each frame. **Your video app must implement the correct methods, so Videobrew can call them.**
 
 ## Implementing the VideoApp API
 
@@ -74,7 +74,7 @@ window.videobrew = {
   }
 };
 ```
-*The above code is based on the [0-dependencies example](../examples/0-dependencies/). Check that out for more information.*
+*The above code is based on the [0-dependencies example](https://github.com/luttje/videobrew/blob/main/examples/0-dependencies/). Check that out for more information.*
 
 ### Using the Client Library
 
@@ -166,5 +166,5 @@ To make it easier to build your video app, you can use the `@videobrew/client` l
     }
     ```
 
-*For more information check out the [<img src="https://raw.githubusercontent.com/webpack/media/master/logo/icon.svg" height="12px" alt="Webpack Logo" /> Webpack + <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/512px-Typescript_logo_2020.svg.png?20221110153201" height="12px" alt="TypeScript Logo" /> TypeScript example](../examples/webpack) or [other examples](../README.md#examples).*
+*For more information check out the [<img src="https://raw.githubusercontent.com/webpack/media/master/logo/icon.svg" height="12px" alt="Webpack Logo" /> Webpack + <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/512px-Typescript_logo_2020.svg.png?20221110153201" height="12px" alt="TypeScript Logo" /> TypeScript example](https://github.com/luttje/videobrew/blob/main/examples/webpack) or [other examples](https://github.com/luttje/videobrew/blob/main/README.md#examples).*
 
