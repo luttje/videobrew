@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         packages: [
-          { base-path: ./scripts, flag-name: scripts },
+          { base-path: ./, flag-name: scripts },
           { base-path: ./packages/client, flag-name: client },
           { base-path: ./packages/cli, flag-name: cli },
           { base-path: ./packages/editor, flag-name: editor },
