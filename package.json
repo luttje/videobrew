@@ -15,7 +15,7 @@
     "license-checker-rseidelsohn": "^4.1.1"
   },
   "scripts": {
-    "build": "node ./scripts/licenses.mjs && npx lerna run build",
+    "build": "npx lerna run build && node ./scripts/licenses.mjs",
     "ci:test": "npm run ci:test-scripts && npx lerna run ci:test",
     "publish": "npx lerna publish --no-private",
     "test-scripts": "jest",
