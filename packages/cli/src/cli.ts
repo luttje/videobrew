@@ -127,7 +127,7 @@ async function showRenderFormats(containerFormats: VideoFormat[]) {
 
 async function render(videoAppUrl: string, outputPath: string, renderQuality: number) {  
   const outputDirectory = path.dirname(outputPath);
-  await fs.mkdirSync(outputDirectory, { recursive: true });
+  fs.mkdirSync(outputDirectory, { recursive: true });
 
   newlines();
   inform(`Step (1/2) Rendering frames:`);
@@ -136,7 +136,7 @@ async function render(videoAppUrl: string, outputPath: string, renderQuality: nu
     hideCursor: true,
   });
 
-  const framesOutputPath = await fs.mkdtempSync(path.join(outputDirectory, '~tmp-'));
+  const framesOutputPath = fs.mkdtempSync(path.join(outputDirectory, '~tmp-'));
   let totalFrames = 0;
   const {
     framerate,
@@ -179,7 +179,7 @@ async function render(videoAppUrl: string, outputPath: string, renderQuality: nu
 
   debug(output);
 
-  await fs.rmSync(framesOutputPath, { recursive: true });
+  fs.rmSync(framesOutputPath, { recursive: true });
 
   newlines();
   inform(
@@ -283,7 +283,7 @@ async function preview(videoAppUrl: string, cliInstalledGlobally: boolean) {
 }
 
 async function main() {
-  const args = await parseArguments();
+  const args = parseArguments();
   const containerFormats = await getContainerFormats();
   
   if (args.action === 'render-formats') {
