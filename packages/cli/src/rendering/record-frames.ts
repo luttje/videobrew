@@ -20,7 +20,7 @@ export function getExtensionByQuality(quality: number) {
 }
 
 export async function recordFrames(
-  videoAppPathOrUrl: string,
+  videoAppUrl: string,
   framesOutputPath: string,
   renderQuality: number,
   onFrameProgress?: FrameProgressCallback,
@@ -32,13 +32,7 @@ export async function recordFrames(
     page.on('console', (message) => inform(`Video App Browser Log: ${message.text()}`));
     page.on('pageerror', (message) => inform(`Video App Browser Error: ${message}`, chalk.red));
 
-    if (!fs.existsSync(framesOutputPath))
-      fs.mkdirSync(framesOutputPath, { recursive: true });
-
-    const isVideoAppAtUrl = isVideoAppUrl(videoAppPathOrUrl);
-    const videoPath = isVideoAppAtUrl ? videoAppPathOrUrl : `file://${videoAppPathOrUrl}/index.html`;
-
-    await page.goto(videoPath, {
+    await page.goto(videoAppUrl, {
       waitUntil: 'domcontentloaded',
     });
     

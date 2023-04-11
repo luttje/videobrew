@@ -7,14 +7,13 @@ import { inform, debug, panic, newlines } from './utils/logging.js';
 import { ArgumentConfig, parse } from 'ts-command-line-args';
 import { isVideoAppUrl } from './utils/is-video-url.js';
 import { AsciiTable3 } from 'ascii-table3';
+import { SingleBar } from 'cli-progress';
 import nodeCleanup from 'node-cleanup';
-import { cwd } from 'process';
+import { exec } from 'child_process';
+import prompts from 'prompts';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
-import { SingleBar } from 'cli-progress';
-import prompts from 'prompts';
-import { exec } from 'child_process';
 
 export const CLI_PACKAGE_NAME = '@videobrew/cli';
 
@@ -26,9 +25,7 @@ const EXAMPLE_VIDEO_APP_PATH = './video';
 const EXAMPLE_VIDEO_APP_URL = 'https://example.test/video';
 const EXAMPLE_OUTPUT_PATH = './rendered/video.mp4';
 
-const workingDirectory = cwd();
-
-interface IVideoBrewArguments {
+export interface IVideoBrewArguments {
   action: string;
   videoAppPathOrUrl?: string;
   output?: string;
@@ -126,7 +123,7 @@ async function showRenderFormats(containerFormats: VideoFormat[]) {
 }
 
 async function render(videoAppUrl: string, outputPath: string, renderQuality: number) {  
-  const outputDirectory = path.dirname(outputPath);
+  const outputDirectory = path.resolve(path.dirname(outputPath));
   fs.mkdirSync(outputDirectory, { recursive: true });
 
   newlines();
@@ -282,8 +279,12 @@ async function preview(videoAppUrl: string, cliInstalledGlobally: boolean) {
   });
 }
 
-async function main() {
-  const args = parseArguments();
+export async function main(args: ReturnType<typeof parseArguments>) {
+  if (args.action === 'help') {
+    args._commandLineResults.printHelp();
+    return;
+  }
+
   const containerFormats = await getContainerFormats();
   
   if (args.action === 'render-formats') {
@@ -323,7 +324,7 @@ async function main() {
     if (!response.ok)
       panic(`Video app URL ${videoAppPathOrUrl} is not responding with 200 OK! Please provide a valid URL to where your video app is being served.`);
   } else {
-    videoAppPathOrUrl = path.join(workingDirectory, relativeVideoAppPath);
+    videoAppPathOrUrl = path.resolve(relativeVideoAppPath);
     debug(`Video app full path: ${videoAppPathOrUrl}`);
     
     const videoAppFilePath = path.join(videoAppPathOrUrl, 'index.html');
@@ -394,7 +395,7 @@ async function main() {
     
     inform(`Render quality chosen: ${quality}% ${(args.renderQuality === undefined ? '(default)' : '')}`);
   
-    const output = path.join(workingDirectory, relativeOutputPath);
+    const output = path.resolve(relativeOutputPath);
     debug(`Output full path: ${output}`);
   
     await startLocalServer();
@@ -414,11 +415,10 @@ async function main() {
     await startLocalServer();
 
     await executePreview(videoAppUrl);
-  } else if (args.action === 'help') {
-    args._commandLineResults.printHelp();
   } else {
     panic(`Unknown action "${args.action}"! Use "preview", "render" or "render-formats`);
   }
 }
 
-main();
+if (!process.env.VIDEOBREW_TESTING)
+  main(parseArguments());
