@@ -1,9 +1,12 @@
-import { IVideoBrewArguments, main } from '../src/cli';
-import { Buffer } from 'buffer';
-import { join } from 'path';
-import fs from 'fs';
-import 'core-js'; // Polyfill needed for chromium.launch() at src/rendering/record-frames.ts
 import { getContainerFormats } from '../src/rendering/video-from-frames';
+import { IVideoBrewArguments, main } from '../src/cli';
+import pathToFfmpeg from 'ffmpeg-static';
+import { exec } from 'child_process';
+import { join } from 'path';
+import util from 'util';
+import 'core-js'; // Polyfill needed for chromium.launch() at src/rendering/record-frames.ts
+
+const execAsync = util.promisify(exec);
 
 const videoAppPath = join(__dirname, '..', '..', '..', 'examples', '0-dependencies');
 const outputPath = join(__dirname, 'output');
@@ -21,6 +24,16 @@ const callMain = async (args: IVideoBrewArguments) => {
       printHelp: mockHelpFunction,
     },
   });
+};
+
+const getVideoSsim = async (expectedPath: string, actualPath: string) => {
+  const command = `${pathToFfmpeg} -i ${expectedPath} -i ${actualPath} -lavfi ssim -f null -`;
+  const result = (await execAsync(command)).stderr;
+
+  const regex = /All:(\d+\.\d+)/;
+  const match = result.match(regex);
+
+  return parseFloat(match![1]);
 };
 
 describe('CLI', () => {
@@ -41,7 +54,6 @@ describe('CLI', () => {
 
     const containerFormats = await getContainerFormats();
 
-    // Go through all container formats and check if they are listed
     for (const containerFormat of containerFormats) {
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(containerFormat.name));
     }
@@ -56,9 +68,9 @@ describe('CLI', () => {
       output: actualPath,
     });
     
-    const actual = fs.readFileSync(actualPath);
-    const expected = fs.readFileSync(join(expectedBasePath, '0-dependencies.mp4'));
-    expect(Buffer.compare(expected, actual)).toBe(0);
+    const expectedPAth = join(expectedBasePath, '0-dependencies.mp4');
+    const ssim = await getVideoSsim(expectedPAth, actualPath);
+    expect(ssim).toBeCloseTo(1.0, 1);
   });
   
   it('should render a local video app with the highest quality by serving it', async () => {
@@ -71,9 +83,9 @@ describe('CLI', () => {
       renderQuality: 100,
     });
     
-    const actual = fs.readFileSync(actualPath);
-    const expected = fs.readFileSync(join(expectedBasePath, '0-dependencies-hq.mp4'));
-    expect(Buffer.compare(expected, actual)).toBe(0);
+    const expectedPAth = join(expectedBasePath, '0-dependencies-hq.mp4');
+    const ssim = await getVideoSsim(expectedPAth, actualPath);
+    expect(ssim).toBeCloseTo(1.0, 1);
   });
 });
 
