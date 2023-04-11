@@ -42,4 +42,13 @@ export default {
 
   // The test environment that will be used for testing
   testEnvironment: "jsdom",
+
+  // The glob patterns Jest uses to detect test files
+  testMatch: [
+    "**/?(*.)+(spec|test).[tj]s?(x)",
+  ],
+
+  setupFilesAfterEnv: [
+    "<rootDir>/__tests__/jest.setup.ts",
+  ],
 };
