@@ -1,14 +1,12 @@
 import chalk from 'chalk';
 
-const log = console.log;
-
 export function newlines(count: number = 1) {
   for (let i = 0; i < count; i++)
-    log('');
+    console.log('');
 }
 
 export function inform(message: string, chalkFn = chalk.white, noPrefix = false) {
-  log(
+  console.log(
     (noPrefix ? '' : (chalkFn.underline('[📼 Videobrew]') + ' ')) +
     chalkFn(message)
   );
@@ -22,6 +20,6 @@ export function debug(message: string) {
 }
 
 export function panic(message: string) {
-  log(chalk.red(message));
+  console.log(chalk.red(message));
   process.exit(1);
 }
