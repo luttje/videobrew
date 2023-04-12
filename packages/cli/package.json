@@ -41,7 +41,7 @@
     "postbuild": "npm run docs-build"
   },
   "dependencies": {
-    "@videobrew/client": "*",
+    "@videobrew/client": "^0.4.4",
     "ascii-table3": "^0.8.2",
     "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",
