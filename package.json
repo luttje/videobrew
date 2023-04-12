@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "npx lerna run build && node ./scripts/licenses.mjs",
-    "ci:test": "npm run ci:test-scripts && npx lerna run ci:test",
+    "ci:test": "npm run ci:test-scripts && npx lerna run --concurrency 1 ci:test",
     "publish": "npx lerna publish --no-private",
     "test-scripts": "jest",
     "ci:test-scripts": "npm run test-scripts -- --ci --coverage"
