@@ -14,7 +14,7 @@
   },
   "author": "Luttje",
   "license": "AGPL-3.0-or-later",
-  "version": "0.4.2-alpha.0",
+  "version": "0.4.3-alpha.0",
   "type": "module",
   "types": "./dist/types/cli.d.ts",
   "bin": {
@@ -38,7 +38,7 @@
     "prepack": "npm run package"
   },
   "dependencies": {
-    "@videobrew/client": "^0.4.2-alpha.0",
+    "@videobrew/client": "^0.4.3-alpha.0",
     "ascii-table3": "^0.8.2",
     "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",

@@ -14,7 +14,7 @@
   },
   "author": "Luttje",
   "license": "AGPL-3.0-or-later",
-  "version": "0.4.2-alpha.0",
+  "version": "0.4.3-alpha.0",
   "type": "module",
   "publishConfig": {
     "access": "public",
@@ -58,7 +58,7 @@
     "@tsconfig/recommended": "^1.0.2",
     "@types/node": "^18.15.11",
     "@types/testing-library__jest-dom": "^5.14.5",
-    "@videobrew/client": "^0.4.2-alpha.0",
+    "@videobrew/client": "^0.4.3-alpha.0",
     "@vitest/coverage-c8": "^0.29.8",
     "@vitest/coverage-istanbul": "^0.29.8",
     "autoprefixer": "^10.4.13",
