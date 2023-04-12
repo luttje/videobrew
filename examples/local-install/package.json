@@ -4,8 +4,8 @@
   "description": "Example Video App showing how to install Videobrew in a local project instead of globally.",
   "private": true,
   "devDependencies": {
-    "@videobrew/cli": "^0.3.0",
-    "@videobrew/editor": "^0.3.0"
+    "@videobrew/cli": "*",
+    "@videobrew/editor": "*"
   },
   "scripts": {
     "preview": "npx videobrew preview",

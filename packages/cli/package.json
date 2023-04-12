@@ -38,7 +38,7 @@
     "prepack": "npm run package"
   },
   "dependencies": {
-    "@videobrew/client": "^0.4.3-alpha.1",
+    "@videobrew/client": "*",
     "ascii-table3": "^0.8.2",
     "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",
@@ -62,5 +62,5 @@
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   },
-  "gitHead": "3cf19701797286424ed22af372cdcc20f3ee75e2"
+  "gitHead": "47b73b8e6b44029305b9c6b6f01b6248a63b5785"
 }
