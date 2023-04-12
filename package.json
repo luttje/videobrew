@@ -19,6 +19,7 @@
     "ci:test": "npm run ci:test-scripts && npx lerna run --concurrency 1 ci:test",
     "publish": "npx lerna publish --no-private",
     "test-scripts": "jest",
-    "ci:test-scripts": "npm run test-scripts -- --ci --coverage"
+    "ci:test-scripts": "npm run test-scripts -- --ci --coverage",
+    "postinstall": "npx lerna link"
   }
 }
