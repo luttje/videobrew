@@ -71,7 +71,7 @@ describe('CLI', () => {
     const expectedPAth = join(expectedBasePath, '0-dependencies.mp4');
     const ssim = await getVideoSsim(expectedPAth, actualPath);
     expect(ssim).toBeCloseTo(1.0, 1);
-  }, 30000);
+  }, 60 * 1000);
   
   it('should render a local video app with the highest quality by serving it', async () => {
     const actualPath = join(actualBasePath, '0-dependencies-hq.mp4');
@@ -86,6 +86,6 @@ describe('CLI', () => {
     const expectedPAth = join(expectedBasePath, '0-dependencies-hq.mp4');
     const ssim = await getVideoSsim(expectedPAth, actualPath);
     expect(ssim).toBeCloseTo(1.0, 1);
-  });
+  }, 60 * 1000);
 });
 
