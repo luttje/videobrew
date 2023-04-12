@@ -16,10 +16,13 @@
   "license": "AGPL-3.0-or-later",
   "version": "0.4.3-alpha.2",
   "type": "module",
-  "types": "./dist/types/cli.d.ts",
+  "types": "dist/types/cli.d.ts",
   "bin": {
-    "videobrew": "./dist/esm/cli.js"
+    "videobrew": "dist/esm/cli.js"
   },
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public",
     "directory": "dist"
@@ -32,10 +35,8 @@
     "ci:test": "npx jest --ci --coverage",
     "clear-build": "node ../../scripts/clear-build.mjs",
     "docs-build": "node ../../scripts/docs-build.mjs",
-    "package": "node ../../scripts/package.mjs",
     "prebuild": "npm run clear-build",
-    "postbuild": "npm run docs-build && npm run package",
-    "prepack": "npm run package"
+    "postbuild": "npm run docs-build"
   },
   "dependencies": {
     "@videobrew/client": "*",

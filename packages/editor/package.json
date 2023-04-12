@@ -16,6 +16,9 @@
   "license": "AGPL-3.0-or-later",
   "version": "0.4.3-alpha.2",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public",
     "directory": "dist"
@@ -41,10 +44,8 @@
     "ci:test:e2e": "cross-env VITE_COVERAGE=true DEBUG=pw:webserver nyc --reporter=json --reporter=text-summary --report-dir=coverage/e2e npx playwright test",
     "clear-build": "node ../../scripts/clear-build.mjs",
     "docs-build": "node ../../scripts/docs-build.mjs",
-    "package": "node ../../scripts/package.mjs",
     "prebuild": "npm run clear-build",
-    "postbuild": "npm run docs-build",
-    "prepack": "npm run package"
+    "postbuild": "npm run docs-build"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",

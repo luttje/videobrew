@@ -94,6 +94,4 @@ It may be helpful to test the published package before publishing it. To do this
 
 3. The packages will be versioned and pushed to Git for a GitHub release.
 
-4. For each package their package.json will be transformed into the `dist` directory, have a package-lock.json generated, get shrinkwrapped *(using [`scripts/package.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/package.mjs))*
-
-5. The contents of the `dist` directory will be published to npm.
+4. The contents of the `dist` directory will be published to npm.

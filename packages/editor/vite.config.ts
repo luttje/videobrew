@@ -13,13 +13,6 @@ const config: UserConfig & { test: VitestConfig['test'] } = {
 	},
 	plugins: [
 		sveltekit(),
-		{
-			name: 'run-package-scripts',
-			async closeBundle() {
-				if (fs.existsSync(path.resolve('dist')))
-					await util.promisify(exec)('npm run package');
-			}
-		},
 		istanbul({
 			nycrcPath: path.resolve(__dirname, '.nycrc'),
       requireEnv: true,
