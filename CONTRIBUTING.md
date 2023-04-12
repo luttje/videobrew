@@ -28,9 +28,9 @@ $ DEBUG=1 videobrew preview
 
 4. Ensure that the `videobrew` CLI and editor are linked as global packages:
     ```bash
-    $ cd packages/cli/dist # run this in project root to get to the CLI dist (ensure it's built first)
+    $ cd packages/cli # run this in project root to get to the CLI dist (ensure it's built first)
     $ npm link
-    $ cd ../../editor/dist
+    $ cd ../../editor
     $ npm link
     ```
 
@@ -62,25 +62,11 @@ This will:
 
 1. Discover third-party licenses used and generate a `LICENSES-THIRD-PARTY` file in the project root *([`scripts/licenses.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/licenses.mjs))*.
 
-2. Clear the `dist` directories in each package *(using [`scripts/clear-build.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/clear-build.mjs))*.
+2. Clear the `dist` directories in each package *(by [`scripts/clear-build.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/clear-build.mjs))*.
 
 3. Call the `build` script in each package to compile its TypeScript code. Build output is placed in the `dist` directory of each package.
 
-4. Build a readme for each package containing the project root readme and a package specific readme. It will also copy `LICENSE` and `LICENSES-THIRD-PARTY`. All this will be placed in the `dist` directory *(using [`scripts/docs-build.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/docs-build.mjs))*.
-
-### Testing before publishing
-
-It may be helpful to test the published package before publishing it. To do this, you can run the following steps:
-
-1. Go into the `packages/cli/dist` and run `npm pack`. 
-
-2. Run `npm install -g <filename>.tgz` to install the CLI globally.
-
-3. Go into the `packages/editor/dist` and run `npm pack`.
-
-4. Run `npm install -g <filename>.tgz` to install the editor globally.
-
-5. You can now run the CLI render and preview action from anywhere. This should give you a good idea of what the published package will behave like.
+4. Build a readme for each package containing the project root readme and a package specific readme. It will also copy `LICENSE` and `LICENSES-THIRD-PARTY`. All this will be placed in the package root directory *(by [`scripts/docs-build.mjs`](https://github.com/luttje/videobrew/blob/main/scripts/docs-build.mjs))*.
 
 ## Publishing
 
@@ -94,4 +80,4 @@ It may be helpful to test the published package before publishing it. To do this
 
 3. The packages will be versioned and pushed to Git for a GitHub release.
 
-4. The contents of the `dist` directory will be published to npm.
+4. The production-needed contents of each package directory will be published to npm.
