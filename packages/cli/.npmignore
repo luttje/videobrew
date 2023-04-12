@@ -1,7 +1,0 @@
-PACKAGE_README.md
-__tests__
-jest.config.ts
-.DS_Store
-node_modules
-coverage
-.nyc_output

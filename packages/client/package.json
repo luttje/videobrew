@@ -21,6 +21,12 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "LICENSES-THIRD-PARTY"
+  ],
   "scripts": {
     "dev": "npx tsc --watch",
     "watch": "npx tsc --watch",

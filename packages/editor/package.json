@@ -19,6 +19,12 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "LICENSES-THIRD-PARTY"
+  ],
   "scripts": {
     "serve-test-video-app": "ws --hostname localhost --port 8088 --directory ../../examples/0-dependencies --stack lws-body-parser lws-request-monitor lws-log lws-cors lws-json lws-compress lws-rewrite lws-blacklist lws-conditional-get lws-mime lws-range lws-spa ./mw-cors.mjs lws-static lws-index",
     "dev-and-serve-test-video-app": "cross-env-shell \"npx concurrently --kill-others \\\"npm run serve-test-video-app\\\" \\\"npx vite dev\\\"\"",
