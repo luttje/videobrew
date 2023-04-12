@@ -16,6 +16,7 @@
   "license": "AGPL-3.0-or-later",
   "version": "0.4.4-alpha.3",
   "type": "module",
+  "main": "dist/index.js",
   "publishConfig": {
     "access": "public"
   },
