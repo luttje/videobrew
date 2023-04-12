@@ -14,7 +14,7 @@
   },
   "author": "Luttje",
   "license": "AGPL-3.0-or-later",
-  "version": "0.4.4-alpha.3",
+  "version": "0.4.4",
   "type": "module",
   "main": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
