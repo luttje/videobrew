@@ -16,12 +16,8 @@
   "license": "AGPL-3.0-or-later",
   "version": "0.4.4-alpha.1",
   "type": "module",
-  "files": [
-    "dist"
-  ],
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "scripts": {
     "serve-test-video-app": "ws --hostname localhost --port 8088 --directory ../../examples/0-dependencies --stack lws-body-parser lws-request-monitor lws-log lws-cors lws-json lws-compress lws-rewrite lws-blacklist lws-conditional-get lws-mime lws-range lws-spa ./mw-cors.mjs lws-static lws-index",
@@ -84,5 +80,5 @@
     "wait-on": "^7.0.1",
     "ws": "^8.13.0"
   },
-  "gitHead": "064bcf324678b6c21921a2de72de5320771a9cfe"
+  "gitHead": "dba51f4469c651f6af739930e309d5201c86f76e"
 }
