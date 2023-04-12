@@ -68,6 +68,7 @@ async function main() {
 
   const distributionDirectory = path.join(packagePath, DISTRIBUTION_DIRECTORY);
 
+  runNpm('link @videobrew/client', distributionDirectory);
   runNpm('i --package-lock-only', distributionDirectory);
   runNpm('ci --omit=dev', distributionDirectory);
   runNpm('shrinkwrap', distributionDirectory);
