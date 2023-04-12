@@ -59,6 +59,7 @@ export default defineConfig({
   /* Run the editor (and an example) server before starting the tests */
   webServer: {
     command: 'npm run dev',
+    timeout: 30 * 1000,
     url: editorUrl,
     reuseExistingServer: !process.env.CI,
   },
