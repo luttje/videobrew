@@ -1,5 +1,6 @@
-/README.md
-/LICENSES-THIRD-PARTY
+PACKAGE_README.md
+__tests__
+jest.config.ts
 .DS_Store
 node_modules
 /.svelte-kit
@@ -9,7 +10,6 @@ node_modules
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-dist
 coverage
 /test-results/
 /playwright-report/
