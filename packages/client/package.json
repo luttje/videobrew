@@ -14,7 +14,7 @@
   },
   "author": "Luttje",
   "license": "AGPL-3.0-or-later",
-  "version": "0.4.3-alpha.1",
+  "version": "0.4.3-alpha.2",
   "publishConfig": {
     "access": "public",
     "directory": "dist"
