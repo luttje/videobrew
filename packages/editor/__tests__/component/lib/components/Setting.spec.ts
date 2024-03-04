@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/svelte';
+import { it, expect, describe, vi } from 'vitest';
 import html from 'svelte-htm';
 import Setting from '../../../../src/lib/components/Setting.svelte';
 

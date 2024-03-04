@@ -1,10 +1,11 @@
 
 import chalk from 'chalk';
 import { newlines, inform, debug, panic } from '../../src/utils/logging';
+import { it, expect, describe, vi } from 'vitest';
 
 describe('logging', () => {
   it('should print newlines', () => {
-    const mockLog = jest.spyOn(console, 'log').mockImplementation(() => { });
+    const mockLog = vi.spyOn(console, 'log').mockImplementation(() => { });
     
     newlines(2);
 
@@ -16,7 +17,7 @@ describe('logging', () => {
   });
 
   it('should print a message', () => {
-    const mockLog = jest.spyOn(console, 'log').mockImplementation(() => { });
+    const mockLog = vi.spyOn(console, 'log').mockImplementation(() => { });
 
     inform('hello');
 
@@ -30,7 +31,7 @@ describe('logging', () => {
   });
 
   it('should not print a debug message when debug environment is not set', () => {
-    const mockLog = jest.spyOn(console, 'log').mockImplementation(() => { });
+    const mockLog = vi.spyOn(console, 'log').mockImplementation(() => { });
 
     debug('hello');
 
@@ -40,7 +41,7 @@ describe('logging', () => {
   });
 
   it('should print a debug message when debug environment is set', () => {
-    const mockLog = jest.spyOn(console, 'log').mockImplementation(() => { });
+    const mockLog = vi.spyOn(console, 'log').mockImplementation(() => { });
     process.env.DEBUG = 'true';
 
     debug('hello');
@@ -55,8 +56,8 @@ describe('logging', () => {
   });
 
   it('should print a panic message', () => {
-    const mockLog = jest.spyOn(console, 'log').mockImplementation(() => { });
-    const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {
+    const mockLog = vi.spyOn(console, 'log').mockImplementation(() => { });
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
       throw new Error('process.exit() was called');
     });
     
@@ -72,7 +73,7 @@ describe('logging', () => {
   });
 
   it('should print a message without prefix', () => {
-    const mockLog = jest.spyOn(console, 'log').mockImplementation(() => { });
+    const mockLog = vi.spyOn(console, 'log').mockImplementation(() => { });
 
     inform('hello', chalk.white, true);
 

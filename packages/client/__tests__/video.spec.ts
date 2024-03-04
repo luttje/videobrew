@@ -1,12 +1,13 @@
 import { Video } from '../src/video';
+import { it, expect, describe, vi, Mock, beforeEach, afterEach } from 'vitest';
 import { VideoBuilder } from '../src/video-builder';
 
 describe('Video', () => {
   const fps = 60;
   let video: Video;
   let mockElement: HTMLElement;
-  let resetFrame: jest.Mock<any, any, any>;
-  let videoFrame: jest.Mock<any, any, any>;
+  let resetFrame: Mock<any, any>;
+  let videoFrame: Mock<any, any>;
 
   beforeEach(() => {
     mockElement = document.createElement('div');
@@ -15,8 +16,8 @@ describe('Video', () => {
 
     const videoBuilder = new VideoBuilder(`#${mockElement.id}`, fps);
 
-    resetFrame = jest.fn();
-    videoFrame = jest.fn();
+    resetFrame = vi.fn();
+    videoFrame = vi.fn();
 
     videoBuilder.addScene(resetFrame, (sceneBuilder) => {
       sceneBuilder.addToFrames(videoFrame);

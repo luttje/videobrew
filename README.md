@@ -2,6 +2,8 @@
 
 [![Videobrew Documentation](https://shields.io/badge/-documentation-583372)](https://github.com/luttje/videobrew/tree/main/docs)
 [![CLI npm version](https://img.shields.io/npm/v/@videobrew/cli)](https://www.npmjs.com/package/@videobrew/cli)
+[![License](https://img.shields.io/github/license/luttje/videobrew)](https://github.com/luttje/videobrew/blob/main/LICENSE)
+[![Dependency status](https://img.shields.io/librariesio/github/luttje/videobrew)](https://libraries.io/github/luttje/videobrew)
 [![GitHub Tests Action](https://github.com/luttje/videobrew/actions/workflows/tests.yml/badge.svg)](https://github.com/luttje/videobrew/actions/workflows/tests.yml)
 [![Test Coverage Status](https://coveralls.io/repos/github/luttje/videobrew/badge.svg?branch=main)](https://coveralls.io/github/luttje/videobrew?branch=main)
 

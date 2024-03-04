@@ -1,1 +1,0 @@
-process.env.VIDEOBREW_TESTING = 'true';

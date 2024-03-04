@@ -1,4 +1,5 @@
 import { modifyTransform } from '../src/dom-utils';
+import { it, expect, describe, vi } from 'vitest';
 
 describe('modifyTransform', () => {
   it('should add a new transform', () => {

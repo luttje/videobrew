@@ -1,4 +1,5 @@
 import { Frame, FrameCount } from '../src/frames';
+import { it, expect, describe, beforeAll } from 'vitest';
 import { SceneBuilder } from '../src/scene-builder';
 
 describe('SceneBuilder', () => {
