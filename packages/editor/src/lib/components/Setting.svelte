@@ -1,5 +1,5 @@
 <script>
-
+  import { createEventDispatcher } from 'svelte';
 </script>
 <div class="flex flex-row gap-4 items-center">
   <span class="text-sm italic">
