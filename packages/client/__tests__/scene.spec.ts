@@ -1,4 +1,5 @@
 import { Scene } from '../src/scene';
+import { it, expect, describe, vi } from 'vitest';
 
 describe('Scene', () => {
   it('should normalize a frame index', () => {
@@ -9,9 +10,9 @@ describe('Scene', () => {
 
   it('should render all frames up to and including the given frame', () => {
     const frames = [
-      jest.fn(),
-      jest.fn(),
-      jest.fn(),
+      vi.fn(),
+      vi.fn(),
+      vi.fn(),
     ];
     const scene = new Scene(() => { }, 10, frames);
     

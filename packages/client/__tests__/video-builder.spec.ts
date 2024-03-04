@@ -1,4 +1,5 @@
 import { FrameCount } from '../src/frames';
+import { it, expect, describe, vi, beforeEach, afterEach } from 'vitest';
 import { VideoBuilder } from '../src/video-builder';
 
 describe('VideoBuilder', () => {
@@ -17,8 +18,8 @@ describe('VideoBuilder', () => {
 
   it('should build a video with a single scene', () => {
     let videoBuilder = new VideoBuilder(`#${mockElement.id}`, fps);
-    const resetFrame = jest.fn();
-    const videoFrame = jest.fn();
+    const resetFrame = vi.fn();
+    const videoFrame = vi.fn();
 
     videoBuilder.addScene(resetFrame, (sceneBuilder) => {
       sceneBuilder.addToFrames(videoFrame);
@@ -36,8 +37,8 @@ describe('VideoBuilder', () => {
 
   it('should build a video with multiple scenes', () => {
     let videoBuilder = new VideoBuilder(`#${mockElement.id}`, fps);
-    const resetFrame = jest.fn();
-    const videoFrame = jest.fn();
+    const resetFrame = vi.fn();
+    const videoFrame = vi.fn();
 
     videoBuilder.addScene(resetFrame, (sceneBuilder) => {
       sceneBuilder.addToFrames(videoFrame);

@@ -1,4 +1,5 @@
 import { FrameCount } from '../src/frames';
+import { it, expect, describe, vi } from 'vitest';
 
 describe('FrameCount', () => {
   const frameCounts = [
