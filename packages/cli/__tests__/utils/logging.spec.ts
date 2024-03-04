@@ -1,6 +1,7 @@
 
 import chalk from 'chalk';
 import { newlines, inform, debug, panic } from '../../src/utils/logging';
+import { it, expect, describe, vi } from 'vitest';
 
 describe('logging', () => {
   it('should print newlines', () => {

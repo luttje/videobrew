@@ -1,5 +1,6 @@
 import { getContainerFormats } from '../src/rendering/video-from-frames';
 import { IVideoBrewArguments, main } from '../src/cli';
+import { it, expect, describe, vi } from 'vitest';
 import pathToFfmpeg from 'ffmpeg-static';
 import { exec } from 'child_process';
 import { join } from 'path';

@@ -1,4 +1,5 @@
 import { isVideoAppUrl } from '../../src/utils/is-video-url';
+import { it, expect, describe, vi } from 'vitest';
 
 describe('isVideoAppUrl', () => {
   it('should return true for a valid http video app url', () => {
