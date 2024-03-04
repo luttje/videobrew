@@ -13,7 +13,7 @@ const outputPath = join(__dirname, 'output');
 const expectedBasePath = join(outputPath, 'expected');
 const actualBasePath = join(outputPath, 'actual');
 
-const mockHelpFunction = jest.fn();
+const mockHelpFunction = vi.fn();
 
 const callMain = async (args: IVideoBrewArguments) => {
   return await main({
@@ -46,7 +46,7 @@ describe('CLI', () => {
   });
 
   it('should show available render-formats', async () => {
-    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => { });
 
     await callMain({
       action: 'render-formats',
