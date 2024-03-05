@@ -4,6 +4,9 @@ import {
   convertWindowsToUnixPath,
   runNpm,
   run,
+  setupProcessListeners,
+  spawnCommand,
+  spawnCommandAndMoveOn,
 } from './run.mjs';
 
 describe('convertWindowsToUnixNewline', () => {
@@ -72,5 +75,59 @@ describe('run', () => {
     let actualWorkingDirectory = run('pwd');
 
     expect(actualWorkingDirectory.trimEnd()).toBe(expectedWorkingDirectory);
+  });
+});
+
+describe('setupProcessListeners', () => {
+  it('logs success message on successful exit', () => {
+    const process = {
+      stdout: { on: jest.fn() },
+      stderr: { on: jest.fn() },
+      on: jest.fn(),
+    };
+
+    jest.spyOn(global.console, "log")
+    setupProcessListeners(process, 'Success!', 'Test');
+    process.on.mock.calls[0][1](0, null);
+
+    expect(console.log).toHaveBeenCalledWith('Success!');
+  });
+  
+  it('logs error message on exit with code', () => {
+    const process = {
+      stdout: { on: jest.fn() },
+      stderr: { on: jest.fn() },
+      on: jest.fn(),
+    };
+
+    jest.spyOn(global.console, "error")
+    setupProcessListeners(process, 'Success!', 'Test');
+    process.on.mock.calls[0][1](1, null);
+
+    expect(console.error).toHaveBeenCalledWith('Test exited with code 1');
+  });
+    
+  it('logs error message on exit with signal', () => {
+    const process = {
+      stdout: { on: jest.fn() },
+      stderr: { on: jest.fn() },
+      on: jest.fn(),
+    };
+
+    jest.spyOn(global.console, "log")
+    setupProcessListeners(process, 'Success!', 'Test');
+    process.on.mock.calls[0][1](null, 'SIGTERM');
+
+    expect(console.log).toHaveBeenCalledWith('Test was killed with signal SIGTERM');
+  });
+});
+
+describe('spawnCommand', () => {
+  it('resolves on successful exit', async () => {
+    await expect(spawnCommand('npm -v', [], 'Success!', 'Test')).resolves.toBeUndefined();
+  });
+
+  it('rejects on exit with code', async () => {
+    await expect(spawnCommand('test', [], 'Success!', 'Test')).rejects.toThrow('Test exited with code 1');
   });
 });
