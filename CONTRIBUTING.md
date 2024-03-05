@@ -73,7 +73,7 @@ This will:
 1. Run:
 
     ```bash
-    npm run publish # run in project root
+    npx lerna publish --no-private # run in project root
     ```
 
 2. Choose the desired version number.
