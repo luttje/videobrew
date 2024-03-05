@@ -3,3 +3,4 @@ node_modules
 coverage
 scripts/test-tmp
 scripts/storage/
+scripts/mock-workspace
