@@ -420,5 +420,5 @@ export async function main(args: ReturnType<typeof parseArguments>) {
   }
 }
 
-if (!process.env.VIDEOBREW_TESTING)
+if (!process.env.VIDEOBREW_UNIT_TESTING)
   main(parseArguments());

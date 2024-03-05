@@ -21,7 +21,6 @@
     "ci:test": "npm run ci:test-scripts && npx lerna run --concurrency 1 ci:test",
     "test-scripts": "jest",
     "ci:test-scripts": "npm run test-scripts -- --ci --coverage",
-    "verdaccio:check": "node ./scripts/npm-verdaccio-check.mjs",
-    "test-package": "node ./scripts/npm-package-test.mjs"
+    "verdaccio:check": "node ./scripts/npm-verdaccio-check.mjs"
   }
 }
