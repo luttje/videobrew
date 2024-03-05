@@ -17,6 +17,8 @@ jobs:
       - run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Install verdaccio for local npm registry
+        run: npm install -g verdaccio
       - name: Build all packages
         run: npx lerna run build
       - name: Test all packages
