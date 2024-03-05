@@ -1,0 +1,7 @@
+storage: ./storage
+packages:
+  '@videobrew/*':
+    access: $all
+    publish: $all
+    # commented so npmjs registry is not used
+    # proxy:
