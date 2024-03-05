@@ -18,7 +18,7 @@ beforeAll(async () => {
   try {
     killVerdaccio = await startVerdaccio();
 
-    // await runLernaPublish();
+    await runLernaPublish();
 
     ({ workspacePath, workspaceRemover } = await installNpmPackageInMockWorkspace());
   } catch (error) {
