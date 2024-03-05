@@ -14,7 +14,7 @@
   },
   "author": "Luttje",
   "license": "AGPL-3.0-or-later",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "type": "module",
   "types": "dist/types/cli.d.ts",
   "bin": {
@@ -41,7 +41,7 @@
     "postbuild": "npm run docs-build"
   },
   "dependencies": {
-    "@videobrew/client": "^0.5.0",
+    "@videobrew/client": "^0.5.1",
     "ascii-table3": "^0.8.2",
     "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",
