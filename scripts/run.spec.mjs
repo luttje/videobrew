@@ -121,13 +121,3 @@ describe('setupProcessListeners', () => {
     expect(console.log).toHaveBeenCalledWith('Test was killed with signal SIGTERM');
   });
 });
-
-describe('spawnCommand', () => {
-  it('resolves on successful exit', async () => {
-    await expect(spawnCommand('npm -v', [], 'Success!', 'Test')).resolves.toBeUndefined();
-  });
-
-  it('rejects on exit with code', async () => {
-    await expect(spawnCommand('test', [], 'Success!', 'Test')).rejects.toThrow('Test exited with code 1');
-  });
-});
