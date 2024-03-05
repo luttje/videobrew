@@ -21,5 +21,5 @@ export async function main(packagePath = null) {
   fs.rmSync(distributionDirectory, { recursive: true });
 }
 
-if (!process.env.VIDEOBREW_TESTING)
+if (!process.env.VIDEOBREW_UNIT_TESTING)
   main();
