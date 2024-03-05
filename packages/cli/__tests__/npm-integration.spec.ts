@@ -1,10 +1,11 @@
 import { afterAll, beforeAll, it, expect, describe, vi } from 'vitest';
+import { exec, execSync } from 'child_process';
 import {
   startVerdaccio,
   runLernaPublish,
   installNpmPackageInMockWorkspace,
 } from "../../../scripts/npm-package-test.mjs";
-import { run } from "../../../scripts/run.mjs";
+import { run } from '../../../scripts/run.mjs';
 
 let killVerdaccio: () => void;
 let workspaceRemover: () => Promise<void>;
@@ -20,25 +21,20 @@ beforeAll(async () => {
   } catch (error) {
     console.error('An error occurred while starting Verdaccio:', error);
   }
-});
-
-afterAll(async () => {
-  killVerdaccio();
-
-  if (workspaceRemover) {
-    await workspaceRemover();
+  
+  // clean up function, called once after all tests run
+  return async () => {
+    killVerdaccio();
+  
+    if (workspaceRemover) {
+      await workspaceRemover();
+    }
   }
 });
 
 describe('npm package integration tests', () => {
-  it('can run ', async () => {
-    console.log('Running npm integration tests...');
-    
-    const output = run(
-      'npx videobrew --help',
-      workspacePath
-    );
-
+  it('should include specific help text', async () => {
+    const output = run('npx videobrew --help', workspacePath);
     expect(output).toContain('Create videos using web technologies.');
   });
 });

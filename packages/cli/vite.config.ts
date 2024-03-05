@@ -7,6 +7,6 @@ export default defineConfig({
     globalSetup: '__tests__/globalSetup.ts',
     coverage: {
       reporter: ['text', 'clover'],
-    }
+    },
   },
 })
