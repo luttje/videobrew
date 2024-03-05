@@ -12,6 +12,9 @@ let workspaceRemover: () => Promise<void>;
 let workspacePath: string;
 
 beforeAll(async () => {
+  // We actually want output, so lets not suppress it
+  delete process.env.VIDEOBREW_UNIT_TESTING;
+
   try {
     killVerdaccio = await startVerdaccio();
 
@@ -27,14 +30,14 @@ beforeAll(async () => {
     killVerdaccio();
   
     if (workspaceRemover) {
-      // await workspaceRemover();
+      await workspaceRemover();
     }
   }
 });
 
 describe('npm package integration tests', () => {
   it('should include specific help text', async () => {
-    const output = run('npx videobrew --help > output.txt', workspacePath);
+    const output = run('npx videobrew --help', workspacePath);
     expect(output).toContain('Create videos using web technologies.');
   });
 });

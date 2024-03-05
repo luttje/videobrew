@@ -6,14 +6,14 @@ const testDirectory = 'test-tmp';
 
 describe('clear-build.mjs', () => {
   beforeAll(() => {
-    process.env.VIDEOBREW_TESTING = true;
+    process.env.VIDEOBREW_UNIT_TESTING = true;
 
     // Create the test directory
     fs.mkdirSync(path.join(__dirname, testDirectory), { recursive: true });
   });
 
   afterAll(() => {
-    delete process.env.VIDEOBREW_TESTING;
+    delete process.env.VIDEOBREW_UNIT_TESTING;
 
     // Delete the test directory
     fs.rmSync(path.join(__dirname, testDirectory), { recursive: true });
