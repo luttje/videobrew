@@ -27,14 +27,14 @@ beforeAll(async () => {
     killVerdaccio();
   
     if (workspaceRemover) {
-      await workspaceRemover();
+      // await workspaceRemover();
     }
   }
 });
 
 describe('npm package integration tests', () => {
   it('should include specific help text', async () => {
-    const output = run('npx videobrew --help', workspacePath);
+    const output = run('npx videobrew --help > output.txt', workspacePath);
     expect(output).toContain('Create videos using web technologies.');
   });
 });

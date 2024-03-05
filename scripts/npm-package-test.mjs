@@ -30,16 +30,10 @@ export async function runLernaPublish() {
  * Ideally we would install it globally, but this way we can remove the workspace after the test.
  * Globally it could conflict on the developer's machine.
  */
-export async function installNpmPackageInMockWorkspace(test) {
+export async function installNpmPackageInMockWorkspace() {
   const mockWorkspaceDir = path.resolve(__dirname, 'mock-workspace');
 
   try {
-    if (!test) {
-      return {
-        workspacePath: mockWorkspaceDir,
-        workspaceRemover: async () => { },
-      };
-    }
     fs.mkdirSync(mockWorkspaceDir, { recursive: true });
     runNpm(`init -y`, mockWorkspaceDir);
     runNpm(`install @videobrew/cli --registry=http://localhost:4000`, mockWorkspaceDir);
