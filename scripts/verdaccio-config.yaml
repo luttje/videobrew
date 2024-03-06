@@ -12,3 +12,4 @@ packages:
     access: $all
     publish: $all
     proxy: npmjs
+log: { type: file, path: verdaccio.log, level: info }

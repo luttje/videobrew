@@ -43,6 +43,7 @@ beforeAll(async () => {
 describe.sequential('npm package integration tests', () => {
   it('integration tests use videobrew in mock-workspace', async () => {
     if (!workspacePath) {
+      console.error('workspacePath is not defined. Lerna publish failed?');
       assert.fail('workspacePath is not defined. Lerna publish failed?');
     }
 
@@ -52,6 +53,7 @@ describe.sequential('npm package integration tests', () => {
   
   it('should include specific help text', async () => {
     if (!workspacePath) {
+      console.error('workspacePath is not defined. Lerna publish failed?');
       assert.fail('workspacePath is not defined. Lerna publish failed?');
     }
 
@@ -61,6 +63,7 @@ describe.sequential('npm package integration tests', () => {
 
   it('should render the 0-dependencies example', async () => {
     if (!workspacePath) {
+      console.error('workspacePath is not defined. Lerna publish failed?');
       assert.fail('workspacePath is not defined. Lerna publish failed?');
     }
 
