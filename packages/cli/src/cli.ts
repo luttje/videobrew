@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoFormat } from './rendering/video-from-frames.js';
+import { ensurePlaywrightInstalled, testPlaywrightInstallationWorking } from './utils/install-playwright.js';
 import { startEditor, getEditorInstallPath, getEditorInstaller, EDITOR_PACKAGE_NAME } from './editor.js';
 import { getExtensionByQuality, recordFrames } from './rendering/record-frames.js';
 import { createLocalWebServer, LocalWebServerInstance } from './server.js';
@@ -49,7 +50,9 @@ function parseArguments() {
       [chalk.bold('render'), 'Render the video app to a video file'],
       [chalk.bold('render-formats'), 'List all supported video render formats'],
     ])
-    .setStyle('none');
+      .setStyle('none');
+  
+    console.log(chalk.bold.bgRedBright('‌‌ ‌‌ ‌‌ ‌‌ ‌‌ ‌‌ ‌‌  ‌‌ ‌‌‌‌ ‌‌‌‌ ‌‌ ‌‌ ‌‌ \n  📼 Videobrew  \n‌‌ ‌‌ ‌‌  ‌‌ ‌‌ ‌‌‌‌ ‌‌‌ ‌‌ ‌‌ ‌‌ ‌‌ ‌‌ ‌‌ \n'));
 
   return parse(argumentConfig, {
     hideMissingArgMessages: true,
@@ -58,7 +61,6 @@ function parseArguments() {
 
     headerContentSections: [
       {
-        header: '📼 Videobrew',
         content: 'Create videos using web technologies.',
       },
       {
@@ -283,6 +285,22 @@ export async function main(args: ReturnType<typeof parseArguments>) {
   if (args.action === 'help') {
     args._commandLineResults.printHelp();
     return;
+  }
+
+  inform('Checking Playwright browsers installation (this may take a minute)...');
+  const result = await ensurePlaywrightInstalled();
+
+  if (result.installedOrUpdated) {
+    inform('Playwright browsers installation or update complete!', chalk.green);
+    inform('Checking if Playwright installation is working...');
+
+    const isWorking = await testPlaywrightInstallationWorking();
+
+    if (!isWorking) {
+      panic('Playwright installation is not working! Please try running the command again.');
+    }
+    
+    inform('Playwright installation is working!', chalk.green);
   }
 
   const containerFormats = await getContainerFormats();

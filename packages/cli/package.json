@@ -48,7 +48,8 @@
     "ffmpeg-static": "^5.1.0",
     "local-web-server": "^5.3.1",
     "node-cleanup": "^2.1.2",
-    "playwright": "^1.31.1",
+    "pkg-dir": "^8.0.0",
+    "playwright": "^1.42.1",
     "prompts": "^2.4.2",
     "ts-command-line-args": "^2.4.2"
   },

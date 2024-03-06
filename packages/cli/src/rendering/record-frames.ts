@@ -1,6 +1,4 @@
 import { Browser, chromium, Page, PageScreenshotOptions } from 'playwright';
-import fs from 'fs';
-import { isVideoAppUrl } from '../utils/is-video-url.js';
 import { inform } from '../utils/logging.js';
 import chalk from 'chalk';
 import { VideoAppSetup } from '@videobrew/client';
