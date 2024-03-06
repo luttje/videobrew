@@ -52,7 +52,7 @@ jobs:
           parallel: true
   finish:
     needs: upload-coveralls
-    if: "!cancelled()"
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished

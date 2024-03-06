@@ -234,7 +234,7 @@ async function confirmPreview() {
 
 async function preview(videoAppUrl: string, cliInstalledGlobally: boolean) {
   const { server, host, port } = await startEditor(videoAppUrl, cliInstalledGlobally);
-  let interval: NodeJS.Timer;
+  let interval: NodeJS.Timeout;
   let isRestarting = false;
 
   // When the server fails, restart it (this is a workaround for errors caused by `watch` rebuilding the editor with different filenames)

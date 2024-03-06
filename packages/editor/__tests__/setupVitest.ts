@@ -3,15 +3,13 @@
  */
 
 /* eslint-disable @typescript-eslint/no-empty-function */
-import * as matchers from "@testing-library/jest-dom/matchers"; 
+import '@testing-library/jest-dom/vitest'
 import { expect, vi } from 'vitest';
 import type { Navigation, Page } from '@sveltejs/kit';
 import { readable } from 'svelte/store';
 import * as environment from '$app/environment';
 import * as navigation from '$app/navigation';
 import * as stores from '$app/stores';
-
-expect.extend(matchers);
 
 // Mock SvelteKit runtime module $app/environment
 vi.mock('$app/environment', (): typeof environment => ({

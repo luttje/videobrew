@@ -1,11 +1,16 @@
-import { render, screen } from '@testing-library/svelte';
-import { it, expect, describe, vi } from 'vitest';
-import html from 'svelte-htm';
-import Setting from '../../../../src/lib/components/Setting.svelte';
+import {render, screen, within} from '@testing-library/svelte'
+import { it, expect, describe } from 'vitest';
+import SettingTest from './Setting.test.svelte';
+
+let host: HTMLElement
 
 describe('Test slot fallbacks', () => {
-  it('Put some elements', () => {
-    render(html`<${Setting}>My Configuration</${Setting}>`);
-    expect(screen.getByText('My Configuration:')).toBeInTheDocument();
+  it('Test Setting component slot', () => {
+    render(SettingTest);
+    
+    const setting = screen.getByRole('setting')
+    const child = within(setting).getByTestId('child')
+    
+    expect(child).toBeInTheDocument();
   });
 });

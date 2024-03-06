@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, it, expect, describe, vi } from 'vitest';
+import { afterAll, beforeAll, it, expect, describe, assert } from 'vitest';
 import { join } from 'path';
 import {
   startVerdaccio,
@@ -42,16 +42,28 @@ beforeAll(async () => {
 
 describe('npm package integration tests', () => {
   it('integration tests use videobrew in mock-workspace', async () => {
+    if (!workspacePath) {
+      assert.fail('workspacePath is not defined. Lerna publish failed?');
+    }
+
     const output = run('npx which videobrew', workspacePath);
     expect(output).toContain('mock-workspace');
   });
   
   it('should include specific help text', async () => {
+    if (!workspacePath) {
+      assert.fail('workspacePath is not defined. Lerna publish failed?');
+    }
+
     const output = run('npx videobrew --help', workspacePath);
     expect(output).toContain('Create videos using web technologies.');
   });
 
   it('should render the 0-dependencies example', async () => {
+    if (!workspacePath) {
+      assert.fail('workspacePath is not defined. Lerna publish failed?');
+    }
+    
     const pathRelativeToWorkspace = '../../examples/0-dependencies';
     const output = run(`npx videobrew render ${pathRelativeToWorkspace} out/my-video.mp4`, workspacePath);
     console.log(output);
