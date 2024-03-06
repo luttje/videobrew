@@ -53,7 +53,13 @@ function parseArguments() {
     ])
       .setStyle('none');
   
-    console.log(chalk.bold.bgRedBright('‌‌ ‌‌ ‌‌ ‌‌ ‌‌ ‌‌ ‌‌  ‌‌ ‌‌‌‌ ‌‌‌‌ ‌‌ ‌‌ ‌‌ \n  📼 Videobrew  \n‌‌ ‌‌ ‌‌  ‌‌ ‌‌ ‌‌‌‌ ‌‌‌ ‌‌ ‌‌ ‌‌ ‌‌ ‌‌ ‌‌ \n'));
+  console.log(
+    chalk.bold.white.bgRedBright(
+      ' ╔═══════════════════╗ \n' +
+      ' ║   📼 Videobrew    ║ \n' +
+      ' ╚═══════════════════╝ '
+    )
+  );
 
   return parse(argumentConfig, {
     hideMissingArgMessages: true,
