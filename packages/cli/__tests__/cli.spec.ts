@@ -1,18 +1,14 @@
 import { getContainerFormats } from '../src/rendering/video-from-frames';
 import { IVideoBrewArguments, main } from '../src/cli';
 import { it, expect, describe, vi } from 'vitest';
-import pathToFfmpeg from 'ffmpeg-static';
-import { exec } from 'child_process';
+import { getVideoSsim } from './utils.js';
 import { join } from 'path';
-import util from 'util';
 import 'core-js'; // Polyfill needed for chromium.launch() at src/rendering/record-frames.ts
 
-const execAsync = util.promisify(exec);
-
 const videoAppPath = join(__dirname, '..', '..', '..', 'examples', '0-dependencies');
-const outputPath = join(__dirname, 'output');
-const expectedBasePath = join(outputPath, 'expected');
-const actualBasePath = join(outputPath, 'actual');
+const fixturesPath = join(__dirname, 'fixtures');
+const expectedBasePath = join(fixturesPath, 'expected');
+const actualBasePath = join(fixturesPath, 'actual');
 
 const mockHelpFunction = vi.fn();
 
@@ -25,16 +21,6 @@ const callMain = async (args: IVideoBrewArguments) => {
       printHelp: mockHelpFunction,
     },
   });
-};
-
-const getVideoSsim = async (expectedPath: string, actualPath: string) => {
-  const command = `${pathToFfmpeg} -i ${expectedPath} -i ${actualPath} -lavfi ssim -f null -`;
-  const result = (await execAsync(command)).stderr;
-
-  const regex = /All:(\d+\.\d+)/;
-  const match = result.match(regex);
-
-  return parseFloat(match![1]);
 };
 
 describe('CLI', () => {

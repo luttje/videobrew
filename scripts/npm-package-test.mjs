@@ -36,7 +36,7 @@ export async function installNpmPackageInMockWorkspace() {
   try {
     fs.mkdirSync(mockWorkspaceDir, { recursive: true });
     runNpm(`init -y`, mockWorkspaceDir);
-    runNpm(`install @videobrew/cli --registry=http://localhost:4000`, mockWorkspaceDir);
+    runNpm(`install @videobrew/cli --registry=http://localhost:4000 --install-strategy=nested`, mockWorkspaceDir);
 
     console.log('Package installed in mock workspace.');
 
