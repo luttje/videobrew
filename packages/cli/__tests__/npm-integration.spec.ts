@@ -93,23 +93,21 @@ describe.sequential('npm package integration tests', () => {
     }
   });
 
-  it('should render a local video app with default quality by serving it', async () => {
-    const actualPath = join(actualBasePath, '0-dependencies.mp4');
+  it('should render a local video app with default quality by serving it', async () => {    
+    const output = run(`npx videobrew render ${videoAppPath} out/my-video-def.mp4`, workspacePath);
+    console.log(output);
     
-    const output = run(`npx videobrew render ${videoAppPath} ${actualPath}`, workspacePath);
-    console.log(`npx videobrew render ${videoAppPath} ${actualPath}`, output);
-    
+    const actualPath = `${workspacePath}/out/my-video-def.mp4`;
     const expectedPAth = join(expectedBasePath, '0-dependencies.mp4');
     const ssim = await getVideoSsim(expectedPAth, actualPath);
     expect(ssim).toBeCloseTo(1.0, 1);
   }, 60 * 1000);
   
   it('should render a local video app with the highest quality by serving it', async () => {
-    const actualPath = join(actualBasePath, '0-dependencies-hq.mp4');
-    
-    const output = run(`npx videobrew render ${videoAppPath} --renderQuality 100 ${actualPath}`, workspacePath);
-    console.log(`npx videobrew render ${videoAppPath} --renderQuality 100 ${actualPath}`, output);
+    const output = run(`npx videobrew render --renderQuality 100 ${videoAppPath} out/my-video-hq.mp4`, workspacePath);
+    console.log(output);
 
+    const actualPath = `${workspacePath}/out/my-video-hq.mp4`;
     const expectedPAth = join(expectedBasePath, '0-dependencies-hq.mp4');
     const ssim = await getVideoSsim(expectedPAth, actualPath);
     expect(ssim).toBeCloseTo(1.0, 1);
