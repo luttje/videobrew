@@ -1,3 +1,4 @@
+import { getContainerFormats } from '../src/rendering/video-from-frames.js';
 import { afterAll, beforeAll, it, expect, describe, assert } from 'vitest';
 import { join } from 'path';
 import {
@@ -13,6 +14,9 @@ let workspaceRemover: () => Promise<void>;
 let workspacePath: string;
 const fixturesPath = join(__dirname, 'fixtures');
 const expectedBasePath = join(fixturesPath, 'expected');
+
+const videoAppPath = join(__dirname, '..', '..', '..', 'examples', '0-dependencies');
+const actualBasePath = join(fixturesPath, 'actual');
 
 beforeAll(async () => {
   // We actually want output, so lets not suppress it
@@ -78,4 +82,35 @@ describe.sequential('npm package integration tests', () => {
     const ssim = await getVideoSsim(expectedPath, actualPath);
     expect(ssim).toBeCloseTo(1.0, 1);
   });
+  
+  it('should show available render-formats', async () => {
+    const output = run(`npx videobrew render-formats`, workspacePath);
+
+    const containerFormats = await getContainerFormats();
+
+    for (const containerFormat of containerFormats) {
+      expect(output).toContain(containerFormat.name);
+    }
+  });
+
+  it('should render a local video app with default quality by serving it', async () => {
+    const actualPath = join(actualBasePath, '0-dependencies.mp4');
+    
+    run(`npx videobrew render ${videoAppPath} ${actualPath}`, workspacePath);
+    
+    const expectedPAth = join(expectedBasePath, '0-dependencies.mp4');
+    const ssim = await getVideoSsim(expectedPAth, actualPath);
+    expect(ssim).toBeCloseTo(1.0, 1);
+  }, 60 * 1000);
+  
+  it('should render a local video app with the highest quality by serving it', async () => {
+    const actualPath = join(actualBasePath, '0-dependencies-hq.mp4');
+    
+    run(`npx videobrew render ${videoAppPath} --renderQuality 100 ${actualPath}`, workspacePath);
+
+    const expectedPAth = join(expectedBasePath, '0-dependencies-hq.mp4');
+    const ssim = await getVideoSsim(expectedPAth, actualPath);
+    expect(ssim).toBeCloseTo(1.0, 1);
+  }, 60 * 1000);
 });
+
