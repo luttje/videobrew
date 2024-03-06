@@ -15,9 +15,7 @@ jobs:
         with:
           node-version: '18'
       - run: npm ci
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Install verdaccio for local npm registry
+      - name: Install verdaccio for local npm registry needed for tests
         run: npm install -g verdaccio
       - name: Build all packages
         run: npx lerna run build
