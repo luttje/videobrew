@@ -97,7 +97,7 @@ describe.sequential('npm package integration tests', () => {
     const actualPath = join(actualBasePath, '0-dependencies.mp4');
     
     const output = run(`npx videobrew render ${videoAppPath} ${actualPath}`, workspacePath);
-    console.log(output);
+    console.log(`npx videobrew render ${videoAppPath} ${actualPath}`, output);
     
     const expectedPAth = join(expectedBasePath, '0-dependencies.mp4');
     const ssim = await getVideoSsim(expectedPAth, actualPath);
@@ -108,7 +108,7 @@ describe.sequential('npm package integration tests', () => {
     const actualPath = join(actualBasePath, '0-dependencies-hq.mp4');
     
     const output = run(`npx videobrew render ${videoAppPath} --renderQuality 100 ${actualPath}`, workspacePath);
-    console.log(output);
+    console.log(`npx videobrew render ${videoAppPath} --renderQuality 100 ${actualPath}`, output);
 
     const expectedPAth = join(expectedBasePath, '0-dependencies-hq.mp4');
     const ssim = await getVideoSsim(expectedPAth, actualPath);
