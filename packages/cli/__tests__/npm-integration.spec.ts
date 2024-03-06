@@ -40,7 +40,7 @@ beforeAll(async () => {
   }
 });
 
-describe('npm package integration tests', () => {
+describe.sequential('npm package integration tests', () => {
   it('integration tests use videobrew in mock-workspace', async () => {
     if (!workspacePath) {
       assert.fail('workspacePath is not defined. Lerna publish failed?');

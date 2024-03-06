@@ -49,7 +49,7 @@ export async function installNpmPackageInMockWorkspace() {
           throw new Error('Refusing to remove the workspace, as it is not in the expected location: ' + mockWorkspaceDir);
         }
         
-        fs.rmdirSync(mockWorkspaceDir, { recursive: true, force: true });
+        fs.rmSync(mockWorkspaceDir, { recursive: true, force: true });
         console.log('Mock workspace removed.');
       },
     };
