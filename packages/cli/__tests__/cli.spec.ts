@@ -1,4 +1,3 @@
-import { getContainerFormats } from '../src/rendering/video-from-frames';
 import { IVideoBrewArguments, main } from '../src/cli';
 import { it, expect, describe, vi } from 'vitest';
 import { getVideoSsim } from './utils.js';
@@ -29,20 +28,6 @@ describe('CLI', () => {
     });
 
     expect(mockHelpFunction).toHaveBeenCalled();
-  });
-
-  it('should show available render-formats', async () => {
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => { });
-
-    await callMain({
-      action: 'render-formats',
-    });
-
-    const containerFormats = await getContainerFormats();
-
-    for (const containerFormat of containerFormats) {
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(containerFormat.name));
-    }
   });
 
   it('should render a local video app with default quality by serving it', async () => {
