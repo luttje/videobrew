@@ -3,7 +3,6 @@ import { IVideoBrewArguments, main } from '../src/cli';
 import { it, expect, describe, vi } from 'vitest';
 import { getVideoSsim } from './utils.js';
 import { join } from 'path';
-import 'core-js'; // Polyfill needed for chromium.launch() at src/rendering/record-frames.ts
 
 const videoAppPath = join(__dirname, '..', '..', '..', 'examples', '0-dependencies');
 const fixturesPath = join(__dirname, 'fixtures');
