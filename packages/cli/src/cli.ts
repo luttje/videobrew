@@ -9,6 +9,7 @@ import { ArgumentConfig, parse } from 'ts-command-line-args';
 import { isVideoAppUrl } from './utils/is-video-url.js';
 import { AsciiTable3 } from 'ascii-table3';
 import { SingleBar } from 'cli-progress';
+import pathToFfmpeg from 'ffmpeg-static';
 import nodeCleanup from 'node-cleanup';
 import { exec } from 'child_process';
 import prompts from 'prompts';
@@ -118,7 +119,7 @@ async function showRenderFormats(containerFormats: VideoFormat[]) {
       formatTable.addRow(format.extension, format.name);
     });
   
-  inform('Supported render formats:');
+  inform(`Supported render formats by ${pathToFfmpeg}:`);
   inform(formatTable.toString(), undefined, true);
   inform('To render as one of these formats suffix the output path with the desired format extension.', undefined, true);
   inform('\n(These are the container formats as reported by ffmpeg)', chalk.italic.gray, true);
@@ -313,6 +314,7 @@ export async function main(args: ReturnType<typeof parseArguments>) {
 
   if (!relativeVideoAppPath) {
     if (args._unknown?.length > 0) {
+      // TODO: Somehow warn if the output is in an unsupported format
       const videoAppPathOrUrl = args._unknown.find(arg => {
         const extension = path.extname(arg);
 
