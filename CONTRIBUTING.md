@@ -73,8 +73,10 @@ This will:
 1. Run:
 
     ```bash
-    npx lerna publish --no-private # run in project root
+    npx lerna publish --no-private --force-publish # run in project root
     ```
+
+    _We will use `--force-publish` to ensure that all packages are versioned the same._
 
 2. Choose the desired version number.
 
