@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
-    "@playwright/test": "^1.32.1",
+    "@playwright/test": "^1.42.1",
     "@sveltejs/adapter-node": "^2.0.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
