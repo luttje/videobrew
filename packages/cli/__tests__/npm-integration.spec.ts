@@ -1,15 +1,22 @@
-import { afterAll, beforeAll, it, expect, describe, vi } from 'vitest';
-import { exec, execSync } from 'child_process';
+import { getContainerFormats } from '../src/rendering/video-from-frames.js';
+import { afterAll, beforeAll, it, expect, describe, assert } from 'vitest';
+import { join } from 'path';
 import {
   startVerdaccio,
   runLernaPublish,
   installNpmPackageInMockWorkspace,
 } from "../../../scripts/npm-package-test.mjs";
 import { run } from '../../../scripts/run.mjs';
+import { getVideoSsim } from './utils.js';
 
 let killVerdaccio: () => void;
 let workspaceRemover: () => Promise<void>;
 let workspacePath: string;
+const fixturesPath = join(__dirname, 'fixtures');
+const expectedBasePath = join(fixturesPath, 'expected');
+
+const videoAppPath = join(__dirname, '..', '..', '..', 'examples', '0-dependencies');
+const actualBasePath = join(fixturesPath, 'actual');
 
 beforeAll(async () => {
   // We actually want output, so lets not suppress it
@@ -18,7 +25,9 @@ beforeAll(async () => {
   try {
     killVerdaccio = await startVerdaccio();
 
-    await runLernaPublish();
+    if (!process.env.VIDEOBREW_TESTS_SKIP_LERNA_PUBLISH || process.env.VIDEOBREW_TESTS_SKIP_LERNA_PUBLISH === 'false') {
+      await runLernaPublish();
+    }
 
     ({ workspacePath, workspaceRemover } = await installNpmPackageInMockWorkspace());
   } catch (error) {
@@ -29,15 +38,80 @@ beforeAll(async () => {
   return async () => {
     killVerdaccio();
   
-    if (workspaceRemover) {
+    if (workspaceRemover && (!process.env.VIDEOBREW_TESTS_KEEP_MOCK_WORKSPACE || process.env.VIDEOBREW_TESTS_KEEP_MOCK_WORKSPACE === 'false')) {
       await workspaceRemover();
     }
   }
 });
 
-describe('npm package integration tests', () => {
+describe.sequential('npm package integration tests', () => {
+  it('integration tests use videobrew in mock-workspace', async () => {
+    if (!workspacePath) {
+      console.error('workspacePath is not defined. Lerna publish failed?');
+      assert.fail('workspacePath is not defined. Lerna publish failed?');
+    }
+
+    const output = run('npx which videobrew', workspacePath);
+    expect(output).toContain('mock-workspace');
+  });
+  
   it('should include specific help text', async () => {
+    if (!workspacePath) {
+      console.error('workspacePath is not defined. Lerna publish failed?');
+      assert.fail('workspacePath is not defined. Lerna publish failed?');
+    }
+
     const output = run('npx videobrew --help', workspacePath);
     expect(output).toContain('Create videos using web technologies.');
   });
+
+  it('should render the 0-dependencies example', async () => {
+    if (!workspacePath) {
+      console.error('workspacePath is not defined. Lerna publish failed?');
+      assert.fail('workspacePath is not defined. Lerna publish failed?');
+    }
+
+    const pathRelativeToWorkspace = '../../examples/0-dependencies';
+    const output = run(`npx videobrew render ${pathRelativeToWorkspace} out/my-video.mp4`, workspacePath);
+    console.log(output);
+
+    expect(output).toContain('Video rendered successfully!');
+
+    const actualPath = `${workspacePath}/out/my-video.mp4`;
+    const expectedPath = join(expectedBasePath, '0-dependencies.mp4');
+    const ssim = await getVideoSsim(expectedPath, actualPath);
+    expect(ssim).toBeCloseTo(1.0, 1);
+  });
+
+  it('should show available render-formats', async () => {
+    const output = run(`npx videobrew render-formats`, workspacePath);
+    console.log(output);
+
+    const containerFormats = await getContainerFormats();
+
+    for (const containerFormat of containerFormats) {
+      expect(output).toContain(containerFormat.name);
+    }
+  });
+
+  it('should render a local video app with default quality by serving it', async () => {    
+    const output = run(`npx videobrew render ${videoAppPath} -o out/my-video-def.mp4`, workspacePath);
+    console.log(output);
+    
+    const actualPath = `${workspacePath}/out/my-video-def.mp4`;
+    const expectedPAth = join(expectedBasePath, '0-dependencies.mp4');
+    const ssim = await getVideoSsim(expectedPAth, actualPath);
+    expect(ssim).toBeCloseTo(1.0, 1);
+  }, 60 * 1000);
+  
+  it('should render a local video app with the highest quality by serving it', async () => {
+    const output = run(`npx videobrew render --renderQuality 100 ${videoAppPath} -o out/my-video-hq.mp4`, workspacePath);
+    console.log(output);
+
+    const actualPath = `${workspacePath}/out/my-video-hq.mp4`;
+    const expectedPAth = join(expectedBasePath, '0-dependencies-hq.mp4');
+    const ssim = await getVideoSsim(expectedPAth, actualPath);
+    expect(ssim).toBeCloseTo(1.0, 1);
+  }, 60 * 1000);
 });
+

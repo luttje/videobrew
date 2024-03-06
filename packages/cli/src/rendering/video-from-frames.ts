@@ -65,7 +65,7 @@ export async function getContainerFormats(): Promise<VideoFormat[]> {
   const { stdout } = await execAsync(`${pathToFfmpeg} -formats`);
 
   return stdout
-    .split('\r\n')
+    .split('\n')
     .filter(line => line.includes('E '))
     .map(line => line.match(/E\s+(\w+)\s+(.*)/))
     .filter(match => match)

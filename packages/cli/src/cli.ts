@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { buildVideoConfigFromFrames, getContainerFormats, renderVideo, VideoFormat } from './rendering/video-from-frames.js';
+import { ensurePlaywrightInstalled, testPlaywrightInstallationWorking } from './utils/install-playwright.js';
 import { startEditor, getEditorInstallPath, getEditorInstaller, EDITOR_PACKAGE_NAME } from './editor.js';
 import { getExtensionByQuality, recordFrames } from './rendering/record-frames.js';
 import { createLocalWebServer, LocalWebServerInstance } from './server.js';
@@ -8,6 +9,7 @@ import { ArgumentConfig, parse } from 'ts-command-line-args';
 import { isVideoAppUrl } from './utils/is-video-url.js';
 import { AsciiTable3 } from 'ascii-table3';
 import { SingleBar } from 'cli-progress';
+import pathToFfmpeg from 'ffmpeg-static';
 import nodeCleanup from 'node-cleanup';
 import { exec } from 'child_process';
 import prompts from 'prompts';
@@ -49,7 +51,15 @@ function parseArguments() {
       [chalk.bold('render'), 'Render the video app to a video file'],
       [chalk.bold('render-formats'), 'List all supported video render formats'],
     ])
-    .setStyle('none');
+      .setStyle('none');
+  
+  console.log(
+    chalk.bold.white.bgRedBright(
+      ' ╔═══════════════════╗ \n' +
+      ' ║   📼 Videobrew    ║ \n' +
+      ' ╚═══════════════════╝ '
+    )
+  );
 
   return parse(argumentConfig, {
     hideMissingArgMessages: true,
@@ -58,7 +68,6 @@ function parseArguments() {
 
     headerContentSections: [
       {
-        header: '📼 Videobrew',
         content: 'Create videos using web technologies.',
       },
       {
@@ -116,7 +125,7 @@ async function showRenderFormats(containerFormats: VideoFormat[]) {
       formatTable.addRow(format.extension, format.name);
     });
   
-  inform('Supported render formats:');
+  inform(`Supported render formats by ${pathToFfmpeg}:`);
   inform(formatTable.toString(), undefined, true);
   inform('To render as one of these formats suffix the output path with the desired format extension.', undefined, true);
   inform('\n(These are the container formats as reported by ffmpeg)', chalk.italic.gray, true);
@@ -232,7 +241,7 @@ async function confirmPreview() {
 
 async function preview(videoAppUrl: string, cliInstalledGlobally: boolean) {
   const { server, host, port } = await startEditor(videoAppUrl, cliInstalledGlobally);
-  let interval: NodeJS.Timer;
+  let interval: NodeJS.Timeout;
   let isRestarting = false;
 
   // When the server fails, restart it (this is a workaround for errors caused by `watch` rebuilding the editor with different filenames)
@@ -285,6 +294,22 @@ export async function main(args: ReturnType<typeof parseArguments>) {
     return;
   }
 
+  inform('Checking Playwright browsers installation (this may take a minute)...');
+  const result = await ensurePlaywrightInstalled();
+
+  if (result.installedOrUpdated) {
+    inform('Playwright browsers installation or update complete!', chalk.green);
+    inform('Checking if Playwright installation is working...');
+
+    const isWorking = await testPlaywrightInstallationWorking();
+
+    if (!isWorking) {
+      panic('Playwright installation is not working! Please try running the command again.');
+    }
+    
+    inform('Playwright installation is working!', chalk.green);
+  }
+
   const containerFormats = await getContainerFormats();
   
   if (args.action === 'render-formats') {
@@ -295,6 +320,7 @@ export async function main(args: ReturnType<typeof parseArguments>) {
 
   if (!relativeVideoAppPath) {
     if (args._unknown?.length > 0) {
+      // TODO: Somehow warn if the output is in an unsupported format
       const videoAppPathOrUrl = args._unknown.find(arg => {
         const extension = path.extname(arg);
 

@@ -7,7 +7,7 @@ export function newlines(count: number = 1) {
 
 export function inform(message: string, chalkFn = chalk.white, noPrefix = false) {
   console.log(
-    (noPrefix ? '' : (chalkFn.underline('[📼 Videobrew]') + ' ')) +
+    (noPrefix ? '' : ('📼 ')) +
     chalkFn(message)
   );
 }

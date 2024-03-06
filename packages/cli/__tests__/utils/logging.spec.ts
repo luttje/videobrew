@@ -23,7 +23,7 @@ describe('logging', () => {
 
     expect(mockLog).toHaveBeenCalledTimes(1);
     expect(mockLog).toHaveBeenCalledWith(
-      chalk.white.underline('[📼 Videobrew]') + ' ' +
+      '📼 ' +
       chalk.white('hello')
     );
 
@@ -48,7 +48,7 @@ describe('logging', () => {
 
     expect(mockLog).toHaveBeenCalledTimes(1);
     expect(mockLog).toHaveBeenCalledWith(
-      chalk.gray.underline('[📼 Videobrew]') + ' ' +
+      '📼 ' +
       chalk.gray('hello')
     );
 
