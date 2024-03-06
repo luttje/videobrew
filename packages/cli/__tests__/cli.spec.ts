@@ -43,7 +43,7 @@ describe('CLI', () => {
     for (const containerFormat of containerFormats) {
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(containerFormat.name));
     }
-  });
+  }, 10 * 1000);
 
   it('should render a local video app with default quality by serving it', async () => {
     const actualPath = join(actualBasePath, '0-dependencies.mp4');

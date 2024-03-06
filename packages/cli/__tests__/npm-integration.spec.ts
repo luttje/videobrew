@@ -21,7 +21,7 @@ beforeAll(async () => {
   try {
     killVerdaccio = await startVerdaccio();
 
-    if (!process.env.VIDEOBREW_TESTS_SKIP_LERNA_PUBLISH || process.env.VIDEOBREW_TESTS_SKIP_LERNA_PUBLISH === 'true') {
+    if (!process.env.VIDEOBREW_TESTS_SKIP_LERNA_PUBLISH || process.env.VIDEOBREW_TESTS_SKIP_LERNA_PUBLISH === 'false') {
       await runLernaPublish();
     }
 
@@ -63,7 +63,7 @@ describe('npm package integration tests', () => {
     if (!workspacePath) {
       assert.fail('workspacePath is not defined. Lerna publish failed?');
     }
-    
+
     const pathRelativeToWorkspace = '../../examples/0-dependencies';
     const output = run(`npx videobrew render ${pathRelativeToWorkspace} out/my-video.mp4`, workspacePath);
     console.log(output);
