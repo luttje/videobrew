@@ -20,6 +20,8 @@ jobs:
       - name: Build all packages
         run: npx lerna run build
       - name: Test all packages
+        env:
+          VIDEOBREW_TESTS_SKIP_LERNA_PUBLISH: true
         run: npm run ci:test
       - name: Cache all files
         uses: actions/cache@v3
