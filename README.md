@@ -14,7 +14,7 @@ Create videos using any web technologies (like Svelte, Vue and React) or just pl
 <hr>
 
 ## 🚧 Unmaintained Proof of Concept
-This project is a proof of concept that is not actively maintained. If you have any questions, feel free to [open an issue](https://github.com/luttje/videobrew/issues/new).
+This project is a proof of concept that is not actively maintained.
 
 </div>
 
